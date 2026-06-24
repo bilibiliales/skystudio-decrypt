@@ -3,6 +3,8 @@
 <head>
     <title>sky studio解密解析工具</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -28,11 +30,33 @@
 
         :root {
             --main-bg-color: #E0E0E0;
-            --main-bg-opacity: 1;
+            --main-bg-layer-color: #E0E0E0FF;
+            --panel-bg-color: #F6F7F8;
+            --panel-text-color: #262626;
+            --panel-muted-color: #666;
+            --panel-card-bg: #ffffff;
+            --panel-soft-bg: rgba(255,255,255,0.78);
+            --panel-border-color: rgba(0,0,0,0.12);
+            --key-face-color: #2c2c2cb0;
+            --key-face-down-color: #9d9c9ca6;
+            --key-border-color: #909090d1;
+            --key-shape-color: #484848a0;
+            --key-shape-fill-color: #2c2c2c30;
+            --key-size: 150px;
+            --key-border-width: 3px;
             --key-opacity: 1;
             --bg-image: none;
             --bg-image-size: cover;
             --bg-image-position: center;
+        }
+
+        body.panel-dark {
+            --panel-bg-color: #1d1d1d;
+            --panel-text-color: #e8edf4;
+            --panel-muted-color: #a8b0bc;
+            --panel-card-bg: ##262626;
+            --panel-soft-bg: rgba(255,255,255,0.08);
+            --panel-border-color: rgba(255,255,255,0.14);
         }
 
         /* 强制WordPress主题的根容器直接父元素使用flex布局 */
@@ -57,8 +81,8 @@
         .sidebar {
             width: 380px;
             height: 100%;
-            background-color: var(--main-bg-color);
-            opacity: var(--main-bg-opacity);
+            background-color: var(--panel-bg-color);
+            color: var(--panel-text-color);
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             overflow-y: auto;
@@ -73,7 +97,7 @@
         }
 
         .sidebar h1 {
-            color: #333;
+            color: var(--panel-text-color);
             font-size: 2em !important;
             font-weight: bold !important;
             text-align: center;
@@ -93,6 +117,10 @@
             transition: border-color 0.3s;
         }
 
+        body.panel-dark .upload-area {
+            border-color: rgba(255,255,255,0.22);
+        }
+
         .upload-area h3 {
             font-size: 1.17em !important;
             font-weight: bold !important;
@@ -107,17 +135,12 @@
             background-color: #f0fff0;
         }
 
-        #fileInput {
-            display: none;
+        body.panel-dark .upload-area.highlight {
+            background-color: rgba(76,175,80,0.14);
         }
 
-        .status {
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #f0f0f0;
-            min-height: 40px;
-            opacity: var(--main-bg-opacity);
+        #fileInput {
+            display: none;
         }
 
         .btn {
@@ -146,21 +169,237 @@
             display: none;
         }
 
-        .log {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
+        .file-list-panel {
+            margin-bottom: 15px;
+        }
+
+        .file-list-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .file-list-toolbar .btn {
+            margin: 0;
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+
+        #fileList {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .empty-file-list {
+            color: #777;
+            font-size: 13px;
+            padding: 10px;
+            border: 1px dashed #ccc;
             border-radius: 4px;
+            text-align: center;
+        }
+
+        .file-row {
+            display: grid;
+            grid-template-columns: 24px 1fr auto auto;
+            align-items: center;
+            gap: 8px;
+            padding: 9px;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background-color: var(--panel-soft-bg);
+        }
+
+        .file-row.active {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76,175,80,0.12);
+        }
+
+        .file-row.invalid {
+            border-color: #d66;
+        }
+
+        .file-main {
+            min-width: 0;
+            border: 0;
+            background: transparent;
+            color: var(--panel-text-color);
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .file-name {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .file-meta {
+            display: block;
+            margin-top: 2px;
+            color: var(--panel-muted-color);
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-radio {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--panel-text-color);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .file-delete-btn {
+            border: 0;
+            background-color: #e56b6f;
+            color: #fff;
+            border-radius: 4px;
+            padding: 5px 7px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .conversion-flow {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding: 9px 10px;
+            background-color: var(--panel-soft-bg);
+            border-radius: 6px;
+            border: 1px solid var(--panel-border-color);
+        }
+
+        .flow-step {
+            color: #777;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .flow-step.done {
+            color: #2d7d32;
+        }
+
+        .flow-step.active {
+            color: #111;
+        }
+
+        body.panel-dark .flow-step.active {
+            color: #fff;
+        }
+
+        .flow-step.error {
+            color: #c62828;
+        }
+
+        .flow-arrow {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .flow-hint {
+            flex-basis: 100%;
+            color: var(--panel-muted-color);
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .toast-container {
+            position: fixed;
+            left: 50%;
+            top: 18px;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .toast-bubble {
+            max-width: min(360px, calc(100vw - 32px));
+            padding: 9px 14px;
+            border-radius: 999px;
+            background-color: rgba(20, 20, 20, 0.86);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+            font-size: 13px;
+            line-height: 1.35;
+            animation: toastBubbleIn 0.18s ease-out, toastBubbleOut 0.24s ease-in 2.6s forwards;
+        }
+
+        .toast-bubble.error {
+            background-color: rgba(198, 40, 40, 0.92);
+        }
+
+        .toast-bubble.success {
+            background-color: rgba(46, 125, 50, 0.94);
+        }
+
+        @keyframes toastBubbleIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes toastBubbleOut {
+            to {
+                opacity: 0;
+                transform: translateY(-6px) scale(0.98);
+            }
+        }
+
+        .log-panel {
+            margin-top: 20px;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background-color: var(--panel-card-bg);
+            overflow: hidden;
+        }
+
+        .log-panel summary {
+            cursor: pointer;
+            padding: 10px 12px;
+            color: var(--panel-text-color);
+            font-weight: bold;
+            font-size: 13px;
+            list-style-position: inside;
+        }
+
+        .log {
+            padding: 15px;
             max-height: 80px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 12px;
+            color: var(--panel-text-color);
+            border-top: 1px solid var(--panel-border-color);
         }
 
         #songInfo {
             margin-top: 20px;
             padding: 15px;
-            background-color: #fff;
+            background-color: var(--panel-card-bg);
+            color: var(--panel-text-color);
             border-radius: 4px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
@@ -176,8 +415,7 @@
             overflow: hidden;
             background-size: var(--bg-image-size);
             background-position: var(--bg-image-position);
-            background-color: var(--main-bg-color);
-            opacity: var(--main-bg-opacity);
+            background-color: var(--main-bg-layer-color);
             transition: margin-left 0.3s ease, margin-right 0.3s ease;
             margin-left: 420px;
             margin-right: 340px;
@@ -249,7 +487,7 @@
 
         .piano-wrap {
             display: grid;
-            grid-template: repeat(3, 90px) / repeat(5, 90px);
+            grid-template: repeat(3, var(--key-size)) / repeat(5, var(--key-size));
             margin: 0 auto;
             width: min-content;
             gap: var(--piano-gap, 10px);
@@ -257,32 +495,146 @@
 
         .piano-wrap > div {
             background-color: transparent;
-            transition: 0.5s background-color;
             display: flex;
             position: relative;
         }
 
         .piano-key {
-            background-color: rgb(90, 90, 90);
+            background-color: var(--key-face-color);
             margin: auto;
-            width: var(--key-width, 80%);
-            height: var(--key-height, 80%);
+            width: 100%;
+            height: 100%;
             opacity: var(--key-opacity);
             box-sizing: border-box;
             padding: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
             color: white;
-            font-weight: bold;
-            border-radius: 4px;
+            font-weight: 400;
+            border: var(--key-border-width) solid var(--key-border-color);
+            border-radius: 16%;
             font-size: var(--key-font-size, 14px);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.28);
+            transition: transform 0.12s ease, background-color 0.16s ease, border-color 0.16s ease;
+            will-change: transform;
+        }
+
+        .key-shape,
+        .key-shape::before,
+        .key-shape::after {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-style: preserve-3d;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .key-shape {
+            width: 58%;
+            height: 58%;
+            transform: translate(-50%, -50%);
+        }
+
+        .piano-key.shape-circle .key-shape {
+            border: var(--key-border-width) solid var(--key-shape-color);
+            border-radius: 50%;
+            background-color: var(--key-shape-fill-color);
+        }
+
+        .piano-key.shape-diamond .key-shape::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: var(--key-border-width) solid var(--key-shape-color);
+            background-color: var(--key-shape-fill-color);
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .piano-key.shape-combo .key-shape::before,
+        .piano-key.shape-combo .key-shape::after {
+            content: '';
+            display: block;
+        }
+
+        .piano-key.shape-combo .key-shape::before {
+            width: 100%;
+            height: 100%;
+            border: var(--key-border-width) solid var(--key-shape-color);
+            background-color: var(--key-shape-fill-color);
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .piano-key.shape-combo .key-shape::after {
+            width: 88%;
+            height: 88%;
+            border: var(--key-border-width) solid var(--key-shape-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .key-label {
+            position: relative;
+            z-index: 1;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .key-label .katex {
+            color: inherit;
+            font-size: 1em;
         }
 
         .piano-key-down {
-            transition: 0.1s all !important;
-            border: 3px solid yellow;
-            box-sizing: border-box;
+            transform: scale(0.9);
+            background: var(--key-face-down-color);
+        }
+
+        .piano-key-down .key-shape,
+        .piano-key-down .key-shape::before,
+        .piano-key-down .key-shape::after {
+            animation: keyShapeFlip 0.36s ease;
+        }
+
+        @keyframes keyShapeFlip {
+            from {
+                transform: translate(-50%, -50%) rotateY(0deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotateY(360deg);
+            }
+        }
+
+        .piano-key.shape-diamond.piano-key-down .key-shape {
+            animation-name: keyShapeFlip;
+        }
+
+        .piano-key.shape-diamond.piano-key-down .key-shape::before {
+            animation: none;
+        }
+
+        .piano-key.shape-combo.piano-key-down .key-shape {
+            animation-name: keyShapeFlip;
+        }
+
+        .piano-key.shape-combo.piano-key-down .key-shape::before {
+            animation: none;
+        }
+
+        .piano-key.shape-combo.piano-key-down .key-shape::after {
+            animation: none;
+        }
+
+        @keyframes keyDiamondFlip {
+            from {
+                transform: translate(-50%, -50%) rotateY(0deg) rotate(45deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotateY(360deg) rotate(45deg);
+            }
         }
 
         #previewControls {
@@ -319,8 +671,8 @@
         #stylePanel {
             width: 300px;
             height: 100%;
-            background-color: var(--main-bg-color);
-            opacity: var(--main-bg-opacity);
+            background-color: var(--panel-bg-color);
+            color: var(--panel-text-color);
             padding: 20px;
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
             overflow-y: auto;
@@ -347,19 +699,142 @@
 
         .style-control label {
             display: block;
-            margin-bottom: 5px;
             font-weight: bold;
+        }
+
+        .style-control.range-row label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-value {
+            color: var(--panel-muted-color);
+            font-size: 13px;
+            font-weight: normal;
+            font-variant-numeric: tabular-nums;
+            min-width: 46px;
+            text-align: right;
+        }
+
+        .style-control.toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .style-control.toggle-row label {
+            margin-bottom: 0;
         }
 
         .style-control input[type="range"] {
             width: 100%;
         }
 
-        .style-control input[type="number"] {
-            width: 60px;
-            padding: 5px;
+        .style-control.range-row input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 999px;
+            background: #4CAF50;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .style-control.range-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+        }
+
+        .style-control.range-row input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+        }
+
+        .style-control input[type="color"] {
+            width: 56px;
+            height: 32px;
+            border: 1px solid var(--panel-border-color);
             border-radius: 4px;
-            border: 1px solid #ccc;
+            background-color: var(--panel-card-bg);
+        }
+
+        .switch-input {
+            width: 44px;
+            height: 24px;
+            appearance: none;
+            -webkit-appearance: none;
+            border-radius: 999px;
+            background-color: rgba(120,120,120,0.35);
+            border: 1px solid var(--panel-border-color);
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .switch-input::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 2px;
+            top: 2px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.26);
+            transition: transform 0.2s ease;
+        }
+
+        .switch-input:checked {
+            background-color: #4CAF50;
+        }
+
+        .switch-input:checked::before {
+            transform: translateX(20px);
+        }
+
+        .segmented-control {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            overflow: hidden;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background-color: var(--panel-soft-bg);
+        }
+
+        .segmented-control input {
+            display: none;
+        }
+
+        .segmented-control span {
+            display: block;
+            padding: 10px 6px;
+            text-align: center;
+            color: var(--panel-text-color);
+            cursor: pointer;
+            font-size: 12px;
+            border-right: 1px solid var(--panel-border-color);
+        }
+
+        .segmented-control label:last-child span {
+            border-right: 0;
+        }
+
+        .segmented-control input:checked + span {
+            background-color: #4CAF50;
+            color: #fff;
         }
 
         /* 侧边栏控制按钮样式 */
@@ -370,7 +845,6 @@
             width: 30px;
             height: 60px;
             background-color: #4CAF50;
-            opacity: var(--main-bg-opacity);
             color: white;
             border: none;
             border-radius: 0 4px 4px 0;
@@ -447,22 +921,58 @@
         .speed-control {
             display: flex;
             align-items: center;
-            margin-right: 10px;
+            gap: 8px;
+            margin-right: 0;
+            min-width: 168px;
         }
 
         .speed-control label {
-            margin-right: 5px;
             font-weight: bold;
             color: #333;
+            white-space: nowrap;
         }
 
-        .speed-control select {
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            background-color: white;
-            font-size: 14px;
+        .speed-control input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 92px;
+            height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(to right, #4CAF50 0%, #4CAF50 var(--speed-progress, 27%), #d8d8d8 var(--speed-progress, 27%), #d8d8d8 100%);
+            outline: none;
             cursor: pointer;
+        }
+
+        .speed-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+        }
+
+        .speed-control input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+        }
+
+        .speed-control input[type="range"]:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        #speedValue {
+            min-width: 32px;
+            color: #333;
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
         }
 
         /* 预览控制区域样式 - 确保同一行显示 */
@@ -472,6 +982,12 @@
             gap: 10px;
             flex-wrap: nowrap; /* 禁止换行 */
             margin-bottom: 15px;
+        }
+
+        .preview-controls-container .btn {
+            margin: 0;
+            padding: 8px 12px;
+            white-space: nowrap;
         }
 
         /* 自定义滚动条样式 */
@@ -521,13 +1037,36 @@
         <div class="upload-area" id="uploadArea">
             <h3>点击或拖拽文件到此处上传</h3>
             <p>支持 .txt 格式的加密/未加密文件</p>
-            <input type="file" id="fileInput" accept=".txt">
+            <input type="file" id="fileInput" accept=".txt" multiple>
         </div>
 
-        <div class="status" id="status">等待上传文件...</div>
+        <div class="file-list-panel">
+            <div class="file-list-toolbar">
+                <button class="btn" id="toggleSelectButton" disabled>全选</button>
+                <button class="btn" id="downloadSelectedButton" disabled>下载选中工程文件</button>
+                <button class="btn" id="zipSelectedButton" disabled>生成ZIP</button>
+                <button class="btn" id="clearListButton" disabled>清空列表</button>
+            </div>
+            <div id="fileList">
+                <div class="empty-file-list">暂无文件，上传后会自动保存到本地列表</div>
+            </div>
+        </div>
 
         <div id="actions" class="action-buttons">
             <button class="btn" id="replaceButton" disabled>开始转换</button>
+        </div>
+
+        <div id="conversionFlow" class="conversion-flow">
+            <span class="flow-step" data-flow-step="upload">上传</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step" data-flow-step="read">识别</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step" data-flow-step="decrypt">解密</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step" data-flow-step="convert">转换</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step" data-flow-step="preview">预览/下载</span>
+            <span id="flowHint" class="flow-hint">拖入文件后会先读取乐谱信息</span>
         </div>
 
         <div id="songInfo"></div>
@@ -545,24 +1084,18 @@
                 <!-- 倍速调节控件 -->
                 <div class="speed-control">
                     <label for="speedSelector">倍速:</label>
-                    <select id="speedSelector" disabled>
-                        <option value="0.25">0.25x</option>
-                        <option value="0.5">0.5x</option>
-                        <option value="0.75">0.75x</option>
-                        <option value="1" selected>1x</option>
-                        <option value="1.25">1.25x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="1.75">1.75x</option>
-                        <option value="2">2x</option>
-                        <option value="3">3x</option>
-                    </select>
+                    <input type="range" id="speedSelector" min="0.25" max="3" step="0.05" value="1" disabled>
+                    <span id="speedValue">1x</span>
                 </div>
                 <button class="btn" id="previewButton" disabled>开始预览</button>
                 <button class="btn" id="stopPreviewButton" disabled>停止预览</button>
             </div>
         </div>
 
-        <div class="log" id="log"></div>
+        <details class="log-panel" id="logPanel">
+            <summary>日志</summary>
+            <div class="log" id="log"></div>
+        </details>
     </div>
 </div>
 
@@ -574,21 +1107,21 @@
 
     <div id="PianoPanel">
         <div class="piano-wrap">
-            <div><div class="piano-key">A1</div></div>
-            <div><div class="piano-key">A2</div></div>
-            <div><div class="piano-key">A3</div></div>
-            <div><div class="piano-key">A4</div></div>
-            <div><div class="piano-key">A5</div></div>
-            <div><div class="piano-key">A6</div></div>
-            <div><div class="piano-key">A7</div></div>
-            <div><div class="piano-key">B1</div></div>
-            <div><div class="piano-key">B2</div></div>
-            <div><div class="piano-key">B3</div></div>
-            <div><div class="piano-key">B4</div></div>
-            <div><div class="piano-key">B5</div></div>
-            <div><div class="piano-key">B6</div></div>
-            <div><div class="piano-key">B7</div></div>
-            <div><div class="piano-key">C1</div></div>
+            <div><div class="piano-key shape-combo" data-key="A1"><span class="key-shape"></span><span class="key-label">A1</span></div></div>
+            <div><div class="piano-key shape-diamond" data-key="A2"><span class="key-shape"></span><span class="key-label">A2</span></div></div>
+            <div><div class="piano-key shape-circle" data-key="A3"><span class="key-shape"></span><span class="key-label">A3</span></div></div>
+            <div><div class="piano-key shape-diamond" data-key="A4"><span class="key-shape"></span><span class="key-label">A4</span></div></div>
+            <div><div class="piano-key shape-circle" data-key="A5"><span class="key-shape"></span><span class="key-label">A5</span></div></div>
+            <div><div class="piano-key shape-circle" data-key="A6"><span class="key-shape"></span><span class="key-label">A6</span></div></div>
+            <div><div class="piano-key shape-diamond" data-key="A7"><span class="key-shape"></span><span class="key-label">A7</span></div></div>
+            <div><div class="piano-key shape-combo" data-key="B1"><span class="key-shape"></span><span class="key-label">B1</span></div></div>
+            <div><div class="piano-key shape-diamond" data-key="B2"><span class="key-shape"></span><span class="key-label">B2</span></div></div>
+            <div><div class="piano-key shape-circle" data-key="B3"><span class="key-shape"></span><span class="key-label">B3</span></div></div>
+            <div><div class="piano-key shape-circle" data-key="B4"><span class="key-shape"></span><span class="key-label">B4</span></div></div>
+            <div><div class="piano-key shape-diamond" data-key="B5"><span class="key-shape"></span><span class="key-label">B5</span></div></div>
+            <div><div class="piano-key shape-circle" data-key="B6"><span class="key-shape"></span><span class="key-label">B6</span></div></div>
+            <div><div class="piano-key shape-diamond" data-key="B7"><span class="key-shape"></span><span class="key-label">B7</span></div></div>
+            <div><div class="piano-key shape-combo" data-key="C1"><span class="key-shape"></span><span class="key-label">C1</span></div></div>
         </div>
     </div>
     <div id="loadding">加载音频中...</div>
@@ -598,22 +1131,34 @@
     <div id="stylePanel" class="sidebar">
         <h3>键盘样式</h3>
 
-        <div class="style-control">
-            <label for="keySize">按键大小 (%)</label>
-            <input type="range" id="keySize" min="50" max="100" value="80">
-            <input type="number" id="keySizeNum" min="50" max="100" value="80">
+        <div class="style-control range-row">
+            <label for="keySize">按键大小 <span class="control-value" id="keySizeValue">90px</span></label>
+            <input type="range" id="keySize" min="40" max="150" value="90">
+        </div>
+
+        <div class="style-control range-row">
+            <label for="keySpacing">按键间距 <span class="control-value" id="keySpacingValue">30px</span></label>
+            <input type="range" id="keySpacing" min="1" max="100" value="30">
+        </div>
+
+        <div class="style-control range-row">
+            <label for="fontSize">字体大小 <span class="control-value" id="fontSizeValue">14px</span></label>
+            <input type="range" id="fontSize" min="10" max="30" value="14">
+        </div>
+
+        <div class="style-control range-row">
+            <label for="keyBorderWidth">边框宽度 <span class="control-value" id="keyBorderWidthValue">3px</span></label>
+            <input type="range" id="keyBorderWidth" min="1" max="5" step="0.1" value="3">
         </div>
 
         <div class="style-control">
-            <label for="keySpacing">按键间距 (px)</label>
-            <input type="range" id="keySpacing" min="0" max="30" value="10">
-            <input type="number" id="keySpacingNum" min="0" max="30" value="10">
-        </div>
-
-        <div class="style-control">
-            <label for="fontSize">字体大小 (px)</label>
-            <input type="range" id="fontSize" min="10" max="20" value="14">
-            <input type="number" id="fontSizeNum" min="10" max="20" value="14">
+            <label>键盘文字</label>
+            <div class="segmented-control" id="keyLabelModeControl">
+                <label><input type="radio" name="keyLabelMode" value="hidden"><span>隐藏</span></label>
+                <label><input type="radio" name="keyLabelMode" value="letters" checked><span>字母</span></label>
+                <label><input type="radio" name="keyLabelMode" value="numbered"><span>简谱</span></label>
+                <label><input type="radio" name="keyLabelMode" value="note"><span>音名</span></label>
+            </div>
         </div>
 
         <div class="style-control">
@@ -621,21 +1166,24 @@
             <input type="color" id="bgColor" value="#F5F5F5">
         </div>
 
-        <div class="style-control">
-            <label for="bgOpacity">透明度</label>
-            <input type="range" id="bgOpacity" min="0.1" max="1" step="0.01" value="1">
-            <input type="number" id="bgOpacityNum" min="0.1" max="1" step="0.01" value="1">
+        <div class="style-control range-row">
+            <label for="bgOpacity">背景透明度 <span class="control-value" id="bgOpacityValue">1</span></label>
+            <input type="range" id="bgOpacity" min="0" max="1" step="0.01" value="1">
         </div>
 
-        <div class="style-control">
-            <label for="keyOpacity">琴键透明度</label>
+        <div class="style-control range-row">
+            <label for="keyOpacity">琴键透明度 <span class="control-value" id="keyOpacityValue">1</span></label>
             <input type="range" id="keyOpacity" min="0.1" max="1" step="0.01" value="1">
-            <input type="number" id="keyOpacityNum" min="0.1" max="1" step="0.01" value="1">
+        </div>
+
+        <div class="style-control toggle-row">
+            <label for="panelThemeToggle">深色侧栏</label>
+            <input type="checkbox" id="panelThemeToggle" class="switch-input">
         </div>
 
         <div class="style-control">
-            <label for="bgImageUpload">自定义背景图片</label>
-            <div class="upload-area" id="bgImageUploadArea" style="border: 2px dashed #ccc; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer;">
+            <label for="bgImageUpload">自定义壁纸</label>
+            <div class="upload-area" id="bgImageUploadArea" style="border: 2px dashed #ccc; border-radius: 8px; padding: 8px; text-align: center; cursor: pointer;">
                 <p>点击或拖拽上传图片</p>
                 <input type="file" id="bgImageUpload" accept="image/*" style="display: none;">
             </div>
@@ -645,6 +1193,7 @@
 </div>
 
 <button id="toggleStylePanel" class="toggle-btn"></button>
+<div id="toastContainer" class="toast-container"></div>
 
 <script>
     // 平台判断
@@ -657,7 +1206,7 @@
     // 全局变量
     let audioCtx;
     let audioDatas = [];
-    let pianoKeys = document.querySelectorAll(".piano-wrap > div");
+    let pianoKeys = document.querySelectorAll(".piano-key");
     let codeContainer = document.getElementById('codeContainer'); // 替换原textarea
     let currentPreviewInterval;
     let currentNoteIndex = 0;
@@ -769,7 +1318,7 @@
             plaintext.songNotes = notesArray;
 
             const outputArray = [plaintext];
-            const result = JSON.stringify(outputArray, null, 2);
+            const result = JSON.stringify(outputArray);
 
             onLog('━━━━━━━━━━━━━━━━━━━━');
             onLog('[成功] 解密完成');
@@ -793,17 +1342,629 @@
     // 3. 文件上传处理
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
-    const status = document.getElementById('status');
     const replaceButton = document.getElementById('replaceButton');
     const downloadButton = document.getElementById('downloadButton');
     const scriptDownloadButton = document.getElementById('scriptDownloadButton');
     const copyButton = document.getElementById('copyButton');
+    const fileListDiv = document.getElementById('fileList');
+    const toggleSelectButton = document.getElementById('toggleSelectButton');
+    const downloadSelectedButton = document.getElementById('downloadSelectedButton');
+    const zipSelectedButton = document.getElementById('zipSelectedButton');
+    const clearListButton = document.getElementById('clearListButton');
+    const flowHint = document.getElementById('flowHint');
+    const toastContainer = document.getElementById('toastContainer');
     const log = document.getElementById('log');
     const songInfoDiv = document.getElementById('songInfo');
     const finisheddiv = document.getElementById('finished');
     const previewButton = document.getElementById('previewButton');
     const stopPreviewButton = document.getElementById('stopPreviewButton');
     const speedSelector = document.getElementById('speedSelector');
+    const speedValue = document.getElementById('speedValue');
+    const STORAGE_KEY = 'skystudio-decrypt-project-list-v1';
+    const STORAGE_ACTIVE_KEY = 'skystudio-decrypt-active-project-v1';
+    const PANEL_THEME_KEY = 'skystudio-decrypt-panel-theme-v1';
+    const KEY_LABEL_MODE_KEY = 'skystudio-decrypt-key-label-mode-v1';
+    let projectFiles = [];
+    let activeProjectId = null;
+    const keyOrder = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
+    const keyLabelMap = {
+        hidden: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        letters: keyOrder,
+        numbered: ['1', '2', '3', '4', '5', '6', '7', '\\dot{1}', '\\dot{2}', '\\dot{3}', '\\dot{4}', '\\dot{5}', '\\dot{6}', '\\dot{7}', '\\dot{\\dot{1}}'],
+        note: ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
+    };
+    const keyLabelFallbackMap = {
+        numbered: ['1', '2', '3', '4', '5', '6', '7', '1\u0307', '2\u0307', '3\u0307', '4\u0307', '5\u0307', '6\u0307', '7\u0307', '1\u0308']
+    };
+    let currentKeyLabelMode = 'letters';
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function showToast(message, type = '') {
+        if (!toastContainer) return;
+
+        const bubble = document.createElement('div');
+        bubble.className = `toast-bubble ${type}`.trim();
+        bubble.textContent = message;
+        toastContainer.appendChild(bubble);
+
+        setTimeout(() => {
+            bubble.remove();
+        }, 3000);
+    }
+
+    function setPanelTheme(isDark, shouldPersist = true) {
+        document.body.classList.toggle('panel-dark', isDark);
+        const toggle = document.getElementById('panelThemeToggle');
+        if (toggle) {
+            toggle.checked = isDark;
+        }
+        if (shouldPersist) {
+            localStorage.setItem(PANEL_THEME_KEY, isDark ? 'dark' : 'light');
+        }
+    }
+
+    function setKeyLabelMode(mode, shouldPersist = true) {
+        const labels = keyLabelMap[mode] || keyLabelMap.letters;
+        currentKeyLabelMode = keyLabelMap[mode] ? mode : 'letters';
+        pianoKeys.forEach((key, index) => {
+            const label = key.querySelector('.key-label');
+            if (label) {
+                const value = labels[index] || '';
+                label.innerHTML = '';
+
+                if (currentKeyLabelMode === 'numbered' && value && window.katex) {
+                    window.katex.render(value, label, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } else {
+                    label.textContent = currentKeyLabelMode === 'numbered'
+                        ? (keyLabelFallbackMap.numbered[index] || '')
+                        : value;
+                }
+            }
+        });
+
+        document.querySelectorAll('input[name="keyLabelMode"]').forEach(input => {
+            input.checked = input.value === currentKeyLabelMode;
+        });
+
+        if (shouldPersist) {
+            localStorage.setItem(KEY_LABEL_MODE_KEY, currentKeyLabelMode);
+        }
+    }
+
+    function safeFileName(value, fallback) {
+        const name = String(value || fallback || 'skystudio_project').trim();
+        return (name || 'skystudio_project').replace(/[\\/:*?"<>|]/g, '_');
+    }
+
+    function stripTxtExtension(fileName) {
+        return String(fileName || 'project').replace(/\.txt$/i, '');
+    }
+
+    function getProjectData(content) {
+        const dataArray = JSON.parse(content);
+        if (!Array.isArray(dataArray) || dataArray.length === 0) {
+            throw new Error('文件格式错误：不是有效的Sky Studio工程数组');
+        }
+        if (!dataArray[0] || typeof dataArray[0] !== 'object') {
+            throw new Error('文件格式错误：工程数据不是对象');
+        }
+        return dataArray[0];
+    }
+
+    function getPaizi(bitsPerPage) {
+        const bits = Number(bitsPerPage) || 0;
+        return `${Math.floor(bits / 4)}/4`;
+    }
+
+    function parseProjectMeta(content) {
+        const songData = getProjectData(content);
+        const songNotes = songData.songNotes;
+        if (!Array.isArray(songNotes)) {
+            throw new Error('文件格式错误：缺少 songNotes 数组');
+        }
+        return {
+            valid: true,
+            name: songData.name || '未定义',
+            author: songData.author || '未定义',
+            bpm: songData.bpm || 120,
+            bitsPerPage: songData.bitsPerPage || 0,
+            paizi: getPaizi(songData.bitsPerPage || 0),
+            isEncrypted: !!songData.isEncrypted,
+            noteCount: Array.isArray(songNotes) ? songNotes.length : 0
+        };
+    }
+
+    function createProjectItem(fileName, content) {
+        const meta = parseProjectMeta(content);
+        return {
+            id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
+            fileName,
+            content,
+            selected: true,
+            meta,
+            sourceIsEncrypted: meta.isEncrypted,
+            createdAt: Date.now(),
+            decryptedSourceContent: null,
+            generatedCode: '',
+            scriptCode: '',
+            notesData: null,
+            bpm: meta.bpm || 120,
+            paizi: meta.paizi || '0/4'
+        };
+    }
+
+    function getActiveProject() {
+        return projectFiles.find(item => item.id === activeProjectId) || null;
+    }
+
+    function getSelectedProjects() {
+        return projectFiles.filter(item => item.selected);
+    }
+
+    function persistProjectFiles() {
+        try {
+            const payload = projectFiles.map(item => ({
+                id: item.id,
+                fileName: item.fileName,
+                content: item.content,
+                selected: item.selected,
+                createdAt: item.createdAt
+            }));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            if (activeProjectId) {
+                localStorage.setItem(STORAGE_ACTIVE_KEY, activeProjectId);
+            } else {
+                localStorage.removeItem(STORAGE_ACTIVE_KEY);
+            }
+        } catch (error) {
+            addLog(`[!] 本地保存失败: ${error.message}`);
+        }
+    }
+
+    function restoreProjectFiles() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+
+            const savedItems = JSON.parse(raw);
+            if (!Array.isArray(savedItems)) return;
+
+            projectFiles = [];
+            savedItems
+                .filter(item => item && typeof item.content === 'string')
+                .forEach(item => {
+                    try {
+                        const restored = createProjectItem(item.fileName || 'project.txt', item.content);
+                        restored.id = item.id || restored.id;
+                        restored.selected = item.selected !== false;
+                        restored.createdAt = item.createdAt || restored.createdAt;
+                        projectFiles.push(restored);
+                    } catch (error) {
+                        addLog(`[!] 已跳过本地无效文件 ${item.fileName || 'project.txt'}: ${error.message}`);
+                    }
+                });
+
+            const savedActiveId = localStorage.getItem(STORAGE_ACTIVE_KEY);
+            if (savedActiveId && projectFiles.some(item => item.id === savedActiveId)) {
+                activeProjectId = savedActiveId;
+            } else if (projectFiles.length > 0) {
+                activeProjectId = projectFiles[0].id;
+            }
+
+            renderFileList();
+            if (activeProjectId) {
+                setActiveProject(activeProjectId, false);
+                addLog(`[+] 已从本地恢复 ${projectFiles.length} 个文件`);
+            }
+        } catch (error) {
+            addLog(`[!] 读取本地列表失败: ${error.message}`);
+        }
+    }
+
+    function setFlowState(state, message) {
+        const order = ['upload', 'read', 'decrypt', 'convert', 'preview'];
+        const activeIndex = {
+            empty: -1,
+            upload: 0,
+            read: 1,
+            converting: 3,
+            converted: 4,
+            error: -1
+        }[state] ?? -1;
+
+        document.querySelectorAll('[data-flow-step]').forEach(step => {
+            const key = step.getAttribute('data-flow-step');
+            const index = order.indexOf(key);
+            step.classList.remove('done', 'active', 'error');
+
+            if (state === 'error') {
+                step.classList.add('error');
+                return;
+            }
+
+            if (index < activeIndex) {
+                step.classList.add('done');
+            } else if (index === activeIndex) {
+                step.classList.add('active');
+            }
+        });
+
+        flowHint.textContent = message || '拖入文件后会先读取乐谱信息';
+    }
+
+    function renderSongInfo(item) {
+        if (!item) {
+            songInfoDiv.innerHTML = '';
+            finisheddiv.innerHTML = '';
+            return;
+        }
+
+        if (!item.meta.valid) {
+            songInfoDiv.innerHTML = `
+                <h4>文件识别失败</h4>
+                <p>文件名：${escapeHtml(item.fileName)}</p>
+                <p>原因：${escapeHtml(item.meta.error || '未知错误')}</p>
+            `;
+            finisheddiv.innerHTML = '';
+            return;
+        }
+
+        songInfoDiv.innerHTML = `
+            <h4>乐谱信息识别成功：</h4>
+            <p>文件名：${escapeHtml(item.fileName)}</p>
+            <p>乐谱名称：${escapeHtml(item.meta.name)}</p>
+            <p>作者：${escapeHtml(item.meta.author)}</p>
+            <p>BPM：${escapeHtml(item.meta.bpm)}</p>
+            <p>拍子： ${escapeHtml(item.meta.paizi)}</p>
+            <p>加密：${item.meta.isEncrypted ? '是' : '否'}</p>
+            <p>数据长度：${escapeHtml(item.meta.noteCount)}</p>
+        `;
+    }
+
+    function renderFileList() {
+        if (projectFiles.length === 0) {
+            fileListDiv.innerHTML = '<div class="empty-file-list">暂无文件，上传后会自动保存到本地列表</div>';
+            toggleSelectButton.disabled = true;
+            downloadSelectedButton.disabled = true;
+            zipSelectedButton.disabled = true;
+            clearListButton.disabled = true;
+            replaceButton.disabled = true;
+            return;
+        }
+
+        fileListDiv.innerHTML = projectFiles.map(item => {
+            const encryptedLabel = item.sourceIsEncrypted ? (item.generatedCode ? '原加密' : '加密') : '未加密';
+            const metaText = item.meta.valid
+                ? `${item.meta.name} · BPM ${item.meta.bpm} · ${encryptedLabel}${item.generatedCode ? ' · 已转换' : ''}`
+                : `识别失败：${item.meta.error || '格式错误'}`;
+            const rowClass = [
+                'file-row',
+                item.id === activeProjectId ? 'active' : '',
+                item.meta.valid ? '' : 'invalid'
+            ].filter(Boolean).join(' ');
+
+            return `
+                <div class="${rowClass}" data-id="${escapeHtml(item.id)}">
+                    <input type="checkbox" class="file-select" data-id="${escapeHtml(item.id)}" ${item.selected ? 'checked' : ''} aria-label="选择下载">
+                    <button type="button" class="file-main" data-action="activate" data-id="${escapeHtml(item.id)}">
+                        <span class="file-name">${escapeHtml(item.fileName)}</span>
+                        <span class="file-meta">${escapeHtml(metaText)}</span>
+                    </button>
+                    <label class="preview-radio">
+                        <input type="radio" name="activeProject" class="file-preview-radio" data-id="${escapeHtml(item.id)}" ${item.id === activeProjectId ? 'checked' : ''}>
+                        预览
+                    </label>
+                    <button type="button" class="file-delete-btn" data-action="delete" data-id="${escapeHtml(item.id)}">删除</button>
+                </div>
+            `;
+        }).join('');
+
+        const selectedCount = getSelectedProjects().length;
+        const selectedValidCount = getSelectedProjects().filter(item => item.meta.valid).length;
+        const allSelected = selectedCount === projectFiles.length;
+        toggleSelectButton.disabled = false;
+        toggleSelectButton.textContent = allSelected ? '取消全选' : '全选';
+        downloadSelectedButton.disabled = selectedValidCount === 0;
+        zipSelectedButton.disabled = selectedValidCount === 0;
+        clearListButton.disabled = false;
+
+        const activeItem = getActiveProject();
+        replaceButton.disabled = !activeItem || !activeItem.meta.valid;
+    }
+
+    function clearActiveOutput() {
+        if (isPreviewing) {
+            stopPreview();
+        }
+        clearAllHighlights();
+        codeContainer.innerHTML = '';
+        codeLineMap.clear();
+        lineToNoteMap.clear();
+        highlightedLines.clear();
+        highlightedKeys.clear();
+        notesData = [];
+        currentNoteIndex = 0;
+        finisheddiv.innerHTML = '';
+        downloadButton.style.display = 'none';
+        scriptDownloadButton.style.display = 'none';
+        copyButton.style.display = 'none';
+        downloadButton.onclick = null;
+        scriptDownloadButton.onclick = null;
+        copyButton.onclick = null;
+        previewButton.disabled = true;
+        stopPreviewButton.disabled = true;
+        speedSelector.disabled = true;
+        document.getElementById('previewControlsInSidebar').style.display = 'none';
+    }
+
+    function rebuildPreviewMaps(noteList) {
+        codeLineMap.clear();
+        lineToNoteMap.clear();
+        for (let i = 0; i < noteList.length; i++) {
+            const codeLineIndex = i + 1;
+            codeLineMap.set(i, codeLineIndex);
+            lineToNoteMap.set(codeLineIndex, i);
+        }
+    }
+
+    function showConvertedProject(item) {
+        if (!item || !item.generatedCode || !Array.isArray(item.notesData)) {
+            clearActiveOutput();
+            return;
+        }
+
+        notesData = item.notesData;
+        BPM = item.bpm || 120;
+        noteDuration = 600 / BPM;
+        rebuildPreviewMaps(notesData);
+        displayFormattedCode(item.generatedCode);
+
+        finisheddiv.innerHTML = `
+            <h5>点击下方按钮可下载代码文件或直接生成脚本文件</h5>
+        `;
+
+        downloadButton.style.display = 'inline-block';
+        scriptDownloadButton.style.display = 'inline-block';
+        copyButton.style.display = 'inline-block';
+        previewButton.disabled = false;
+        speedSelector.disabled = false;
+        document.getElementById('previewControlsInSidebar').style.display = 'block';
+
+        const downloadBaseName = safeFileName(item.meta.name || stripTxtExtension(item.fileName), 'skystudio_project');
+        downloadButton.onclick = function () {
+            downloadTextFile(`${downloadBaseName}_skyscript.txt`, item.generatedCode);
+        };
+
+        scriptDownloadButton.onclick = function () {
+            downloadTextFile(`${downloadBaseName}_skyscript3.zjs`, item.scriptCode);
+        };
+
+        copyButton.onclick = function () {
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = item.generatedCode;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+            addLog('[+] 代码已复制到剪贴板');
+            showToast('代码已复制', 'success');
+        };
+    }
+
+    function setActiveProject(id, shouldPersist = true) {
+        const item = projectFiles.find(project => project.id === id);
+        if (!item) return;
+
+        if (isPreviewing) {
+            stopPreview();
+        }
+
+        activeProjectId = id;
+        modifiedContent = item.content;
+        renderSongInfo(item);
+
+        if (item.generatedCode) {
+            showConvertedProject(item);
+            setFlowState('converted', `当前文件：${item.fileName}，已可预览和下载`);
+        } else {
+            clearActiveOutput();
+            setFlowState(item.meta.valid ? 'read' : 'error', item.meta.valid ? `当前文件：${item.fileName}，信息已识别` : `当前文件识别失败：${item.meta.error}`);
+        }
+
+        renderFileList();
+        if (shouldPersist) {
+            persistProjectFiles();
+        }
+    }
+
+    function normalizeKeyNames(content) {
+        let result = content;
+        for (let i = 0; i < searchList1.length; i++) {
+            result = result.replace(new RegExp(searchList1[i], 'g'), replaceList[i]);
+        }
+        for (let i = 0; i < searchList2.length; i++) {
+            result = result.replace(new RegExp(searchList2[i], 'g'), replaceList[i]);
+        }
+        return result;
+    }
+
+    function buildFormattedCode(songData, paizi) {
+        const bpm = songData.bpm || 120;
+        const songNotes = Array.isArray(songData.songNotes) ? songData.songNotes : [];
+        let formattedStrings = `const BPM = ${bpm};const n = 4;const m = "${paizi}";var a = 600/BPM/1;\n`;
+
+        let origon_bpm = 0;
+        let i = 0;
+        while (!origon_bpm && i < songNotes.length - 1) {
+            origon_bpm = songNotes[i + 1].time - songNotes[i].time;
+            i++;
+        }
+
+        for (let noteIndex = 0; noteIndex < songNotes.length; noteIndex++) {
+            const key = songNotes[noteIndex].key;
+            const nextTime = (noteIndex < songNotes.length - 1) ? songNotes[noteIndex + 1].time : songNotes[noteIndex].time + origon_bpm;
+            const duration = nextTime - songNotes[noteIndex].time;
+            formattedStrings += `zdjl.click(${key}.x, ${key}.y, 1);sleep(${duration}*a);\n`;
+        }
+
+        return formattedStrings;
+    }
+
+    function buildScriptCode(formattedStrings) {
+        return `{"repeatCount":-1,"pauseOnFail":true,"count":3,"minVerCode":2026000,"minVerName":"2.26.0","screenWidth":0,"screenHeight":0,"screenDpi":0,"lastSaveScreenWidth":1312,"lastSaveScreenHeight":2848,"lastSaveScreenDpi":3.5,"savedVerCode":2027020,"savedVerName":"2.27.2","description":"该脚本通过机器制造，基于开源3.3内核，仅可用作学习交流，不得进行商业化用途。3.3版本转换器可能存在原始BPM错误的情况，建议在var a;一行中增加：/数字的操作","delay":""}
+{"type":"设置变量","delay":"0","delayUnit":0,"desc":"录入位点用于后面的自动点屏幕用","scriptCallbacks":{"afterExecSuc":{"type":"系统提示","delay":"0","delayUnit":0,"condition":{"type":"jsExpression","runWhenFalse":true,"expression":"true","desc":""},"promptType":"alert","promptText":"一切准备就绪！点击确定即可开始运行","promptTitle":"进入游戏主界面后点击确定","showPosition":"default","playAudio":"false","useVibrator":false,"actions":[{"name":"确定"},{"name":"暂停显示5秒","script":{"type":"控制执行","delay":"5","delayUnit":1,"controlRunType":"jumpTo","jumpToPosition":"2","ContinueParentExecute":false}}],"showDuration":5000},"afterExecFail":{"type":"控制执行","delay":"0","delayUnit":1,"controlRunType":"stop","jumpToPosition":"","ContinueParentExecute":false}},"vars":[{"name":"设置音调","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"请按照从音调低到高的顺序设置好A1-C1","textSize":15,"textColor":"#e5e5e5"}},{"name":"A1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"C1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"x","value":{"varType":"number","varScope":"script","showInput":true,"showInputLabel":"倍速：","mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","number":1,"selectItems":[0.25,0.5,0.75,1,1.25,1.5,1.75,2]}},{"name":"倍速修改","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"*其它倍速需进入编辑模式修改。该谱默认使用C大调，支持修改大调","textSize":10,"textColor":"#bcbcbc"}}],"dialogTitle":"设置琴键位点","dialogOKText":"继续","dialogCancelText":"none"}
+{"type":"运行JS代码","delay":"0","delayUnit":1,"jsCode":"${formattedStrings.replace(/\n/g, '\\n').replace(/"/g, '\\"')}"}`;
+    }
+
+    function downloadBlob(fileName, blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadTextFile(fileName, content) {
+        downloadBlob(fileName, new Blob([content], { type: 'text/plain;charset=utf-8' }));
+    }
+
+    function getSourceFileName(item) {
+        if (!item.sourceIsEncrypted) {
+            return item.fileName;
+        }
+        return `${safeFileName(stripTxtExtension(item.fileName), 'project')}_decrypted.txt`;
+    }
+
+    function getSourceProjectContent(item) {
+        if (!item.sourceIsEncrypted) {
+            return item.content;
+        }
+
+        if (!item.decryptedSourceContent) {
+            item.decryptedSourceContent = decryptContent(item.content, addLog);
+        }
+        return item.decryptedSourceContent;
+    }
+
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    const crcTable = (() => {
+        const table = new Uint32Array(256);
+        for (let n = 0; n < 256; n++) {
+            let c = n;
+            for (let k = 0; k < 8; k++) {
+                c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+            }
+            table[n] = c >>> 0;
+        }
+        return table;
+    })();
+
+    function crc32(bytes) {
+        let crc = 0 ^ -1;
+        for (let i = 0; i < bytes.length; i++) {
+            crc = (crc >>> 8) ^ crcTable[(crc ^ bytes[i]) & 0xFF];
+        }
+        return (crc ^ -1) >>> 0;
+    }
+
+    function pushUint16(target, value) {
+        target.push(value & 0xFF, (value >>> 8) & 0xFF);
+    }
+
+    function pushUint32(target, value) {
+        target.push(value & 0xFF, (value >>> 8) & 0xFF, (value >>> 16) & 0xFF, (value >>> 24) & 0xFF);
+    }
+
+    function getDosDateTime(date) {
+        const dosTime = (date.getHours() << 11) | (date.getMinutes() << 5) | Math.floor(date.getSeconds() / 2);
+        const dosDate = ((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
+        return { dosTime, dosDate };
+    }
+
+    function createZipBlob(files) {
+        const encoder = new TextEncoder();
+        const localParts = [];
+        const centralParts = [];
+        const entries = [];
+        let offset = 0;
+        const now = getDosDateTime(new Date());
+
+        files.forEach(file => {
+            const fileNameBytes = encoder.encode(file.name.replace(/\\/g, '/'));
+            const contentBytes = encoder.encode(file.content);
+            const checksum = crc32(contentBytes);
+            const local = [];
+
+            pushUint32(local, 0x04034b50);
+            pushUint16(local, 20);
+            pushUint16(local, 0x0800);
+            pushUint16(local, 0);
+            pushUint16(local, now.dosTime);
+            pushUint16(local, now.dosDate);
+            pushUint32(local, checksum);
+            pushUint32(local, contentBytes.length);
+            pushUint32(local, contentBytes.length);
+            pushUint16(local, fileNameBytes.length);
+            pushUint16(local, 0);
+
+            const localBytes = new Uint8Array([...local, ...fileNameBytes, ...contentBytes]);
+            localParts.push(localBytes);
+            entries.push({ fileNameBytes, contentBytes, checksum, offset });
+            offset += localBytes.length;
+        });
+
+        entries.forEach(entry => {
+            const central = [];
+            pushUint32(central, 0x02014b50);
+            pushUint16(central, 20);
+            pushUint16(central, 20);
+            pushUint16(central, 0x0800);
+            pushUint16(central, 0);
+            pushUint16(central, now.dosTime);
+            pushUint16(central, now.dosDate);
+            pushUint32(central, entry.checksum);
+            pushUint32(central, entry.contentBytes.length);
+            pushUint32(central, entry.contentBytes.length);
+            pushUint16(central, entry.fileNameBytes.length);
+            pushUint16(central, 0);
+            pushUint16(central, 0);
+            pushUint16(central, 0);
+            pushUint16(central, 0);
+            pushUint32(central, 0);
+            pushUint32(central, entry.offset);
+            centralParts.push(new Uint8Array([...central, ...entry.fileNameBytes]));
+        });
+
+        const centralSize = centralParts.reduce((sum, part) => sum + part.length, 0);
+        const end = [];
+        pushUint32(end, 0x06054b50);
+        pushUint16(end, 0);
+        pushUint16(end, 0);
+        pushUint16(end, entries.length);
+        pushUint16(end, entries.length);
+        pushUint32(end, centralSize);
+        pushUint32(end, offset);
+        pushUint16(end, 0);
+
+        return new Blob([...localParts, ...centralParts, new Uint8Array(end)], { type: 'application/zip' });
+    }
 
     // 拖拽上传
     uploadArea.addEventListener('dragover', (e) => {
@@ -820,7 +1981,7 @@
         uploadArea.classList.remove('highlight');
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            handleFile(files[0]);
+            handleFiles(files);
         }
     });
 
@@ -832,34 +1993,179 @@
     fileInput.addEventListener('change', (e) => {
         const files = e.target.files;
         if (files.length > 0) {
-            handleFile(files[0]);
+            handleFiles(files);
         }
+        fileInput.value = '';
     });
 
-    function handleFile(file) {
-        if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
-            status.textContent = '错误：请上传.txt格式的文件';
+    function readTextFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target.result);
+            reader.onerror = () => reject(reader.error || new Error('文件读取失败'));
+            reader.readAsText(file);
+        });
+    }
+
+    async function handleFiles(files) {
+        const incomingFiles = Array.from(files);
+        let firstAddedId = null;
+
+        for (const file of incomingFiles) {
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                addLog(`[!] 已跳过非txt文件: ${file.name}`);
+                showToast(`已跳过非txt文件：${file.name}`, 'error');
+                continue;
+            }
+
+            try {
+                const content = await readTextFile(file);
+                const item = createProjectItem(file.name, content);
+                projectFiles.push(item);
+                if (!firstAddedId) {
+                    firstAddedId = item.id;
+                }
+                addLog(`[+] 已加载文件: ${file.name}`);
+                addLog(`[*] 已识别: ${item.meta.name} / BPM ${item.meta.bpm} / ${item.meta.isEncrypted ? '加密' : '未加密'}`);
+                showToast(`已识别：${item.meta.name}`, 'success');
+            } catch (error) {
+                addLog(`[!] 文件未被接受 ${file.name}: ${error.message}`);
+                showToast(`文件未被接受：${file.name}`, 'error');
+                if (!getActiveProject()) {
+                    setFlowState('error', `文件未被接受：${file.name}，${error.message}`);
+                }
+            }
+        }
+
+        if (firstAddedId) {
+            renderFileList();
+            setActiveProject(firstAddedId);
+            persistProjectFiles();
+        }
+    }
+
+    fileListDiv.addEventListener('click', function(event) {
+        const actionElement = event.target.closest('[data-action]');
+        if (!actionElement) return;
+
+        const id = actionElement.getAttribute('data-id');
+        if (actionElement.getAttribute('data-action') === 'activate') {
+            setActiveProject(id);
             return;
         }
 
-        status.textContent = `已选择文件: ${file.name}`;
-        replaceButton.disabled = false;
+        if (actionElement.getAttribute('data-action') === 'delete') {
+            const deleteIndex = projectFiles.findIndex(item => item.id === id);
+            if (deleteIndex === -1) return;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            modifiedContent = e.target.result;
-            addLog(`[+] 已加载文件: ${file.name}`);
-        };
-        reader.readAsText(file);
-    }
+            const wasActive = projectFiles[deleteIndex].id === activeProjectId;
+            const removed = projectFiles.splice(deleteIndex, 1)[0];
+            addLog(`[-] 已从列表删除: ${removed.fileName}`);
+
+            if (wasActive) {
+                activeProjectId = projectFiles[deleteIndex]?.id || projectFiles[deleteIndex - 1]?.id || null;
+                clearActiveOutput();
+                if (activeProjectId) {
+                    setActiveProject(activeProjectId, false);
+                } else {
+                    renderSongInfo(null);
+                    setFlowState('empty');
+                }
+            }
+
+            renderFileList();
+            persistProjectFiles();
+        }
+    });
+
+    fileListDiv.addEventListener('change', function(event) {
+        if (event.target.classList.contains('file-select')) {
+            const item = projectFiles.find(project => project.id === event.target.getAttribute('data-id'));
+            if (!item) return;
+            item.selected = event.target.checked;
+            renderFileList();
+            persistProjectFiles();
+            return;
+        }
+
+        if (event.target.classList.contains('file-preview-radio')) {
+            setActiveProject(event.target.getAttribute('data-id'));
+        }
+    });
+
+    toggleSelectButton.addEventListener('click', function() {
+        const shouldSelect = !projectFiles.every(item => item.selected);
+        projectFiles.forEach(item => {
+            item.selected = shouldSelect;
+        });
+        renderFileList();
+        persistProjectFiles();
+    });
+
+    clearListButton.addEventListener('click', function() {
+        if (isPreviewing) {
+            stopPreview();
+        }
+        projectFiles = [];
+        activeProjectId = null;
+        modifiedContent = '';
+        clearActiveOutput();
+        renderSongInfo(null);
+        renderFileList();
+        setFlowState('empty');
+        persistProjectFiles();
+        addLog('[-] 已清空文件列表');
+    });
+
+    downloadSelectedButton.addEventListener('click', async function() {
+        const selectedItems = getSelectedProjects().filter(item => item.meta.valid);
+        if (selectedItems.length === 0) return;
+
+        for (const item of selectedItems) {
+            try {
+                downloadTextFile(getSourceFileName(item), getSourceProjectContent(item));
+                addLog(`[+] 已下载工程文件: ${item.fileName}`);
+                showToast(`已下载：${item.fileName}`, 'success');
+                await wait(250);
+            } catch (error) {
+                addLog(`[!] 下载失败 ${item.fileName}: ${error.message}`);
+            }
+        }
+    });
+
+    zipSelectedButton.addEventListener('click', function() {
+        const selectedItems = getSelectedProjects().filter(item => item.meta.valid);
+        if (selectedItems.length === 0) return;
+
+        try {
+            const files = selectedItems.map(item => ({
+                name: getSourceFileName(item),
+                content: getSourceProjectContent(item)
+            }));
+            downloadBlob('skystudio_source_projects.zip', createZipBlob(files));
+            addLog(`[+] 已生成ZIP: ${selectedItems.length} 个工程文件`);
+            showToast(`已生成ZIP：${selectedItems.length} 个文件`, 'success');
+        } catch (error) {
+            addLog(`[!] 生成ZIP失败: ${error.message}`);
+        }
+    });
 
     // 4. 转换按钮点击事件（整合解密步骤）
     replaceButton.addEventListener('click', async function () {
-        if (!modifiedContent) return;
+        const activeItem = getActiveProject();
+        if (!activeItem || !activeItem.meta.valid) return;
 
         replaceButton.disabled = true;
-        status.textContent = '处理中...';
+        modifiedContent = activeItem.content;
+        activeItem.generatedCode = '';
+        activeItem.scriptCode = '';
+        activeItem.notesData = null;
+        setFlowState('converting', `正在处理：${activeItem.fileName}`);
         clearLog();
+        if (isPreviewing) {
+            stopPreview();
+        }
+        clearAllHighlights();
         codeContainer.innerHTML = ''; // 清空代码框
         codeLineMap.clear(); // 清空代码行映射
         lineToNoteMap.clear(); // 清空反向映射
@@ -869,24 +2175,10 @@
         try {
             // 步骤1: 先解密（如果需要）
             const decryptedContent = decryptContent(modifiedContent, addLog);
+            activeItem.decryptedSourceContent = decryptedContent;
 
             // 步骤2: 执行原转换逻辑
-            modifiedContent = decryptedContent;
-
-            // 版本1替换
-            for (let i = 0; i < searchList1.length; i++) {
-                const searchText = searchList1[i];
-                const replaceText = replaceList[i];
-                const regExp = new RegExp(searchText, 'g');
-                modifiedContent = modifiedContent.replace(regExp, replaceText);
-            }
-            // 版本2替换
-            for (let i = 0; i < searchList2.length; i++) {
-                const searchText = searchList2[i];
-                const replaceText = replaceList[i];
-                const regExp = new RegExp(searchText, 'g');
-                modifiedContent = modifiedContent.replace(regExp, replaceText);
-            }
+            modifiedContent = normalizeKeyNames(decryptedContent);
 
             // 显示信息
             const modifiedContentObj = JSON.parse(modifiedContent);
@@ -899,12 +2191,16 @@
             const bitsPerPage = songData.bitsPerPage || 0;
             const paizi = `${Math.floor(bitsPerPage / 4)}/4`;
             const isEncrypted = songData.isEncrypted;
+            activeItem.meta = parseProjectMeta(modifiedContent);
+            activeItem.bpm = BPM;
+            activeItem.paizi = paizi;
 
             // 构建要显示的HTML字符串
             const displayData = `
                     <h4>乐谱信息识别成功：</h4>
-                    <p>乐谱名称：${name}</p>
-                    <p>作者：${author}</p>
+                    <p>文件名：${escapeHtml(activeItem.fileName)}</p>
+                    <p>乐谱名称：${escapeHtml(name)}</p>
+                    <p>作者：${escapeHtml(author)}</p>
                     <p>BPM：${BPM}</p>
                     <p>拍子： ${paizi}</p>
                     <p>加密：${isEncrypted}</p>
@@ -960,56 +2256,70 @@
                 document.getElementById('previewControlsInSidebar').style.display = 'block';
 
                 // 导出代码文件
-                downloadButton.addEventListener('click', function () {
+                downloadButton.onclick = function () {
                     const blob = new Blob([formattedStrings], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `${name}_skyscript.txt`;
+                    a.download = `${safeFileName(name, 'skystudio_project')}_skyscript.txt`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                });
+                };
 
                 // 复制到剪贴板
-                copyButton.addEventListener('click', function () {
+                copyButton.onclick = function () {
                     // 创建临时textarea用于复制
                     const tempTextarea = document.createElement('textarea');
                     tempTextarea.value = formattedStrings;
                     document.body.appendChild(tempTextarea);
                     tempTextarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempTextarea);
-                    addLog('[+] 代码已复制到剪贴板');
-                });
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+            addLog('[+] 代码已复制到剪贴板');
+            showToast('代码已复制', 'success');
+        };
 
                 //格式化zjs文件内容
-                const formatteScriptcode = `{"repeatCount":-1,"pauseOnFail":true,"count":3,"minVerCode":2026000,"minVerName":"2.26.0","screenWidth":0,"screenHeight":0,"screenDpi":0,"lastSaveScreenWidth":1312,"lastSaveScreenHeight":2848,"lastSaveScreenDpi":3.5,"savedVerCode":2027020,"savedVerName":"2.27.2","description":"该脚本通过机器制造，基于开源3.3内核，仅可用作学习交流，不得进行商业化用途。3.3版本转换器可能存在原始BPM错误的情况，建议在var a;一行中增加：/数字的操作","delay":""}
+                const formatteScriptcode = `{"repeatCount":-1,"pauseOnFail":true,"count":3,"minVerCode":2026000,"minVerName":"2.26.0","screenWidth":0,"screenHeight":0,"screenDpi":0,"lastSaveScreenWidth":1312,"lastSaveScreenHeight":2848,"lastSaveScreenDpi":3.5,"savedVerCode":2027020,"savedVerName":"2.27.2","description":"本脚本使用机器程序自动制作，仅可用作学习交流，不得进行商业化用途。脚本基于开源3.3版本内核制作。3.3版本转换器可能存在原始BPM错误的情况，建议在var a;一行中增加：/数字的操作","delay":""}
 {"type":"设置变量","delay":"0","delayUnit":0,"desc":"录入位点用于后面的自动点屏幕用","scriptCallbacks":{"afterExecSuc":{"type":"系统提示","delay":"0","delayUnit":0,"condition":{"type":"jsExpression","runWhenFalse":true,"expression":"true","desc":""},"promptType":"alert","promptText":"一切准备就绪！点击确定即可开始运行","promptTitle":"进入游戏主界面后点击确定","showPosition":"default","playAudio":"false","useVibrator":false,"actions":[{"name":"确定"},{"name":"暂停显示5秒","script":{"type":"控制执行","delay":"5","delayUnit":1,"controlRunType":"jumpTo","jumpToPosition":"2","ContinueParentExecute":false}}],"showDuration":5000},"afterExecFail":{"type":"控制执行","delay":"0","delayUnit":1,"controlRunType":"stop","jumpToPosition":"","ContinueParentExecute":false}},"vars":[{"name":"设置音调","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"请按照从音调低到高的顺序设置好A1-C1","textSize":15,"textColor":"#e5e5e5"}},{"name":"A1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"C1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"x","value":{"varType":"number","varScope":"script","showInput":true,"showInputLabel":"倍速：","mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","number":1,"selectItems":[0.25,0.5,0.75,1,1.25,1.5,1.75,2]}},{"name":"倍速修改","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"*其它倍速需进入编辑模式修改。该谱默认使用C大调，支持修改大调","textSize":10,"textColor":"#bcbcbc"}}],"dialogTitle":"设置琴键位点","dialogOKText":"继续","dialogCancelText":"none"}
 {"type":"运行JS代码","delay":"0","delayUnit":1,"jsCode":"${formattedStrings.replace(/\n/g, '\\n').replace(/"/g, '\\"')}"}`;
 
+                activeItem.generatedCode = formattedStrings;
+                activeItem.scriptCode = formatteScriptcode;
+                activeItem.notesData = songNotes;
+                activeItem.bpm = BPM;
+                activeItem.paizi = paizi;
+                renderSongInfo(activeItem);
+                showConvertedProject(activeItem);
+                renderFileList();
+                persistProjectFiles();
+                setFlowState('converted', `转换完成：${activeItem.fileName}`);
+                showToast(`转换完成：${activeItem.meta.name}`, 'success');
+
                 //导出脚本文件
-                scriptDownloadButton.addEventListener('click', function () {
+                scriptDownloadButton.onclick = function () {
                     const scriptContent = formatteScriptcode;
                     const blob = new Blob([scriptContent], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `${name}_skyscript3.zjs`;
+                    a.download = `${safeFileName(name, 'skystudio_project')}_skyscript3.zjs`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                });
+                };
             } else {
                 throw new Error('解密失败，文件仍处于加密状态');
             }
 
-            status.textContent = '转换成功！';
-        } catch (error) {
-            status.textContent = `处理失败: ${error.message}`;
             replaceButton.disabled = false;
+        } catch (error) {
+            replaceButton.disabled = false;
+            setFlowState('error', `处理失败: ${error.message}`);
+            renderFileList();
             addLog(`[!] 错误: ${error.message}`);
         }
     });
@@ -1034,16 +2344,36 @@
         stopPreview();
     });
 
-    // 倍速选择器事件
-    speedSelector.addEventListener('change', function() {
-        currentSpeed = parseFloat(this.value);
-        addLog(`[*] 倍速已设置为: ${currentSpeed}x`);
+    function formatSpeedValue(speed) {
+        return speed.toFixed(2).replace(/\.?0+$/, '');
+    }
 
-        // 如果正在预览，更新速度
-        if (isPreviewing) {
-            restartPreviewAtCurrentPosition();
+    function updateSpeedControl(shouldLog) {
+        const speed = parseFloat(speedSelector.value);
+        const min = parseFloat(speedSelector.min);
+        const max = parseFloat(speedSelector.max);
+
+        currentSpeed = isFinite(speed) && speed > 0 ? speed : 1;
+        speedValue.textContent = `${formatSpeedValue(currentSpeed)}x`;
+
+        const progress = ((currentSpeed - min) / (max - min)) * 100;
+        speedSelector.style.setProperty('--speed-progress', `${Math.min(100, Math.max(0, progress))}%`);
+
+        if (shouldLog) {
+            addLog(`[*] 倍速已设置为: ${formatSpeedValue(currentSpeed)}x`);
         }
+    }
+
+    // 倍速滑块事件：预览中拖动也会实时影响后续节奏
+    speedSelector.addEventListener('input', function() {
+        updateSpeedControl(false);
     });
+
+    speedSelector.addEventListener('change', function() {
+        updateSpeedControl(true);
+    });
+
+    updateSpeedControl(false);
 
     // 开始预览
     function startPreview() {
@@ -1052,7 +2382,7 @@
         isPreviewing = true;
         previewButton.textContent = '暂停预览';
         stopPreviewButton.disabled = false;
-        speedSelector.disabled = true; // 预览时禁用倍速选择
+        updateSpeedControl(false);
 
         // 创建中止控制器
         previewAbortController = new AbortController();
@@ -1095,7 +2425,7 @@
         isPreviewing = false;
         previewButton.textContent = '继续预览';
         stopPreviewButton.disabled = true;
-        speedSelector.disabled = false; // 允许修改倍速
+        speedSelector.disabled = false;
 
         // 保留当前高亮状态
         // 不清除高亮，保持当前状态
@@ -1125,16 +2455,81 @@
         container.scrollTop = 0; // 直接滚动到顶部
     }
 
-    // 重新开始当前位置的预览
-    function restartPreviewAtCurrentPosition() {
-        if (isPreviewing) {
-            // 先暂停当前预览
-            pausePreview();
-            // 延迟一点时间后重新开始
-            setTimeout(() => {
-                startPreview();
-            }, 100);
+    function createPreviewAbortError() {
+        return new DOMException('Preview aborted', 'AbortError');
+    }
+
+    function waitForPreviewDelay(baseDelay, signal) {
+        if (baseDelay <= 0) {
+            return Promise.resolve();
         }
+
+        return new Promise((resolve, reject) => {
+            if (signal.aborted) {
+                reject(createPreviewAbortError());
+                return;
+            }
+
+            let virtualElapsed = 0;
+            let lastTime = Date.now();
+            let timeoutId = null;
+            let settled = false;
+
+            const cleanup = () => {
+                if (timeoutId !== null) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+                signal.removeEventListener('abort', handleAbort);
+            };
+
+            const handleAbort = () => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                reject(createPreviewAbortError());
+            };
+
+            const tick = () => {
+                if (signal.aborted) {
+                    handleAbort();
+                    return;
+                }
+
+                const now = Date.now();
+                virtualElapsed += (now - lastTime) * currentSpeed;
+                lastTime = now;
+
+                if (virtualElapsed >= baseDelay) {
+                    settled = true;
+                    cleanup();
+                    resolve();
+                    return;
+                }
+
+                timeoutId = setTimeout(tick, 16);
+            };
+
+            signal.addEventListener('abort', handleAbort, { once: true });
+            timeoutId = setTimeout(tick, 16);
+        });
+    }
+
+    function removePreviewHighlightAfterDelay(keyElement, keyIndex, codeLineNumber, signal) {
+        waitForPreviewDelay(noteDuration * 300, signal).then(() => {
+            if (!signal.aborted) {
+                keyElement.classList.remove('piano-key-down');
+                highlightedKeys.delete(keyIndex);
+
+                if (codeLineNumber !== undefined) {
+                    removeCodeHighlight(codeLineNumber);
+                }
+            }
+        }).catch(error => {
+            if (error.name !== 'AbortError') {
+                addLog(`[!] 高亮清除出错: ${error.message}`);
+            }
+        });
     }
 
     async function playNextNote(noteTimes, resolve, reject, signal) {
@@ -1179,32 +2574,17 @@
                         }
                     }
 
-                    // 异步移除高亮
-                    setTimeout(() => {
-                        if (!signal.aborted) {
-                            keyElement.classList.remove('piano-key-down');
-                            highlightedKeys.delete(keyIndex);
-
-                            if (codeLineNumber !== undefined) {
-                                removeCodeHighlight(codeLineNumber);
-                            }
-                        }
-                    }, noteDuration * 300 / currentSpeed); // 按倍速调整高亮时间
+                    // 异步移除高亮，等待期间会实时读取当前倍速
+                    removePreviewHighlightAfterDelay(keyElement, keyIndex, codeLineNumber, signal);
                 }
 
-                // 计算下一个音符的延迟时间（按倍速调整）
+                // 计算下一个音符的基础延迟时间，实际等待会按当前倍速动态推进
                 const delay = (i < noteTimes.length - 1) ?
-                    (noteTimes[i + 1] * (600 / BPM)) / currentSpeed :
-                    (noteDuration / currentSpeed);
+                    (noteTimes[i + 1] * (600 / BPM)) :
+                    noteDuration;
 
                 // 使用await实现非阻塞延迟
-                await new Promise((resolveDelay) => {
-                    const timeoutId = setTimeout(resolveDelay, delay);
-                    // 如果中止，清除超时
-                    signal.addEventListener('abort', () => {
-                        clearTimeout(timeoutId);
-                    }, { once: true });
-                });
+                await waitForPreviewDelay(delay, signal);
 
                 // 检查是否中止
                 if (signal.aborted) {
@@ -1221,7 +2601,6 @@
     }
 
     function getKeyIndex(keyName) {
-        const keyOrder = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
         return keyOrder.indexOf(keyName);
     }
 
@@ -1352,35 +2731,50 @@
         mainContent.classList.toggle('stylepanel-collapsed');
     });
 
+    function clampNumber(value, min, max, fallback) {
+        const number = parseFloat(value);
+        if (!isFinite(number)) {
+            return fallback;
+        }
+        return Math.min(max, Math.max(min, number));
+    }
+
+    function opacityToHex(opacity) {
+        const alpha = Math.round(clampNumber(opacity, 0, 1, 1) * 255).toString(16).toUpperCase();
+        return alpha.length === 1 ? `0${alpha}` : alpha;
+    }
+
     // 键盘样式调整
     function updatePianoStyle() {
         const keySize = document.getElementById('keySize').value;
         const keySpacing = document.getElementById('keySpacing').value;
         const fontSize = document.getElementById('fontSize').value;
+        const keyBorderWidth = document.getElementById('keyBorderWidth').value;
 
-        document.documentElement.style.setProperty('--key-width', `${keySize}%`);
-        document.documentElement.style.setProperty('--key-height', `${keySize}%`);
+        document.documentElement.style.setProperty('--key-size', `${keySize}px`);
         document.documentElement.style.setProperty('--piano-gap', `${keySpacing}px`);
         document.documentElement.style.setProperty('--key-font-size', `${fontSize}px`);
+        document.documentElement.style.setProperty('--key-border-width', `${keyBorderWidth}px`);
 
-        // 更新数字输入框
-        document.getElementById('keySizeNum').value = keySize;
-        document.getElementById('keySpacingNum').value = keySpacing;
-        document.getElementById('fontSizeNum').value = fontSize;
+        document.getElementById('keySizeValue').textContent = `${keySize}px`;
+        document.getElementById('keySpacingValue').textContent = `${keySpacing}px`;
+        document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
+        document.getElementById('keyBorderWidthValue').textContent = `${parseFloat(keyBorderWidth).toFixed(1).replace(/\.0$/, '')}px`;
 
         // 新增背景颜色控制
-        const bgColor = document.getElementById('bgColor').value;
+        const bgColor = document.getElementById('bgColor').value.toUpperCase();
         document.documentElement.style.setProperty('--main-bg-color', bgColor);
 
-        // 新增背景透明度控制
-        const bgOpacity = document.getElementById('bgOpacity').value;
-        document.documentElement.style.setProperty('--main-bg-opacity', bgOpacity);
-        document.getElementById('bgOpacityNum').value = bgOpacity;
+        // 新增背景透明度控制，仅修改背景层颜色的 alpha 通道
+        const bgOpacity = clampNumber(document.getElementById('bgOpacity').value, 0, 1, 1);
+        document.documentElement.style.setProperty('--main-bg-layer-color', `${bgColor}${opacityToHex(bgOpacity)}`);
+        document.getElementById('bgOpacity').value = bgOpacity;
+        document.getElementById('bgOpacityValue').textContent = bgOpacity.toFixed(2).replace(/\.?0+$/, '');
 
         // 新增琴键透明度控制
         const keyOpacity = document.getElementById('keyOpacity').value;
         document.documentElement.style.setProperty('--key-opacity', keyOpacity);
-        document.getElementById('keyOpacityNum').value = keyOpacity;
+        document.getElementById('keyOpacityValue').textContent = parseFloat(keyOpacity).toFixed(2).replace(/\.?0+$/, '');
     }
 
     // 背景图片上传处理
@@ -1427,6 +2821,7 @@
             document.documentElement.style.setProperty('--bg-image', `url('${imgUrl}')`);
             removeBgImageBtn.style.display = 'inline-block';
             addLog(`[+] 已设置自定义背景图片: ${file.name}`);
+            showToast('背景图已设置', 'success');
         };
         reader.readAsDataURL(file);
     }
@@ -1436,6 +2831,7 @@
         document.documentElement.style.setProperty('--bg-image', 'none');
         removeBgImageBtn.style.display = 'none';
         addLog('[+] 已移除自定义背景图片');
+        showToast('背景图已移除', 'success');
     });
 
     // 背景颜色选择器事件
@@ -1443,38 +2839,35 @@
 
     // 背景透明度控制事件
     document.getElementById('bgOpacity').addEventListener('input', updatePianoStyle);
-    document.getElementById('bgOpacityNum').addEventListener('change', function() {
-        document.getElementById('bgOpacity').value = this.value;
-        // updatePianoStyle();
-    });
 
     // 琴键透明度控制事件
     document.getElementById('keyOpacity').addEventListener('input', updatePianoStyle);
-    document.getElementById('keyOpacityNum').addEventListener('change', function() {
-        document.getElementById('keyOpacity').value = this.value;
-        // updatePianoStyle();
+
+    document.getElementById('panelThemeToggle').addEventListener('change', function() {
+        setPanelTheme(this.checked);
+    });
+
+    document.querySelectorAll('input[name="keyLabelMode"]').forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checked) {
+                setKeyLabelMode(this.value);
+            }
+        });
     });
 
     // 绑定样式控制事件
     document.getElementById('keySize').addEventListener('input', updatePianoStyle);
     document.getElementById('keySpacing').addEventListener('input', updatePianoStyle);
     document.getElementById('fontSize').addEventListener('input', updatePianoStyle);
-
-    document.getElementById('keySizeNum').addEventListener('change', function() {
-        document.getElementById('keySize').value = this.value;
-        updatePianoStyle();
-    });
-    document.getElementById('keySpacingNum').addEventListener('change', function() {
-        document.getElementById('keySpacing').value = this.value;
-        updatePianoStyle();
-    });
-    document.getElementById('fontSizeNum').addEventListener('change', function() {
-        document.getElementById('fontSize').value = this.value;
-        updatePianoStyle();
-    });
+    document.getElementById('keyBorderWidth').addEventListener('input', updatePianoStyle);
 
     // 初始化样式
     updatePianoStyle();
+    setPanelTheme(localStorage.getItem(PANEL_THEME_KEY) === 'dark', false);
+    setKeyLabelMode(localStorage.getItem(KEY_LABEL_MODE_KEY) || 'letters', false);
+    window.addEventListener('load', function() {
+        setKeyLabelMode(currentKeyLabelMode, false);
+    });
 
     // 初始化日志
     addLog('Skyscript转换工具（支持加密文件）');
@@ -1482,6 +2875,9 @@
     addLog('点击或拖拽文件到上传区域开始');
     addLog('支持加密/未加密文件转换');
     addLog('');
+    setFlowState('empty');
+    renderFileList();
+    restoreProjectFiles();
 
     // 代码框相关函数
     function displayFormattedCode(code) {
@@ -1596,5 +2992,4 @@
     }
 </script>
 </body>
-
 </html>
