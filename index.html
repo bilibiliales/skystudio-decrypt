@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-cn">
 <head>
     <title>sky studio解密解析工具</title>
@@ -54,7 +54,7 @@
             --panel-bg-color: #1d1d1d;
             --panel-text-color: #e8edf4;
             --panel-muted-color: #a8b0bc;
-            --panel-card-bg: ##262626;
+            --panel-card-bg: #262626;
             --panel-soft-bg: rgba(255,255,255,0.08);
             --panel-border-color: rgba(255,255,255,0.14);
         }
@@ -404,6 +404,25 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
+        .info-panel h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: var(--panel-text-color);
+        }
+
+        .info-panel p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .info-error h4 {
+            color: #d66;
+        }
+
+        .info-success h4 {
+            color: #4CAF50;
+        }
+
         /* 主内容区样式 */
         #mainContent {
             flex: 1;
@@ -429,7 +448,7 @@
             margin-right: 0;
         }
 
-        /* 代码框样式 - 替换原textarea */
+        /* 代码框样式 */
         #codeContainer {
             width: 80%;
             height: 200px;
@@ -1043,17 +1062,13 @@
         <div class="file-list-panel">
             <div class="file-list-toolbar">
                 <button class="btn" id="toggleSelectButton" disabled>全选</button>
-                <button class="btn" id="downloadSelectedButton" disabled>下载选中工程文件</button>
+                <button class="btn" id="downloadSelectedButton" disabled>下载选中解密文件</button>
                 <button class="btn" id="zipSelectedButton" disabled>生成ZIP</button>
                 <button class="btn" id="clearListButton" disabled>清空列表</button>
             </div>
             <div id="fileList">
                 <div class="empty-file-list">暂无文件，上传后会自动保存到本地列表</div>
             </div>
-        </div>
-
-        <div id="actions" class="action-buttons">
-            <button class="btn" id="replaceButton" disabled>开始转换</button>
         </div>
 
         <div id="conversionFlow" class="conversion-flow">
@@ -1069,8 +1084,23 @@
             <span id="flowHint" class="flow-hint">拖入文件后会先读取乐谱信息</span>
         </div>
 
-        <div id="songInfo"></div>
-        <div id="finished"></div>
+        <div id="songInfo" class="info-panel">
+            <div id="songInfoEmpty" class="info-empty"></div>
+            <div id="songInfoError" class="info-error" style="display:none;">
+                <h4>文件识别失败</h4>
+                <p>文件名：<span id="errorFileName"></span></p>
+                <p>原因：<span id="errorReason"></span></p>
+            </div>
+            <div id="songInfoSuccess" class="info-success" style="display:none;">
+                <h4>当前乐谱信息：</h4>
+                <p>乐谱名称：<span id="infoName"></span></p>
+                <p>作者：<span id="infoAuthor"></span></p>
+                <p>BPM：<span id="infoBpm"></span></p>
+                <p>拍子：<span id="infoPaizi"></span></p>
+                <p>加密：<span id="infoEncrypted"></span></p>
+                <p>数据长度：<span id="infoNoteCount"></span></p>
+            </div>
+        </div>
 
         <div id="previewControls">
             <button class="btn download-btn" id="downloadButton" style="display:none;">下载代码</button>
@@ -1102,7 +1132,7 @@
 <button id="toggleSidebar" class="toggle-btn"></button>
 
 <div id="mainContent">
-    <!-- 代码框容器 - 替换原textarea -->
+    <!-- 代码框容器 -->
     <div id="codeContainer"></div>
 
     <div id="PianoPanel">
@@ -1189,6 +1219,10 @@
             </div>
             <button class="btn" id="removeBgImageBtn" style="margin-top: 10px; display: none;">移除背景图</button>
         </div>
+
+        <div class="style-control">
+            <button class="btn" id="resetDefaultsBtn" style="margin-top: 10px;">恢复默认设置</button>
+        </div>
     </div>
 </div>
 
@@ -1211,16 +1245,20 @@
     let currentPreviewInterval;
     let currentNoteIndex = 0;
     let notesData = [];
+    let previewSleepUnits = [];
     let BPM = 120;
     let noteDuration = 600 / BPM; // 每个音符的基础时长(ms)
     let currentSpeed = 1; // 当前倍速
     let isPreviewing = false; // 预览状态
     let previewPromise = null; // 预览Promise引用
     let previewAbortController = null; // 用于中止预览
+    let previewAbortReason = '';
+    let previewRunId = 0;
     let codeLineMap = new Map(); // 存储代码行与音符的映射关系
     let highlightedLines = new Set(); // 存储当前高亮的代码行
     let highlightedKeys = new Set(); // 存储当前高亮的琴键
     let lineToNoteMap = new Map(); // 存储代码行到音符索引的反向映射
+    const CONFIG_CODE_LINE_COUNT = 5;
 
     // 1. 解密工具核心代码
     const enc_ragus = [
@@ -1342,7 +1380,6 @@
     // 3. 文件上传处理
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
-    const replaceButton = document.getElementById('replaceButton');
     const downloadButton = document.getElementById('downloadButton');
     const scriptDownloadButton = document.getElementById('scriptDownloadButton');
     const copyButton = document.getElementById('copyButton');
@@ -1355,7 +1392,6 @@
     const toastContainer = document.getElementById('toastContainer');
     const log = document.getElementById('log');
     const songInfoDiv = document.getElementById('songInfo');
-    const finisheddiv = document.getElementById('finished');
     const previewButton = document.getElementById('previewButton');
     const stopPreviewButton = document.getElementById('stopPreviewButton');
     const speedSelector = document.getElementById('speedSelector');
@@ -1364,6 +1400,8 @@
     const STORAGE_ACTIVE_KEY = 'skystudio-decrypt-active-project-v1';
     const PANEL_THEME_KEY = 'skystudio-decrypt-panel-theme-v1';
     const KEY_LABEL_MODE_KEY = 'skystudio-decrypt-key-label-mode-v1';
+    const KEYBOARD_STYLE_KEY = 'skystudio-decrypt-keyboard-style-v1';
+    const BG_IMAGE_KEY = 'skystudio-decrypt-bg-image-v1';
     let projectFiles = [];
     let activeProjectId = null;
     const keyOrder = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
@@ -1475,8 +1513,9 @@
         }
         return {
             valid: true,
-            name: songData.name || '未定义',
-            author: songData.author || '未定义',
+            name: songData.name || '未知',
+            author: songData.author || '未知',
+            transcribedBy: songData.transcribedBy || '未知',
             bpm: songData.bpm || 120,
             bitsPerPage: songData.bitsPerPage || 0,
             paizi: getPaizi(songData.bitsPerPage || 0),
@@ -1604,32 +1643,37 @@
     }
 
     function renderSongInfo(item) {
+        const songInfoEmpty = document.getElementById('songInfoEmpty');
+        const songInfoError = document.getElementById('songInfoError');
+        const songInfoSuccess = document.getElementById('songInfoSuccess');
+
         if (!item) {
-            songInfoDiv.innerHTML = '';
-            finisheddiv.innerHTML = '';
+            songInfoEmpty.style.display = 'block';
+            songInfoError.style.display = 'none';
+            songInfoSuccess.style.display = 'none';
             return;
         }
 
         if (!item.meta.valid) {
-            songInfoDiv.innerHTML = `
-                <h4>文件识别失败</h4>
-                <p>文件名：${escapeHtml(item.fileName)}</p>
-                <p>原因：${escapeHtml(item.meta.error || '未知错误')}</p>
-            `;
-            finisheddiv.innerHTML = '';
+            songInfoEmpty.style.display = 'none';
+            songInfoError.style.display = 'block';
+            songInfoSuccess.style.display = 'none';
+
+            document.getElementById('errorFileName').textContent = escapeHtml(item.fileName);
+            document.getElementById('errorReason').textContent = escapeHtml(item.meta.error || '未知错误');
             return;
         }
 
-        songInfoDiv.innerHTML = `
-            <h4>乐谱信息识别成功：</h4>
-            <p>文件名：${escapeHtml(item.fileName)}</p>
-            <p>乐谱名称：${escapeHtml(item.meta.name)}</p>
-            <p>作者：${escapeHtml(item.meta.author)}</p>
-            <p>BPM：${escapeHtml(item.meta.bpm)}</p>
-            <p>拍子： ${escapeHtml(item.meta.paizi)}</p>
-            <p>加密：${item.meta.isEncrypted ? '是' : '否'}</p>
-            <p>数据长度：${escapeHtml(item.meta.noteCount)}</p>
-        `;
+        songInfoEmpty.style.display = 'none';
+        songInfoError.style.display = 'none';
+        songInfoSuccess.style.display = 'block';
+
+        document.getElementById('infoName').textContent = escapeHtml(item.meta.name);
+        document.getElementById('infoAuthor').textContent = escapeHtml(item.meta.author);
+        document.getElementById('infoBpm').textContent = escapeHtml(item.meta.bpm);
+        document.getElementById('infoPaizi').textContent = escapeHtml(item.meta.paizi);
+        document.getElementById('infoEncrypted').textContent = item.meta.isEncrypted ? '是' : '否';
+        document.getElementById('infoNoteCount').textContent = escapeHtml(item.meta.noteCount);
     }
 
     function renderFileList() {
@@ -1639,7 +1683,6 @@
             downloadSelectedButton.disabled = true;
             zipSelectedButton.disabled = true;
             clearListButton.disabled = true;
-            replaceButton.disabled = true;
             return;
         }
 
@@ -1678,9 +1721,6 @@
         downloadSelectedButton.disabled = selectedValidCount === 0;
         zipSelectedButton.disabled = selectedValidCount === 0;
         clearListButton.disabled = false;
-
-        const activeItem = getActiveProject();
-        replaceButton.disabled = !activeItem || !activeItem.meta.valid;
     }
 
     function clearActiveOutput() {
@@ -1694,8 +1734,9 @@
         highlightedLines.clear();
         highlightedKeys.clear();
         notesData = [];
+        previewSleepUnits = [];
         currentNoteIndex = 0;
-        finisheddiv.innerHTML = '';
+        
         downloadButton.style.display = 'none';
         scriptDownloadButton.style.display = 'none';
         copyButton.style.display = 'none';
@@ -1712,7 +1753,7 @@
         codeLineMap.clear();
         lineToNoteMap.clear();
         for (let i = 0; i < noteList.length; i++) {
-            const codeLineIndex = i + 1;
+            const codeLineIndex = i + CONFIG_CODE_LINE_COUNT;
             codeLineMap.set(i, codeLineIndex);
             lineToNoteMap.set(codeLineIndex, i);
         }
@@ -1727,12 +1768,9 @@
         notesData = item.notesData;
         BPM = item.bpm || 120;
         noteDuration = 600 / BPM;
+        previewSleepUnits = buildTimingModel(notesData).sleepUnits;
         rebuildPreviewMaps(notesData);
         displayFormattedCode(item.generatedCode);
-
-        finisheddiv.innerHTML = `
-            <h5>点击下方按钮可下载代码文件或直接生成脚本文件</h5>
-        `;
 
         downloadButton.style.display = 'inline-block';
         scriptDownloadButton.style.display = 'inline-block';
@@ -1747,7 +1785,7 @@
         };
 
         scriptDownloadButton.onclick = function () {
-            downloadTextFile(`${downloadBaseName}_skyscript3.zjs`, item.scriptCode);
+            downloadTextFile(`${downloadBaseName}_skyscript3.3.3.zjs`, item.scriptCode);
         };
 
         copyButton.onclick = function () {
@@ -1762,6 +1800,39 @@
         };
     }
 
+    function convertProjectItem(item) {
+        if (!item || !item.meta.valid) {
+            throw new Error('文件无效，无法转换');
+        }
+
+        const decryptedContent = decryptContent(item.content, addLog);
+        const normalizedContent = normalizeKeyNames(decryptedContent);
+        const songData = getProjectData(normalizedContent);
+
+        if (songData.isEncrypted) {
+            throw new Error('解密失败，文件仍处于加密状态');
+        }
+
+        const songNotes = Array.isArray(songData.songNotes) ? songData.songNotes : [];
+        if (songNotes.length === 0) {
+            throw new Error('文件格式错误：没有可转换的音符数据');
+        }
+
+        const bpm = songData.bpm || 120;
+        const paizi = getPaizi(songData.bitsPerPage || 0);
+        const formattedStrings = buildFormattedCode(songData, paizi);
+
+        item.decryptedSourceContent = decryptedContent;
+        item.meta = parseProjectMeta(normalizedContent);
+        item.generatedCode = formattedStrings;
+        item.scriptCode = buildScriptCode(formattedStrings);
+        item.notesData = songNotes;
+        item.bpm = bpm;
+        item.paizi = paizi;
+
+        return item;
+    }
+
     function setActiveProject(id, shouldPersist = true) {
         const item = projectFiles.find(project => project.id === id);
         if (!item) return;
@@ -1774,14 +1845,41 @@
         modifiedContent = item.content;
         renderSongInfo(item);
 
-        if (item.generatedCode) {
-            showConvertedProject(item);
-            setFlowState('converted', `当前文件：${item.fileName}，已可预览和下载`);
-        } else {
+        if (!item.meta.valid) {
             clearActiveOutput();
-            setFlowState(item.meta.valid ? 'read' : 'error', item.meta.valid ? `当前文件：${item.fileName}，信息已识别` : `当前文件识别失败：${item.meta.error}`);
+            setFlowState('error', `当前文件识别失败：${item.meta.error}`);
+            renderFileList();
+            if (shouldPersist) {
+                persistProjectFiles();
+            }
+            return;
         }
 
+        if (!item.generatedCode) {
+            setFlowState('converting', `正在转换：${item.fileName}`);
+            try {
+                convertProjectItem(item);
+                addLog(`[+] 已转换：${item.fileName}`);
+                showToast(`转换完成：${item.meta.name}`, 'success');
+            } catch (error) {
+                item.generatedCode = '';
+                item.scriptCode = '';
+                item.notesData = null;
+                clearActiveOutput();
+                setFlowState('error', `处理失败：${error.message}`);
+                renderFileList();
+                addLog(`[!] 转换失败 ${item.fileName}: ${error.message}`);
+                showToast(`转换失败：${item.fileName}`, 'error');
+                if (shouldPersist) {
+                    persistProjectFiles();
+                }
+                return;
+            }
+        }
+
+        renderSongInfo(item);
+        showConvertedProject(item);
+        setFlowState('converted', `当前文件：${item.fileName}，已可预览和下载`);
         renderFileList();
         if (shouldPersist) {
             persistProjectFiles();
@@ -1799,32 +1897,234 @@
         return result;
     }
 
+    function escapeScriptString(value) {
+        return JSON.stringify(String(value ?? ''));
+    }
+
+    function buildTimingModel(songNotes) {
+        const rawDurations = [];
+        const uniqueDurations = [];
+        let fallbackDuration = 0;
+
+        for (let i = 0; i < songNotes.length - 1; i++) {
+            const duration = Math.round((songNotes[i + 1].time || 0) - (songNotes[i].time || 0));
+            if (duration > 0 && fallbackDuration === 0) {
+                fallbackDuration = duration;
+            }
+        }
+
+        for (let i = 0; i < songNotes.length; i++) {
+            const nextTime = (i < songNotes.length - 1)
+                ? (songNotes[i + 1].time || 0)
+                : (songNotes[i].time || 0) + fallbackDuration;
+            const duration = Math.max(0, Math.round(nextTime - (songNotes[i].time || 0)));
+            rawDurations.push(duration);
+
+            if (duration > 0 && !uniqueDurations.includes(duration)) {
+                uniqueDurations.push(duration);
+            }
+        }
+
+        let unit = uniqueDurations[0] || 1;
+        for (let i = 1; i < uniqueDurations.length; i++) {
+            unit = findGCD(unit, uniqueDurations[i]);
+        }
+
+        const sleepUnits = rawDurations.map(duration => (
+            duration > 0 ? Math.round(duration / unit) : 0
+        ));
+
+        return { rawDurations, sleepUnits, unit };
+    }
+
     function buildFormattedCode(songData, paizi) {
         const bpm = songData.bpm || 120;
         const songNotes = Array.isArray(songData.songNotes) ? songData.songNotes : [];
-        let formattedStrings = `const BPM = ${bpm};const n = 4;const m = "${paizi}";var a = 600/BPM/1;\n`;
+        const timingModel = buildTimingModel(songNotes);
+        const name = songData.name || '未定义';
+        const author = songData.author || '未定义';
+        const transcribedBy = songData.transcribedBy || '未知';
 
-        let origon_bpm = 0;
-        let i = 0;
-        while (!origon_bpm && i < songNotes.length - 1) {
-            origon_bpm = songNotes[i + 1].time - songNotes[i].time;
-            i++;
-        }
-
+        let formattedStrings = `const name = ${escapeScriptString(name)};\n`;
+        formattedStrings += `const author = ${escapeScriptString(author)};\n`;
+        formattedStrings += `const transcribedBy = ${escapeScriptString(transcribedBy)};\n`;
+        formattedStrings += `console.log("乐谱名：" + name + "\\n作者：" + author + "\\n改编者：" + transcribedBy);\n`;
+        formattedStrings += `const BPM = ${bpm};const n = 4;const m = "${paizi}";var a = 60000/BPM/x;\n`;
+        
         for (let noteIndex = 0; noteIndex < songNotes.length; noteIndex++) {
             const key = songNotes[noteIndex].key;
-            const nextTime = (noteIndex < songNotes.length - 1) ? songNotes[noteIndex + 1].time : songNotes[noteIndex].time + origon_bpm;
-            const duration = nextTime - songNotes[noteIndex].time;
-            formattedStrings += `zdjl.click(${key}.x, ${key}.y, 1);sleep(${duration}*a);\n`;
+            const sleepUnit = timingModel.sleepUnits[noteIndex] || 0;
+            formattedStrings += `zdjl.click(${key}.x, ${key}.y, 1);sleep(${sleepUnit}*a);\n`;
         }
 
         return formattedStrings;
     }
 
     function buildScriptCode(formattedStrings) {
-        return `{"repeatCount":-1,"pauseOnFail":true,"count":3,"minVerCode":2026000,"minVerName":"2.26.0","screenWidth":0,"screenHeight":0,"screenDpi":0,"lastSaveScreenWidth":1312,"lastSaveScreenHeight":2848,"lastSaveScreenDpi":3.5,"savedVerCode":2027020,"savedVerName":"2.27.2","description":"该脚本通过机器制造，基于开源3.3内核，仅可用作学习交流，不得进行商业化用途。3.3版本转换器可能存在原始BPM错误的情况，建议在var a;一行中增加：/数字的操作","delay":""}
-{"type":"设置变量","delay":"0","delayUnit":0,"desc":"录入位点用于后面的自动点屏幕用","scriptCallbacks":{"afterExecSuc":{"type":"系统提示","delay":"0","delayUnit":0,"condition":{"type":"jsExpression","runWhenFalse":true,"expression":"true","desc":""},"promptType":"alert","promptText":"一切准备就绪！点击确定即可开始运行","promptTitle":"进入游戏主界面后点击确定","showPosition":"default","playAudio":"false","useVibrator":false,"actions":[{"name":"确定"},{"name":"暂停显示5秒","script":{"type":"控制执行","delay":"5","delayUnit":1,"controlRunType":"jumpTo","jumpToPosition":"2","ContinueParentExecute":false}}],"showDuration":5000},"afterExecFail":{"type":"控制执行","delay":"0","delayUnit":1,"controlRunType":"stop","jumpToPosition":"","ContinueParentExecute":false}},"vars":[{"name":"设置音调","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"请按照从音调低到高的顺序设置好A1-C1","textSize":15,"textColor":"#e5e5e5"}},{"name":"A1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"C1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"x","value":{"varType":"number","varScope":"script","showInput":true,"showInputLabel":"倍速：","mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","number":1,"selectItems":[0.25,0.5,0.75,1,1.25,1.5,1.75,2]}},{"name":"倍速修改","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"*其它倍速需进入编辑模式修改。该谱默认使用C大调，支持修改大调","textSize":10,"textColor":"#bcbcbc"}}],"dialogTitle":"设置琴键位点","dialogOKText":"继续","dialogCancelText":"none"}
-{"type":"运行JS代码","delay":"0","delayUnit":1,"jsCode":"${formattedStrings.replace(/\n/g, '\\n').replace(/"/g, '\\"')}"}`;
+        const readCoordinateJs = `// 初始化'坐标信息'变量
+if(zdjl.getStorage('appName','scmf')){
+  console.log("检测到配置文件");
+}else{
+  zdjl.setStorage('appName',[],'scmf');
+  console.log("配置文件不存在，已自动创建");
+}
+// 读取坐标信息
+zdjl.setVar("坐标信息",zdjl.getStorage('appName','scmf'));`;
+
+        const saveCoordinateJs = `// 格式化处理要上传的数组
+var temp = [];
+temp.push((A1 ? A1.x + "," + A1.y : null));
+temp.push((A2 ? A2.x + "," + A2.y : null));
+temp.push((A3 ? A3.x + "," + A3.y : null));
+temp.push((A4 ? A4.x + "," + A4.y : null));
+temp.push((A5 ? A5.x + "," + A5.y : null));
+temp.push((A6 ? A6.x + "," + A6.y : null));
+temp.push((A7 ? A7.x + "," + A7.y : null));
+temp.push((B1 ? B1.x + "," + B1.y : null));
+temp.push((B2 ? B2.x + "," + B2.y : null));
+temp.push((B3 ? B3.x + "," + B3.y : null));
+temp.push((B4 ? B4.x + "," + B4.y : null));
+temp.push((B5 ? B5.x + "," + B5.y : null));
+temp.push((B6 ? B6.x + "," + B6.y : null));
+temp.push((B7 ? B7.x + "," + B7.y : null));
+temp.push((C1 ? C1.x + "," + C1.y : null));
+// 写入坐标信息
+zdjl.setStorage('appName',temp,'scmf')`;
+
+        const keyNames = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
+        const createPositionVar = (keyName, index) => ({
+            name: keyName,
+            value: {
+                varType: 'position',
+                varScope: 'script',
+                showInput: true,
+                mustInput: true,
+                showInputContentAlign: 'left',
+                syncValueOnChange: true,
+                position: {
+                    type: 'location',
+                    __vars: {
+                        xy: {
+                            varType: 'expression',
+                            varScope: 'script',
+                            mustInput: true,
+                            valueExp: `坐标信息[${index}]||"50%,50%"`
+                        }
+                    }
+                },
+                findAll: false,
+                onlyCanChooseLocWhenInput: true
+            }
+        });
+
+        const scriptHeader = {
+            repeatCount: -1,
+            pauseOnFail: true,
+            count: 5,
+            minVerCode: 2023000,
+            minVerName: '2.23.0',
+            screenWidth: 0,
+            screenHeight: 0,
+            screenDpi: 0,
+            lastSaveScreenWidth: 402,
+            lastSaveScreenHeight: 600,
+            lastSaveScreenDpi: 1,
+            savedVerCode: 26000000,
+            savedVerName: '26.0.0',
+            description: '本脚本使用机器程序自动制作，仅可用作学习交流，不得进行商业化用途。如果您不是源工程文件的制作者，请在获得原作者的许可后再使用。脚本基于开源3.3.3版本内核制作。由于脚本环境限制，在实际运行中会比在线预览和工程文件慢一些，请根据实际情况调整倍速。',
+            delay: ''
+        };
+
+        const setupStep = {
+            type: '设置变量',
+            delay: '0',
+            delayUnit: 0,
+            desc: '录入位点用于后面的自动点击屏幕',
+            scriptCallbacks: {
+                beforeStartExec: {
+                    type: '运行JS代码',
+                    delay: '0',
+                    delayUnit: 1,
+                    desc: '读取坐标内容',
+                    jsCode: readCoordinateJs
+                },
+                afterExecSuc: {
+                    type: '运行JS代码',
+                    delay: '0',
+                    delayUnit: 1,
+                    desc: '存储坐标内容',
+                    jsCode: saveCoordinateJs
+                }
+            },
+            vars: [
+                {
+                    name: '提示',
+                    value: {
+                        varType: 'ui_text',
+                        varScope: 'global',
+                        showInput: true,
+                        mustInput: true,
+                        showInputContentAlign: 'left',
+                        textContent: '请按照从音调低到高的顺序设置好A1-C1',
+                        textSize: 15,
+                        textColor: '#e5e5e5'
+                    }
+                },
+                ...keyNames.map(createPositionVar),
+                {
+                    name: 'x',
+                    value: {
+                        varType: 'number',
+                        varScope: 'script',
+                        showInput: true,
+                        showInputLabel: '倍速：',
+                        mustInput: true,
+                        rememberInputValue: true,
+                        showInputContentAlign: 'left',
+                        syncValueOnChange: true,
+                        number: 1,
+                        selectItems: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+                    }
+                },
+                {
+                    name: '倍速修改',
+                    value: {
+                        varType: 'ui_text',
+                        varScope: 'script',
+                        showInput: true,
+                        mustInput: true,
+                        showInputContentAlign: 'left',
+                        textContent: '*其它倍速需进入编辑模式修改。该谱默认使用C大调，支持修改大调。坐标设置成功后可用于其他基于同一内核开发的脚本。',
+                        textSize: 10,
+                        textColor: '#bcbcbc'
+                    }
+                }
+            ],
+            dialogTitle: '请设置您的屏幕位点',
+            dialogOKText: '下一步',
+            dialogCancelText: 'none',
+            dialogCancelAction: {
+                type: '控制执行',
+                delay: '0',
+                delayUnit: 1,
+                controlRunType: 'stop',
+                jumpToPosition: '',
+                ContinueParentExecute: false
+            }
+        };
+
+        const runStep = {
+            type: '运行JS代码',
+            delay: '0',
+            delayUnit: 1,
+            jsCode: formattedStrings
+        };
+
+        return [
+            JSON.stringify(scriptHeader),
+            JSON.stringify(setupStep),
+            JSON.stringify(runStep)
+        ].join('\n');
     }
 
     function downloadBlob(fileName, blob) {
@@ -2150,181 +2450,7 @@
         }
     });
 
-    // 4. 转换按钮点击事件（整合解密步骤）
-    replaceButton.addEventListener('click', async function () {
-        const activeItem = getActiveProject();
-        if (!activeItem || !activeItem.meta.valid) return;
-
-        replaceButton.disabled = true;
-        modifiedContent = activeItem.content;
-        activeItem.generatedCode = '';
-        activeItem.scriptCode = '';
-        activeItem.notesData = null;
-        setFlowState('converting', `正在处理：${activeItem.fileName}`);
-        clearLog();
-        if (isPreviewing) {
-            stopPreview();
-        }
-        clearAllHighlights();
-        codeContainer.innerHTML = ''; // 清空代码框
-        codeLineMap.clear(); // 清空代码行映射
-        lineToNoteMap.clear(); // 清空反向映射
-        highlightedLines.clear(); // 清空高亮行记录
-        highlightedKeys.clear(); // 清空高亮键记录
-
-        try {
-            // 步骤1: 先解密（如果需要）
-            const decryptedContent = decryptContent(modifiedContent, addLog);
-            activeItem.decryptedSourceContent = decryptedContent;
-
-            // 步骤2: 执行原转换逻辑
-            modifiedContent = normalizeKeyNames(decryptedContent);
-
-            // 显示信息
-            const modifiedContentObj = JSON.parse(modifiedContent);
-            const songData = modifiedContentObj[0];
-
-            // 检查属性是否存在
-            const name = songData.name || "未定义";
-            const author = songData.author || "未定义";
-            BPM = songData.bpm || 120;
-            const bitsPerPage = songData.bitsPerPage || 0;
-            const paizi = `${Math.floor(bitsPerPage / 4)}/4`;
-            const isEncrypted = songData.isEncrypted;
-            activeItem.meta = parseProjectMeta(modifiedContent);
-            activeItem.bpm = BPM;
-            activeItem.paizi = paizi;
-
-            // 构建要显示的HTML字符串
-            const displayData = `
-                    <h4>乐谱信息识别成功：</h4>
-                    <p>文件名：${escapeHtml(activeItem.fileName)}</p>
-                    <p>乐谱名称：${escapeHtml(name)}</p>
-                    <p>作者：${escapeHtml(author)}</p>
-                    <p>BPM：${BPM}</p>
-                    <p>拍子： ${paizi}</p>
-                    <p>加密：${isEncrypted}</p>
-                `;
-            songInfoDiv.innerHTML = displayData;
-
-            if (!isEncrypted) {
-                // 处理 songNotes 并生成格式化字符串
-                noteDuration = 600 / BPM; // 更新音符时长
-                let formattedStrings = `const BPM = ${BPM};const n = 4;const m = "${paizi}";var a = 600/BPM/1;\n`;
-                const songNotes = songData.songNotes;
-                notesData = songNotes; // 保存音符数据用于预览
-
-                // 计算原始BPM间隔
-                let origon_bpm = 0;
-                let i = 0;
-                while (!origon_bpm && i < songNotes.length - 1) {
-                    origon_bpm = songNotes[i + 1].time - songNotes[i].time;
-                    i++;
-                }
-
-                // 生成脚本代码并建立映射关系
-                let codeLineIndex = 1; // 前4行是配置代码
-                for (let i = 0; i < songNotes.length; i++) {
-                    const key = songNotes[i].key;
-                    const nextTime = (i < songNotes.length - 1) ? songNotes[i + 1].time : songNotes[i].time + origon_bpm;
-                    const duration = nextTime - songNotes[i].time;
-                    const codeLine = `zdjl.click(${key}.x, ${key}.y, 1);sleep(${duration}*a);`;
-                    formattedStrings += codeLine + '\n';
-
-                    // 建立代码行与音符的映射关系
-                    codeLineMap.set(i, codeLineIndex);
-                    // 建立反向映射（代码行到音符索引）
-                    lineToNoteMap.set(codeLineIndex, i);
-                    codeLineIndex++;
-                }
-
-                // 在代码框中显示格式化代码（带行号）
-                displayFormattedCode(formattedStrings);
-
-                finisheddiv.innerHTML = `
-                        <h5>点击下方按钮可下载代码文件或直接生成脚本文件</h5>
-                    `;
-
-                // 设置下载按钮可见
-                downloadButton.style.display = 'inline-block';
-                scriptDownloadButton.style.display = 'inline-block';
-                copyButton.style.display = 'inline-block';
-                previewButton.disabled = false;
-                speedSelector.disabled = false; // 启用倍速选择器
-
-                // 显示预览按钮
-                document.getElementById('previewControlsInSidebar').style.display = 'block';
-
-                // 导出代码文件
-                downloadButton.onclick = function () {
-                    const blob = new Blob([formattedStrings], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${safeFileName(name, 'skystudio_project')}_skyscript.txt`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                };
-
-                // 复制到剪贴板
-                copyButton.onclick = function () {
-                    // 创建临时textarea用于复制
-                    const tempTextarea = document.createElement('textarea');
-                    tempTextarea.value = formattedStrings;
-                    document.body.appendChild(tempTextarea);
-                    tempTextarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextarea);
-            addLog('[+] 代码已复制到剪贴板');
-            showToast('代码已复制', 'success');
-        };
-
-                //格式化zjs文件内容
-                const formatteScriptcode = `{"repeatCount":-1,"pauseOnFail":true,"count":3,"minVerCode":2026000,"minVerName":"2.26.0","screenWidth":0,"screenHeight":0,"screenDpi":0,"lastSaveScreenWidth":1312,"lastSaveScreenHeight":2848,"lastSaveScreenDpi":3.5,"savedVerCode":2027020,"savedVerName":"2.27.2","description":"本脚本使用机器程序自动制作，仅可用作学习交流，不得进行商业化用途。脚本基于开源3.3版本内核制作。3.3版本转换器可能存在原始BPM错误的情况，建议在var a;一行中增加：/数字的操作","delay":""}
-{"type":"设置变量","delay":"0","delayUnit":0,"desc":"录入位点用于后面的自动点屏幕用","scriptCallbacks":{"afterExecSuc":{"type":"系统提示","delay":"0","delayUnit":0,"condition":{"type":"jsExpression","runWhenFalse":true,"expression":"true","desc":""},"promptType":"alert","promptText":"一切准备就绪！点击确定即可开始运行","promptTitle":"进入游戏主界面后点击确定","showPosition":"default","playAudio":"false","useVibrator":false,"actions":[{"name":"确定"},{"name":"暂停显示5秒","script":{"type":"控制执行","delay":"5","delayUnit":1,"controlRunType":"jumpTo","jumpToPosition":"2","ContinueParentExecute":false}}],"showDuration":5000},"afterExecFail":{"type":"控制执行","delay":"0","delayUnit":1,"controlRunType":"stop","jumpToPosition":"","ContinueParentExecute":false}},"vars":[{"name":"设置音调","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"请按照从音调低到高的顺序设置好A1-C1","textSize":15,"textColor":"#e5e5e5"}},{"name":"A1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"A7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B2","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B3","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B4","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B5","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B6","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"B7","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"C1","value":{"varType":"position","varScope":"script","showInput":true,"mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","position":{"type":"location","x":"50%","y":"50%"},"findAll":false,"onlyCanChooseLocWhenInput":true}},{"name":"x","value":{"varType":"number","varScope":"script","showInput":true,"showInputLabel":"倍速：","mustInput":true,"rememberInputValue":true,"showInputContentAlign":"left","number":1,"selectItems":[0.25,0.5,0.75,1,1.25,1.5,1.75,2]}},{"name":"倍速修改","value":{"varType":"ui_text","varScope":"script","showInput":true,"mustInput":true,"showInputContentAlign":"left","textContent":"*其它倍速需进入编辑模式修改。该谱默认使用C大调，支持修改大调","textSize":10,"textColor":"#bcbcbc"}}],"dialogTitle":"设置琴键位点","dialogOKText":"继续","dialogCancelText":"none"}
-{"type":"运行JS代码","delay":"0","delayUnit":1,"jsCode":"${formattedStrings.replace(/\n/g, '\\n').replace(/"/g, '\\"')}"}`;
-
-                activeItem.generatedCode = formattedStrings;
-                activeItem.scriptCode = formatteScriptcode;
-                activeItem.notesData = songNotes;
-                activeItem.bpm = BPM;
-                activeItem.paizi = paizi;
-                renderSongInfo(activeItem);
-                showConvertedProject(activeItem);
-                renderFileList();
-                persistProjectFiles();
-                setFlowState('converted', `转换完成：${activeItem.fileName}`);
-                showToast(`转换完成：${activeItem.meta.name}`, 'success');
-
-                //导出脚本文件
-                scriptDownloadButton.onclick = function () {
-                    const scriptContent = formatteScriptcode;
-                    const blob = new Blob([scriptContent], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${safeFileName(name, 'skystudio_project')}_skyscript3.zjs`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                };
-            } else {
-                throw new Error('解密失败，文件仍处于加密状态');
-            }
-
-            replaceButton.disabled = false;
-        } catch (error) {
-            replaceButton.disabled = false;
-            setFlowState('error', `处理失败: ${error.message}`);
-            renderFileList();
-            addLog(`[!] 错误: ${error.message}`);
-        }
-    });
-
-    // 5. 预览功能实现
+    // 4. 预览功能实现
     previewButton.addEventListener('click', function() {
         if (notesData.length === 0) {
             addLog('[!] 没有可预览的音符数据');
@@ -2378,6 +2504,13 @@
     // 开始预览
     function startPreview() {
         if (isPreviewing) return;
+        if (notesData.length === 0) return;
+        if (currentNoteIndex >= notesData.length) {
+            currentNoteIndex = 0;
+        }
+        if (previewSleepUnits.length !== notesData.length) {
+            previewSleepUnits = buildTimingModel(notesData).sleepUnits;
+        }
 
         isPreviewing = true;
         previewButton.textContent = '暂停预览';
@@ -2385,26 +2518,25 @@
         updateSpeedControl(false);
 
         // 创建中止控制器
+        previewAbortReason = '';
         previewAbortController = new AbortController();
         const signal = previewAbortController.signal;
-
-        // 计算每个音符的实际播放时间（基于BPM和倍速）
-        const noteTimes = [];
-        let previousTime = 0;
-
-        for (let i = 0; i < notesData.length; i++) {
-            const currentTime = notesData[i].time;
-            noteTimes.push(currentTime - previousTime);
-            previousTime = currentTime;
-        }
+        const runId = ++previewRunId;
 
         // 使用Promise处理异步预览
         previewPromise = new Promise((resolve, reject) => {
-            playNextNote(noteTimes, resolve, reject, signal);
+            playNextNote(resolve, reject, signal);
         }).then(() => {
+            if (runId !== previewRunId) return;
             // 预览正常结束
             resetPreviewState();
         }).catch(error => {
+            if (runId !== previewRunId) return;
+            if (error.name === 'AbortError' && previewAbortReason === 'pause') {
+                previewPromise = null;
+                previewAbortController = null;
+                return;
+            }
             if (error.name !== 'AbortError') {
                 addLog(`[!] 预览出错: ${error.message}`);
             }
@@ -2418,13 +2550,14 @@
 
         // 中止当前预览
         if (previewAbortController) {
+            previewAbortReason = 'pause';
             previewAbortController.abort();
         }
 
         // 重置状态但保留当前位置
         isPreviewing = false;
         previewButton.textContent = '继续预览';
-        stopPreviewButton.disabled = true;
+        stopPreviewButton.disabled = false; // 暂停时允许停止
         speedSelector.disabled = false;
 
         // 保留当前高亮状态
@@ -2434,8 +2567,10 @@
     // 停止预览
     function stopPreview() {
         if (previewAbortController) {
+            previewAbortReason = 'stop';
             previewAbortController.abort();
         }
+        previewRunId++;
         currentNoteIndex = 0;
         resetPreviewState();
 
@@ -2451,8 +2586,9 @@
         speedSelector.disabled = false;
         previewPromise = null;
         previewAbortController = null;
-        const container = document.getElementById('codeContainer');
-        container.scrollTop = 0; // 直接滚动到顶部
+        previewAbortReason = '';
+        currentNoteIndex = 0;
+        // 不清除高亮，保留当前位置
     }
 
     function createPreviewAbortError() {
@@ -2515,32 +2651,21 @@
         });
     }
 
-    function removePreviewHighlightAfterDelay(keyElement, keyIndex, codeLineNumber, signal) {
-        waitForPreviewDelay(noteDuration * 300, signal).then(() => {
-            if (!signal.aborted) {
-                keyElement.classList.remove('piano-key-down');
-                highlightedKeys.delete(keyIndex);
-
-                if (codeLineNumber !== undefined) {
-                    removeCodeHighlight(codeLineNumber);
-                }
-            }
-        }).catch(error => {
-            if (error.name !== 'AbortError') {
-                addLog(`[!] 高亮清除出错: ${error.message}`);
-            }
-        });
-    }
-
-    async function playNextNote(noteTimes, resolve, reject, signal) {
+    async function playNextNote(resolve, reject, signal) {
         try {
-            for (let i = currentNoteIndex; i < notesData.length; i++) {
+            const firstNoteIndex = currentNoteIndex;
+
+            for (let i = firstNoteIndex; i < notesData.length; i++) {
                 // 检查是否中止
                 if (signal.aborted) {
                     throw new DOMException('Preview aborted', 'AbortError');
                 }
 
-                currentNoteIndex = i;
+                const isNewPreviewGroup = i === firstNoteIndex || (previewSleepUnits[i - 1] || 0) > 0;
+                if (isNewPreviewGroup) {
+                    clearAllHighlights();
+                }
+
                 const note = notesData[i];
                 const keyName = note.key;
                 const keyIndex = getKeyIndex(keyName);
@@ -2573,15 +2698,11 @@
                             container.scrollTop = targetScrollTop;
                         }
                     }
-
-                    // 异步移除高亮，等待期间会实时读取当前倍速
-                    removePreviewHighlightAfterDelay(keyElement, keyIndex, codeLineNumber, signal);
                 }
 
-                // 计算下一个音符的基础延迟时间，实际等待会按当前倍速动态推进
-                const delay = (i < noteTimes.length - 1) ?
-                    (noteTimes[i + 1] * (600 / BPM)) :
-                    noteDuration;
+                currentNoteIndex = i + 1;
+                const sleepUnit = previewSleepUnits[i] || 0;
+                const delay = sleepUnit * (60000 / BPM);
 
                 // 使用await实现非阻塞延迟
                 await waitForPreviewDelay(delay, signal);
@@ -2594,6 +2715,7 @@
 
             // 预览结束
             currentNoteIndex = 0;
+            clearAllHighlights();
             resolve();
         } catch (error) {
             reject(error);
@@ -2602,6 +2724,16 @@
 
     function getKeyIndex(keyName) {
         return keyOrder.indexOf(keyName);
+    }
+
+    // 计算最大公约数
+    function findGCD(a, b) {
+        while (b !== 0) {
+            let temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
     }
 
     // 6. 音频播放功能
@@ -2775,6 +2907,64 @@
         const keyOpacity = document.getElementById('keyOpacity').value;
         document.documentElement.style.setProperty('--key-opacity', keyOpacity);
         document.getElementById('keyOpacityValue').textContent = parseFloat(keyOpacity).toFixed(2).replace(/\.?0+$/, '');
+
+        // 保存键盘样式到localStorage
+        saveKeyboardStyle();
+    }
+
+    // 保存键盘样式到localStorage
+    function saveKeyboardStyle() {
+        const styleData = {
+            keySize: document.getElementById('keySize').value,
+            keySpacing: document.getElementById('keySpacing').value,
+            fontSize: document.getElementById('fontSize').value,
+            keyBorderWidth: document.getElementById('keyBorderWidth').value,
+            bgColor: document.getElementById('bgColor').value,
+            bgOpacity: document.getElementById('bgOpacity').value,
+            keyOpacity: document.getElementById('keyOpacity').value
+        };
+        try {
+            localStorage.setItem(KEYBOARD_STYLE_KEY, JSON.stringify(styleData));
+        } catch (error) {
+            console.warn('保存键盘样式失败:', error);
+        }
+    }
+
+    // 从localStorage加载键盘样式
+    function loadKeyboardStyle() {
+        try {
+            const savedStyle = localStorage.getItem(KEYBOARD_STYLE_KEY);
+            if (savedStyle) {
+                const styleData = JSON.parse(savedStyle);
+                
+                // 设置滑块值
+                if (styleData.keySize) document.getElementById('keySize').value = styleData.keySize;
+                if (styleData.keySpacing) document.getElementById('keySpacing').value = styleData.keySpacing;
+                if (styleData.fontSize) document.getElementById('fontSize').value = styleData.fontSize;
+                if (styleData.keyBorderWidth) document.getElementById('keyBorderWidth').value = styleData.keyBorderWidth;
+                if (styleData.bgColor) document.getElementById('bgColor').value = styleData.bgColor;
+                if (styleData.bgOpacity) document.getElementById('bgOpacity').value = styleData.bgOpacity;
+                if (styleData.keyOpacity) document.getElementById('keyOpacity').value = styleData.keyOpacity;
+                
+                // 应用样式
+                updatePianoStyle();
+            }
+        } catch (error) {
+            console.warn('加载键盘样式失败:', error);
+        }
+    }
+
+    // 从localStorage加载背景图片
+    function loadBgImage() {
+        try {
+            const savedBgImage = localStorage.getItem(BG_IMAGE_KEY);
+            if (savedBgImage) {
+                document.documentElement.style.setProperty('--bg-image', `url('${savedBgImage}')`);
+                removeBgImageBtn.style.display = 'inline-block';
+            }
+        } catch (error) {
+            console.warn('加载背景图片失败:', error);
+        }
     }
 
     // 背景图片上传处理
@@ -2822,6 +3012,13 @@
             removeBgImageBtn.style.display = 'inline-block';
             addLog(`[+] 已设置自定义背景图片: ${file.name}`);
             showToast('背景图已设置', 'success');
+            
+            // 保存背景图片到localStorage
+            try {
+                localStorage.setItem(BG_IMAGE_KEY, imgUrl);
+            } catch (error) {
+                console.warn('保存背景图片失败:', error);
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -2832,6 +3029,13 @@
         removeBgImageBtn.style.display = 'none';
         addLog('[+] 已移除自定义背景图片');
         showToast('背景图已移除', 'success');
+        
+        // 清除localStorage中的背景图片
+        try {
+            localStorage.removeItem(BG_IMAGE_KEY);
+        } catch (error) {
+            console.warn('清除背景图片缓存失败:', error);
+        }
     });
 
     // 背景颜色选择器事件
@@ -2861,8 +3065,49 @@
     document.getElementById('fontSize').addEventListener('input', updatePianoStyle);
     document.getElementById('keyBorderWidth').addEventListener('input', updatePianoStyle);
 
+    // 恢复默认设置按钮
+    document.getElementById('resetDefaultsBtn').addEventListener('click', function() {
+    // 清除所有本地存储
+        try {
+            localStorage.removeItem(KEYBOARD_STYLE_KEY);
+            localStorage.removeItem(BG_IMAGE_KEY);
+            localStorage.removeItem(PANEL_THEME_KEY);
+            localStorage.removeItem(KEY_LABEL_MODE_KEY);
+        } catch (error) {
+            console.warn('清除本地存储失败:', error);
+        }
+        
+        // 重置键盘样式为默认值
+        document.getElementById('keySize').value = '90';
+        document.getElementById('keySpacing').value = '30';
+        document.getElementById('fontSize').value = '14';
+        document.getElementById('keyBorderWidth').value = '3';
+        document.getElementById('bgColor').value = '#F5F5F5';
+        document.getElementById('bgOpacity').value = '1';
+        document.getElementById('keyOpacity').value = '1';
+        
+        // 重置背景图片
+        document.documentElement.style.setProperty('--bg-image', 'none');
+        removeBgImageBtn.style.display = 'none';
+        
+        // 重置面板主题为浅色
+        setPanelTheme(false, false);
+        document.getElementById('panelThemeToggle').checked = false;
+        
+        // 重置键盘文字模式为字母
+        setKeyLabelMode('letters', false);
+        document.querySelector('input[name="keyLabelMode"][value="letters"]').checked = true;
+        
+        // 应用重置后的样式
+        updatePianoStyle();
+        
+        addLog('[+] 已恢复所有设置为默认值');
+        showToast('已恢复默认设置', 'success');
+    });
+
     // 初始化样式
-    updatePianoStyle();
+    loadKeyboardStyle(); // 从localStorage加载键盘样式
+    loadBgImage(); // 从localStorage加载背景图片
     setPanelTheme(localStorage.getItem(PANEL_THEME_KEY) === 'dark', false);
     setKeyLabelMode(localStorage.getItem(KEY_LABEL_MODE_KEY) || 'letters', false);
     window.addEventListener('load', function() {
@@ -2905,20 +3150,32 @@
 
     // 处理代码行点击事件
     function handleCodeLineClick(lineIndex) {
+        if (lineIndex < CONFIG_CODE_LINE_COUNT) {
+            return;
+        }
+
         // 获取对应的音符索引
         const noteIndex = lineToNoteMap.get(lineIndex);
 
         if (noteIndex !== undefined && noteIndex >= 0 && noteIndex < notesData.length) {
-            // 停止当前预览
-            if (isPreviewing) {
-                stopPreview();
+            if (previewAbortController) {
+                previewAbortReason = 'jump';
+                previewAbortController.abort();
             }
+            previewRunId++;
+            isPreviewing = false;
+            previewButton.textContent = '开始预览';
+            stopPreviewButton.disabled = true;
+            speedSelector.disabled = false;
+            previewPromise = null;
+            previewAbortController = null;
+            previewAbortReason = '';
+            clearAllHighlights();
 
             // 设置当前音符索引
             currentNoteIndex = noteIndex;
 
             // 高亮当前行
-            clearAllHighlights();
             highlightCodeLine(lineIndex);
 
             // 滚动到当前行
@@ -2929,11 +3186,11 @@
                 container.scrollTop = targetScrollTop;
             }
 
-            // 开始预览
+            // 开始预览（从当前位置）
             startPreview();
 
             addLog(`[*] 已跳转到第 ${lineIndex} 行，对应音符索引: ${noteIndex}`);
-        } else {
+        } else if (lineIndex >= CONFIG_CODE_LINE_COUNT) {
             addLog(`[!] 无法跳转到第 ${lineIndex} 行，没有对应的音符数据`);
         }
     }
@@ -2993,3 +3250,4 @@
 </script>
 </body>
 </html>
+
