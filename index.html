@@ -20,12 +20,29 @@
         body {
             display: flex;
             height: 100vh;
+            height: 100dvh;
             font-size: 16px;
             font-weight: 400;
             overflow: hidden;
             margin: 0;
             padding: 0;
-            background-image: var(--bg-image);
+            position: relative;
+            background-color: transparent;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background-image: var(--bg-image, none);
+            background-size: var(--bg-image-size, cover);
+            background-position: var(--bg-image-position, center);
+            background-repeat: no-repeat;
         }
 
         :root {
@@ -66,6 +83,7 @@
         .wp-site-blocks {
             display: flex !important;
             height: 100vh !important;
+            height: 100dvh !important;
             width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -502,8 +520,9 @@
 
         /* 预览区样式 */
         #scorePreview {
-            width: 900px;
-            height: 240px;
+            width: min(var(--piano-preview-width)*1.2, calc(100vw - 40px));
+            max-width: calc(100% - 40px);
+            height: clamp(180px, 28vh, 280px);
             margin-bottom: 20px;
             opacity: 1;
             transform: translateY(0);
@@ -758,6 +777,88 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        @media (max-width: 820px), (max-height: 520px) {
+            .sidebar {
+                width: min(86vw, 380px);
+            }
+
+            #stylePanel {
+                width: min(82vw, 300px);
+            }
+
+            #toggleSidebar {
+                left: min(420px, 86vw);
+            }
+
+            #toggleStylePanel {
+                right: min(340px, 82vw);
+            }
+
+            #mainContent {
+                margin-left: 0;
+                margin-right: 0;
+                padding: 10px 8px;
+                box-sizing: border-box;
+                justify-content: center;
+            }
+
+            #scorePreview {
+                width: calc(100vw - 20px);
+                max-width: calc(100vw - 20px);
+                height: clamp(120px, 30vh, 220px);
+                height: clamp(120px, 30dvh, 220px);
+                margin-bottom: 10px;
+            }
+
+            #codeContainer {
+                padding: 10px;
+                font-size: 12px;
+                line-height: 1.42;
+                overflow: auto;
+                white-space: pre;
+                word-wrap: normal;
+            }
+
+            #notationContainer {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            #pipelineContainer {
+                min-height: 120px;
+            }
+
+            #snapshotGridContainer {
+                padding: 6px 34px;
+            }
+
+            .snapshot-grid-board {
+                gap: 4px;
+            }
+
+            .snapshot-grid-cell {
+                padding: 3px;
+            }
+
+            #PianoPanel {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px 8px;
+                overflow: auto;
+            }
+
+            #scorePreview.preview-hidden + #PianoPanel {
+                transform: translateY(-10px);
+            }
+
+            #loadding {
+                max-width: calc(100vw - 32px);
+                box-sizing: border-box;
+                font-size: 18px;
+                text-align: center;
+            }
         }
 
         .snapshot-key-state::before {
@@ -1809,9 +1910,18 @@
 <script>
     // 平台判断
     var inBrowser = typeof window !== 'undefined';
-    var UA = inBrowser && window.navigator.userAgent.toLowerCase();
-    var isAndroid = UA && UA.indexOf('android') > 0;
-    var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
+    var UA = '';
+    if (inBrowser) {
+        UA = window.navigator.userAgent.toLowerCase();
+    }
+    var isAndroid = false;
+    if (UA) {
+        isAndroid = UA.indexOf('android') > 0;
+    }
+    var isIOS = false;
+    if (UA) {
+        isIOS = /iphone|ipad|ipod|ios/.test(UA);
+    }
     var isMobile = isAndroid || isIOS;
 
     // 全局变量
@@ -1890,7 +2000,8 @@
             const keyChar = RAGUS.charAt(i % RAGUS.length);
             const decrypted = val - keyChar.charCodeAt(0) + 100;
 
-            if (decrypted >= 0 && decrypted < 0x110000) {
+            const isValidCharCode = decrypted >= 0 ? decrypted < 0x110000 : false;
+            if (isValidCharCode) {
                 result += String.fromCharCode(decrypted);
             } else {
                 onLog(`[!] 警告: 位置 ${i} 的字符无效: ${decrypted}`);
@@ -2019,12 +2130,13 @@
     let currentKeyLabelMode = 'letters';
 
     function escapeHtml(value) {
+        const amp = String.fromCharCode(38);
         return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+            .split(amp).join(`${amp}amp;`)
+            .split('<').join(`${amp}lt;`)
+            .split('>').join(`${amp}gt;`)
+            .split('"').join(`${amp}quot;`)
+            .split("'").join(`${amp}#39;`);
     }
 
     function showToast(message, type = '') {
@@ -2060,7 +2172,10 @@
                 const value = labels[index] || '';
                 label.innerHTML = '';
 
-                if (currentKeyLabelMode === 'numbered' && value && window.katex) {
+                const shouldRenderNumberedLabel = currentKeyLabelMode === 'numbered'
+                    ? (value ? !!window.katex : false)
+                    : false;
+                if (shouldRenderNumberedLabel) {
                     window.katex.render(value, label, {
                         throwOnError: false,
                         displayMode: false
@@ -2226,7 +2341,7 @@
 
             projectFiles = [];
             savedItems
-                .filter(item => item && typeof item.content === 'string')
+                .filter(item => item ? typeof item.content === 'string' : false)
                 .forEach(item => {
                     try {
                         const restored = createProjectItem(item.fileName || 'project.txt', item.content);
@@ -2240,7 +2355,10 @@
                 });
 
             const savedActiveId = localStorage.getItem(STORAGE_ACTIVE_KEY);
-            if (savedActiveId && projectFiles.some(item => item.id === savedActiveId)) {
+            const canRestoreSavedActive = savedActiveId
+                ? projectFiles.some(item => item.id === savedActiveId)
+                : false;
+            if (canRestoreSavedActive) {
                 activeProjectId = savedActiveId;
             } else if (projectFiles.length > 0) {
                 activeProjectId = projectFiles[0].id;
@@ -2403,12 +2521,18 @@
         }
 
         const values = getSongInfoEditorValues();
-        if (
-            values.name === item.meta.name &&
-            values.author === item.meta.author &&
-            values.transcribedBy === item.meta.transcribedBy &&
-            values.bpm === Number(item.meta.bpm)
-        ) {
+        const metaUnchanged = values.name === item.meta.name
+            ? (
+                values.author === item.meta.author
+                    ? (
+                        values.transcribedBy === item.meta.transcribedBy
+                            ? values.bpm === Number(item.meta.bpm)
+                            : false
+                    )
+                    : false
+            )
+            : false;
+        if (metaUnchanged) {
             renderSongInfo(item);
             return;
         }
@@ -2690,8 +2814,10 @@
 
         for (let i = 0; i < songNotes.length - 1; i++) {
             const duration = Math.round((songNotes[i + 1].time || 0) - (songNotes[i].time || 0));
-            if (duration > 0 && fallbackDuration === 0) {
-                fallbackDuration = duration;
+            if (duration > 0) {
+                if (fallbackDuration === 0) {
+                    fallbackDuration = duration;
+                }
             }
         }
 
@@ -2702,8 +2828,10 @@
             const duration = Math.max(0, Math.round(nextTime - (songNotes[i].time || 0)));
             rawDurations.push(duration);
 
-            if (duration > 0 && !uniqueDurations.includes(duration)) {
-                uniqueDurations.push(duration);
+            if (duration > 0) {
+                if (!uniqueDurations.includes(duration)) {
+                    uniqueDurations.push(duration);
+                }
             }
         }
 
@@ -2926,7 +3054,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     function drawFittedCanvasText(ctx, text, x, y, maxWidth, align = 'center') {
         let output = String(text || '');
-        while (output.length > 1 && ctx.measureText(output).width > maxWidth) {
+        while (output.length > 1) {
+            if (ctx.measureText(output).width <= maxWidth) {
+                break;
+            }
             output = `${output.slice(0, -4)}...`;
         }
 
@@ -3130,27 +3261,31 @@ zdjl.setStorage('appName',temp,'scmf')`;
         for (let n = 0; n < 256; n++) {
             let c = n;
             for (let k = 0; k < 8; k++) {
-                c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+                c = (c % 2) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
             }
             table[n] = c >>> 0;
         }
         return table;
     })();
 
+    function lowByte(value) {
+        return (value >>> 0) % 256;
+    }
+
     function crc32(bytes) {
         let crc = 0 ^ -1;
         for (let i = 0; i < bytes.length; i++) {
-            crc = (crc >>> 8) ^ crcTable[(crc ^ bytes[i]) & 0xFF];
+            crc = (crc >>> 8) ^ crcTable[lowByte(crc ^ bytes[i])];
         }
         return (crc ^ -1) >>> 0;
     }
 
     function pushUint16(target, value) {
-        target.push(value & 0xFF, (value >>> 8) & 0xFF);
+        target.push(lowByte(value), lowByte(value >>> 8));
     }
 
     function pushUint32(target, value) {
-        target.push(value & 0xFF, (value >>> 8) & 0xFF, (value >>> 16) & 0xFF, (value >>> 24) & 0xFF);
+        target.push(lowByte(value), lowByte(value >>> 8), lowByte(value >>> 16), lowByte(value >>> 24));
     }
 
     function getDosDateTime(date) {
@@ -3440,7 +3575,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         const min = parseFloat(speedSelector.min);
         const max = parseFloat(speedSelector.max);
 
-        currentSpeed = isFinite(speed) && speed > 0 ? speed : 1;
+        currentSpeed = isFinite(speed) ? (speed > 0 ? speed : 1) : 1;
         speedValue.textContent = `${formatSpeedValue(currentSpeed)}x`;
 
         const progress = ((currentSpeed - min) / (max - min)) * 100;
@@ -3493,7 +3628,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
             resetPreviewState({ returnToTop: true, clearHighlights: true });
         }).catch(error => {
             if (runId !== previewRunId) return;
-            if (error.name === 'AbortError' && previewAbortReason === 'pause') {
+            const isPausedAbort = error.name === 'AbortError'
+                ? previewAbortReason === 'pause'
+                : false;
+            if (isPausedAbort) {
                 previewPromise = null;
                 previewAbortController = null;
                 return;
@@ -3706,21 +3844,21 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     // 加载所有音频
     Promise.all([
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b1.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b2.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b3.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b4.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b5.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b6.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/b7.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c1.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c2.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c3.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c4.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c5.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c6.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/c7.mp3").then(response => response.arrayBuffer()),
-        fetch("https://tokisakiyuu.github.io/skypiano/sounds/d1.mp3").then(response => response.arrayBuffer())
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b1.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b2.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b3.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b4.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b5.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b6.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b7.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c1.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c2.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c3.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c4.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c5.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c6.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c7.mp3").then(response => response.arrayBuffer()),
+        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/d1.mp3").then(response => response.arrayBuffer())
     ])
 
         // 创建audio上下文
@@ -3846,8 +3984,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
         const min = parseFloat(input.min || '0');
         const max = parseFloat(input.max || '100');
         const value = parseFloat(input.value);
-        const progress = max > min && isFinite(value)
+        const progress = max > min
+            ? (isFinite(value)
             ? ((value - min) / (max - min)) * 100
+            : 0)
             : 0;
         input.style.setProperty('--range-progress', `${Math.min(100, Math.max(0, progress))}%`);
     }
@@ -3979,7 +4119,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
         e.preventDefault();
         bgImageUploadArea.classList.remove('highlight');
         const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
+        const hasDroppedImage = files.length > 0
+            ? files[0].type.startsWith('image/')
+            : false;
+        if (hasDroppedImage) {
             handleBgImageUpload(files[0]);
         }
     });
@@ -3991,7 +4134,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     bgImageUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
+        const hasSelectedImage = file
+            ? file.type.startsWith('image/')
+            : false;
+        if (hasSelectedImage) {
             handleBgImageUpload(file);
         }
     });
@@ -4130,7 +4276,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
     window.addEventListener('load', function() {
         setKeyLabelMode(currentKeyLabelMode, false);
         const activeItem = getActiveProject();
-        if (activeItem && Array.isArray(activeItem.notesData)) {
+        const canRestoreActivePreview = activeItem
+            ? Array.isArray(activeItem.notesData)
+            : false;
+        if (canRestoreActivePreview) {
             displayFormattedNotation(activeItem);
             displayFormattedPipeline(activeItem);
             displayFormattedSnapshotGrid(activeItem);
@@ -4205,7 +4354,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
             const time = Math.round(Number(note.time) || 0);
             const lastGroup = groups[groups.length - 1];
 
-            if (lastGroup && lastGroup.time === time) {
+            const canAppendToLastGroup = lastGroup
+                ? lastGroup.time === time
+                : false;
+            if (canAppendToLastGroup) {
                 lastGroup.notes.push(note);
                 lastGroup.noteIndices.push(noteIndex);
                 return;
@@ -4865,7 +5017,13 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
 
         const style = window.getComputedStyle ? window.getComputedStyle(container) : null;
-        return !style || (style.display !== 'none' && style.visibility !== 'hidden');
+        if (!style) {
+            return true;
+        }
+        if (style.display === 'none') {
+            return false;
+        }
+        return style.visibility !== 'hidden';
     }
 
     function clampScrollValue(value, maxValue) {
@@ -4922,7 +5080,14 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
         const couldScrollVertically = container.scrollHeight > container.clientHeight;
         const targetTop = clampScrollValue(targetScrollTop, container.scrollHeight - container.clientHeight);
-        if (couldScrollVertically && Math.abs(container.scrollTop - targetTop) > 2 && typeof element.scrollIntoView === 'function') {
+        const shouldUseScrollIntoView = couldScrollVertically
+            ? (
+                Math.abs(container.scrollTop - targetTop) > 2
+                    ? typeof element.scrollIntoView === 'function'
+                    : false
+            )
+            : false;
+        if (shouldUseScrollIntoView) {
             element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
         }
 
