@@ -500,6 +500,114 @@
             color: #f4f4f4;
         }
 
+        #pipelineContainer {
+            --pipeline-cell-size: 11.33px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: none;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            background: #25282d;
+            color: #f4f4f4;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            scroll-behavior: smooth;
+        }
+
+        .pipeline-track {
+            width: max-content;
+            height: calc((var(--pipeline-cell-size) + 2px) * 15);
+            display: flex;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .pipeline-spacer {
+            flex: 0 0 50%;
+            width: 50%;
+            height: 100%;
+        }
+
+        .pipeline-time-column {
+            flex: 0 0 calc(var(--pipeline-cell-size) + 1px);
+            width: calc(var(--pipeline-cell-size) + 1px);
+            height: 100%;
+            display: grid;
+            grid-template-rows: repeat(15, calc(var(--pipeline-cell-size) + 2px));
+            box-sizing: border-box;
+            border-left: 1px solid rgba(190,190,190,0.36);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .pipeline-time-column.section-odd {
+            background: rgba(0,0,0,0.12);
+        }
+
+        .pipeline-time-column.measure-start {
+            border-left: 2px solid #000;
+        }
+
+        .pipeline-time-column.active {
+            background: rgba(82,170,235,0.34);
+        }
+
+        .pipeline-cell {
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            border-top: 1px solid rgba(190,190,190,0.34);
+        }
+
+        .pipeline-cell.pitch-group-start {
+            border-top: 2px solid #000;
+        }
+
+        .pipeline-note-square {
+            width: var(--pipeline-cell-size);
+            height: var(--pipeline-cell-size);
+            min-width: 7px;
+            min-height: 7px;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 0;
+            border-radius: 2px;
+            background: #fff;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .pipeline-note-square.active {
+            box-shadow: 0 0 0 2px #ffcc00;
+        }
+
+        .pipeline-playhead {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            transform: translateX(-1px);
+            background: #d31f2a;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.22);
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .pipeline-empty {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.72);
+            font-size: 14px;
+        }
+
         .notation-header {
             display: flex;
             align-items: baseline;
@@ -1342,6 +1450,7 @@
     <div id="scorePreview">
         <div id="codeContainer"></div>
         <div id="notationContainer"></div>
+        <div id="pipelineContainer"></div>
     </div>
 
     <div id="PianoPanel">
@@ -1372,10 +1481,11 @@
 
         <div class="style-control">
             <label>预览显示</label>
-            <div class="segmented-control" id="previewDisplayModeControl" data-segments="3">
+            <div class="segmented-control" id="previewDisplayModeControl" data-segments="4">
                 <label><input type="radio" name="previewDisplayMode" value="hidden"><span>隐藏</span></label>
                 <label><input type="radio" name="previewDisplayMode" value="code" checked><span>代码</span></label>
                 <label><input type="radio" name="previewDisplayMode" value="notation"><span>简谱</span></label>
+                <label><input type="radio" name="previewDisplayMode" value="pipeline"><span>流水线</span></label>
             </div>
         </div>
 
@@ -1462,6 +1572,7 @@
     let scorePreview = document.getElementById('scorePreview');
     let codeContainer = document.getElementById('codeContainer');
     let notationContainer = document.getElementById('notationContainer');
+    let pipelineContainer = document.getElementById('pipelineContainer');
     let currentPreviewInterval;
     let currentNoteIndex = 0;
     let notesData = [];
@@ -1478,8 +1589,10 @@
     let pendingPreviewScrollNoteIndex = -1;
     let codeLineMap = new Map(); // 存储代码行与音符的映射关系
     let notationNoteMap = new Map(); // 存储简谱位置与音符的映射关系
+    let pipelineNoteMap = new Map(); // 存储流水线音符与时间列的映射关系
     let highlightedLines = new Set(); // 存储当前高亮的代码行
     let highlightedNotationEvents = new Set(); // 存储当前高亮的简谱位置
+    let highlightedPipelineElements = new Set(); // 存储当前高亮的流水线列/音符
     let highlightedKeys = new Set(); // 存储当前高亮的琴键
     let lineToNoteMap = new Map(); // 存储代码行到音符索引的反向映射
     const CONFIG_CODE_LINE_COUNT = 5;
@@ -1633,8 +1746,9 @@
     let projectFiles = [];
     let activeProjectId = null;
     let currentPreviewDisplayMode = 'code';
-    const previewDisplayModes = ['hidden', 'code', 'notation'];
+    const previewDisplayModes = ['hidden', 'code', 'notation', 'pipeline'];
     const keyOrder = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
+    const PIPELINE_KEY_ORDER = [...keyOrder].reverse();
     const keyLabelMap = {
         hidden: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
         letters: keyOrder,
@@ -1721,6 +1835,12 @@
         }
         if (notationContainer) {
             notationContainer.style.display = currentPreviewDisplayMode === 'notation' ? 'block' : 'none';
+        }
+        if (pipelineContainer) {
+            pipelineContainer.style.display = currentPreviewDisplayMode === 'pipeline' ? 'block' : 'none';
+            if (currentPreviewDisplayMode === 'pipeline') {
+                updatePipelineLayoutMetrics();
+            }
         }
 
         document.querySelectorAll('input[name="previewDisplayMode"]').forEach(input => {
@@ -1991,11 +2111,14 @@
         scrollPreviewToTop();
         codeContainer.innerHTML = '';
         notationContainer.innerHTML = '';
+        pipelineContainer.innerHTML = '';
         codeLineMap.clear();
         notationNoteMap.clear();
+        pipelineNoteMap.clear();
         lineToNoteMap.clear();
         highlightedLines.clear();
         highlightedNotationEvents.clear();
+        highlightedPipelineElements.clear();
         highlightedKeys.clear();
         notesData = [];
         previewSleepUnits = [];
@@ -2038,6 +2161,7 @@
         rebuildPreviewMaps(notesData);
         displayFormattedCode(item.generatedCode);
         displayFormattedNotation(item);
+        displayFormattedPipeline(item);
         scrollPreviewToTop();
 
         downloadButton.style.display = 'inline-block';
@@ -3140,6 +3264,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
                         highlightCodeLine(codeLineNumber);
                     }
                     highlightNotationEvent(i);
+                    highlightPipelineColumn(i);
                     requestPreviewScroll(i);
                 }
 
@@ -3582,6 +3707,14 @@ zdjl.setStorage('appName',temp,'scmf')`;
         const activeItem = getActiveProject();
         if (activeItem && Array.isArray(activeItem.notesData)) {
             displayFormattedNotation(activeItem);
+            displayFormattedPipeline(activeItem);
+        }
+    });
+
+    window.addEventListener('resize', function() {
+        updatePipelineLayoutMetrics();
+        if (currentPreviewDisplayMode === 'pipeline') {
+            requestPreviewScroll(getCursorNoteIndex());
         }
     });
 
@@ -3829,6 +3962,144 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
     }
 
+    function buildPipelineColumns(songNotes) {
+        const timingModel = buildTimingModel(songNotes);
+        const unit = timingModel.unit || 1;
+        const columns = [];
+        let maxSlotIndex = 0;
+
+        songNotes.forEach((note, noteIndex) => {
+            const time = Math.max(0, Math.round(Number(note.time) || 0));
+            const slotIndex = Math.max(0, Math.round(time / unit));
+            const pitchIndex = PIPELINE_KEY_ORDER.indexOf(note.key);
+            if (pitchIndex < 0) {
+                return;
+            }
+
+            maxSlotIndex = Math.max(maxSlotIndex, slotIndex);
+            if (!columns[slotIndex]) {
+                columns[slotIndex] = [];
+            }
+            columns[slotIndex].push({
+                note,
+                noteIndex,
+                pitchIndex
+            });
+        });
+
+        const minimumColumnCount = NOTATION_BEATS_PER_MEASURE * NOTATION_MEASURES_PER_LINE;
+        const roundedColumnCount = Math.ceil((maxSlotIndex + 1) / minimumColumnCount) * minimumColumnCount;
+        const columnCount = Math.max(minimumColumnCount, roundedColumnCount);
+
+        return Array.from({ length: columnCount }, (_, slotIndex) => columns[slotIndex] || []);
+    }
+
+    function updatePipelineLayoutMetrics() {
+        if (!pipelineContainer) {
+            return;
+        }
+
+        const previewHeight = pipelineContainer.clientHeight || scorePreview?.clientHeight || 200;
+        const cellSize = Math.max(8, (previewHeight - (2 * PIPELINE_KEY_ORDER.length)) / PIPELINE_KEY_ORDER.length);
+        pipelineContainer.style.setProperty('--pipeline-cell-size', `${cellSize.toFixed(2)}px`);
+
+        pipelineContainer.querySelectorAll('.pipeline-spacer').forEach(spacer => {
+            spacer.style.flexBasis = `${Math.max(0, pipelineContainer.clientWidth / 2)}px`;
+            spacer.style.width = `${Math.max(0, pipelineContainer.clientWidth / 2)}px`;
+        });
+    }
+
+    function createPipelineNoteButton(noteInfo, columnElement) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pipeline-note-square';
+        button.title = `${noteInfo.note.key} · ${noteInfo.noteIndex}`;
+        button.addEventListener('click', () => {
+            jumpToNoteIndex(noteInfo.noteIndex, `流水线第 ${noteInfo.noteIndex + 1} 个音符`);
+        });
+
+        pipelineNoteMap.set(noteInfo.noteIndex, {
+            column: columnElement,
+            note: button
+        });
+
+        return button;
+    }
+
+    function displayFormattedPipeline(item) {
+        pipelineContainer.innerHTML = '';
+        pipelineNoteMap.clear();
+
+        if (!item || !Array.isArray(item.notesData) || item.notesData.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'pipeline-empty';
+            empty.textContent = '暂无可显示的流水线';
+            pipelineContainer.appendChild(empty);
+            return;
+        }
+
+        const track = document.createElement('div');
+        track.className = 'pipeline-track';
+
+        const leftSpacer = document.createElement('div');
+        leftSpacer.className = 'pipeline-spacer';
+        track.appendChild(leftSpacer);
+
+        const columns = buildPipelineColumns(item.notesData);
+        columns.forEach((noteInfos, slotIndex) => {
+            const columnElement = document.createElement('div');
+            columnElement.className = [
+                'pipeline-time-column',
+                Math.floor(slotIndex / (NOTATION_BEATS_PER_MEASURE * NOTATION_MEASURES_PER_LINE)) % 2 === 1 ? 'section-odd' : '',
+                slotIndex % NOTATION_BEATS_PER_MEASURE === 0 ? 'measure-start' : ''
+            ].filter(Boolean).join(' ');
+            columnElement.dataset.slotIndex = String(slotIndex);
+
+            const notesByPitch = new Map();
+            noteInfos.forEach(noteInfo => {
+                if (!notesByPitch.has(noteInfo.pitchIndex)) {
+                    notesByPitch.set(noteInfo.pitchIndex, []);
+                }
+                notesByPitch.get(noteInfo.pitchIndex).push(noteInfo);
+            });
+
+            PIPELINE_KEY_ORDER.forEach((keyName, pitchIndex) => {
+                const cell = document.createElement('div');
+                cell.className = [
+                    'pipeline-cell',
+                    pitchIndex % 5 === 0 ? 'pitch-group-start' : ''
+                ].filter(Boolean).join(' ');
+                cell.dataset.key = keyName;
+
+                const pitchNotes = notesByPitch.get(pitchIndex) || [];
+                if (pitchNotes.length > 0) {
+                    cell.appendChild(createPipelineNoteButton(pitchNotes[0], columnElement));
+                    pitchNotes.slice(1).forEach(noteInfo => {
+                        pipelineNoteMap.set(noteInfo.noteIndex, {
+                            column: columnElement,
+                            note: cell.querySelector('.pipeline-note-square')
+                        });
+                    });
+                }
+
+                columnElement.appendChild(cell);
+            });
+
+            track.appendChild(columnElement);
+        });
+
+        const rightSpacer = document.createElement('div');
+        rightSpacer.className = 'pipeline-spacer';
+        track.appendChild(rightSpacer);
+
+        const playhead = document.createElement('div');
+        playhead.className = 'pipeline-playhead';
+
+        pipelineContainer.appendChild(track);
+        pipelineContainer.appendChild(playhead);
+        updatePipelineLayoutMetrics();
+    }
+
     // 代码框相关函数
     function displayFormattedCode(code) {
         // 清空代码容器
@@ -3934,6 +4205,32 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
     }
 
+    function highlightPipelineColumn(noteIndex) {
+        const pipelineTarget = pipelineNoteMap.get(noteIndex);
+        if (!pipelineTarget) {
+            return;
+        }
+
+        if (pipelineTarget.column) {
+            pipelineTarget.column.classList.add('active');
+            highlightedPipelineElements.add(pipelineTarget.column);
+        }
+        if (pipelineTarget.note) {
+            pipelineTarget.note.classList.add('active');
+            highlightedPipelineElements.add(pipelineTarget.note);
+        }
+        if (currentPreviewDisplayMode === 'pipeline') {
+            requestPreviewScroll(noteIndex);
+        }
+    }
+
+    function removePipelineHighlight(element) {
+        if (element) {
+            element.classList.remove('active');
+            highlightedPipelineElements.delete(element);
+        }
+    }
+
     function removeNotationHighlight(eventElement) {
         if (eventElement) {
             eventElement.classList.remove('highlight');
@@ -3947,6 +4244,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
             highlightCodeLine(codeLineNumber);
         }
         highlightNotationEvent(noteIndex);
+        highlightPipelineColumn(noteIndex);
     }
 
     function getVisiblePreviewContainer() {
@@ -3955,6 +4253,9 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
         if (currentPreviewDisplayMode === 'notation') {
             return notationContainer;
+        }
+        if (currentPreviewDisplayMode === 'pipeline') {
+            return pipelineContainer;
         }
         return null;
     }
@@ -4065,12 +4366,12 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     function scrollPreviewToTop() {
         cancelPreviewScrollRequest();
-        [scorePreview, codeContainer, notationContainer].forEach(container => {
+        [scorePreview, codeContainer, notationContainer, pipelineContainer].forEach(container => {
             setPreviewScrollPosition(container, 0, 0);
         });
 
         const resetAgain = function() {
-            [scorePreview, codeContainer, notationContainer].forEach(container => {
+            [scorePreview, codeContainer, notationContainer, pipelineContainer].forEach(container => {
                 setPreviewScrollPosition(container, 0, 0);
             });
         };
@@ -4084,6 +4385,16 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     function scrollCodeLineIntoPreview(lineIndex) {
         scrollElementIntoPreview(document.getElementById(`code-line-${lineIndex}`), codeContainer);
+    }
+
+    function scrollPipelineNoteIntoPreview(noteIndex) {
+        const pipelineTarget = pipelineNoteMap.get(noteIndex);
+        if (!pipelineTarget || !pipelineTarget.column || !pipelineContainer) {
+            return;
+        }
+
+        updatePipelineLayoutMetrics();
+        scrollElementIntoPreview(pipelineTarget.column, pipelineContainer);
     }
 
     function getCursorNoteIndex() {
@@ -4108,6 +4419,8 @@ zdjl.setStorage('appName',temp,'scmf')`;
             }
         } else if (currentPreviewDisplayMode === 'notation') {
             scrollElementIntoPreview(notationNoteMap.get(noteIndex), notationContainer);
+        } else if (currentPreviewDisplayMode === 'pipeline') {
+            scrollPipelineNoteIntoPreview(noteIndex);
         }
     }
 
@@ -4123,6 +4436,12 @@ zdjl.setStorage('appName',temp,'scmf')`;
             removeNotationHighlight(eventElement);
         });
         highlightedNotationEvents.clear();
+
+        // 清除所有流水线高亮
+        highlightedPipelineElements.forEach(element => {
+            removePipelineHighlight(element);
+        });
+        highlightedPipelineElements.clear();
 
         // 清除所有琴键高亮
         highlightedKeys.forEach(keyIndex => {
