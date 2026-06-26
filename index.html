@@ -593,13 +593,148 @@
             left: 50%;
             width: 2px;
             transform: translateX(-1px);
-            background: #d31f2a;
+            background: #ffffff;
             box-shadow: 0 0 0 1px rgba(255,255,255,0.22);
             pointer-events: none;
             z-index: 4;
         }
 
         .pipeline-empty {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.72);
+            font-size: 14px;
+        }
+
+        #snapshotGridContainer {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: none;
+            position: relative;
+            overflow: hidden;
+            padding: 8px 48px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.28);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #f4f4f4;
+        }
+
+        .snapshot-grid-board {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+            grid-template-rows: repeat(4, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .snapshot-grid-cell {
+            min-width: 0;
+            min-height: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 1px solid rgba(255,255,255,0.34);
+            border-radius: 4px;
+            background: rgba(0,0,0,0.36);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.18s, background-color 0.18s, box-shadow 0.18s;
+        }
+
+        .snapshot-grid-cell.empty {
+            cursor: default;
+            border-color: rgba(255,255,255,0.34);
+            background: rgba(160,170,180,0.22);
+        }
+
+        .snapshot-grid-cell.active {
+            border-color: rgba(255,80,80,0.9);
+            background: rgba(170,60,60,0.44);
+            box-shadow: inset 0 0 0 1px rgba(255,80,80,0.65);
+        }
+
+        .snapshot-key-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-rows: repeat(3, minmax(0, 1fr));
+            gap: 2px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .snapshot-key-state {
+            width: min(72%, 9px);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .snapshot-key-state::before {
+            content: "";
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.42);
+        }
+
+        .snapshot-key-state.on::before {
+            width: 100%;
+            height: 100%;
+            border-radius: 1px;
+            background: #fff;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+        }
+
+        .snapshot-page-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 42px;
+            border: 0;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.78);
+            color: #24272b;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.22);
+        }
+
+        .snapshot-page-button:disabled {
+            opacity: 0.36;
+            cursor: default;
+        }
+
+        .snapshot-page-button.prev {
+            left: 8px;
+        }
+
+        .snapshot-page-button.next {
+            right: 8px;
+        }
+
+        .snapshot-page-label {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 22px;
+            line-height: 1;
+            font-weight: 700;
+            color: rgba(255,255,255,0.76);
+            pointer-events: none;
+        }
+
+        .snapshot-grid-empty {
             height: 100%;
             display: flex;
             align-items: center;
@@ -1141,6 +1276,10 @@
             grid-template-columns: repeat(3, 1fr);
         }
 
+        .segmented-control[data-segments="5"] {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
         .segmented-control input {
             display: none;
         }
@@ -1451,6 +1590,7 @@
         <div id="codeContainer"></div>
         <div id="notationContainer"></div>
         <div id="pipelineContainer"></div>
+        <div id="snapshotGridContainer"></div>
     </div>
 
     <div id="PianoPanel">
@@ -1481,11 +1621,12 @@
 
         <div class="style-control">
             <label>预览显示</label>
-            <div class="segmented-control" id="previewDisplayModeControl" data-segments="4">
+            <div class="segmented-control" id="previewDisplayModeControl" data-segments="5">
                 <label><input type="radio" name="previewDisplayMode" value="hidden"><span>隐藏</span></label>
                 <label><input type="radio" name="previewDisplayMode" value="code" checked><span>代码</span></label>
                 <label><input type="radio" name="previewDisplayMode" value="notation"><span>简谱</span></label>
-                <label><input type="radio" name="previewDisplayMode" value="pipeline"><span>流水线</span></label>
+                <label><input type="radio" name="previewDisplayMode" value="pipeline"><span>时间轴</span></label>
+                <label><input type="radio" name="previewDisplayMode" value="snapshot"><span>方格</span></label>
             </div>
         </div>
 
@@ -1573,6 +1714,7 @@
     let codeContainer = document.getElementById('codeContainer');
     let notationContainer = document.getElementById('notationContainer');
     let pipelineContainer = document.getElementById('pipelineContainer');
+    let snapshotGridContainer = document.getElementById('snapshotGridContainer');
     let currentPreviewInterval;
     let currentNoteIndex = 0;
     let notesData = [];
@@ -1590,14 +1732,22 @@
     let codeLineMap = new Map(); // 存储代码行与音符的映射关系
     let notationNoteMap = new Map(); // 存储简谱位置与音符的映射关系
     let pipelineNoteMap = new Map(); // 存储流水线音符与时间列的映射关系
+    let snapshotGridNoteMap = new Map(); // 存储方格谱音符与格子的映射关系
+    let snapshotGridCellElements = new Map(); // 存储当前方格谱页面格子元素
+    let snapshotGridPages = [];
+    let currentSnapshotGridPageIndex = 0;
     let highlightedLines = new Set(); // 存储当前高亮的代码行
     let highlightedNotationEvents = new Set(); // 存储当前高亮的简谱位置
     let highlightedPipelineElements = new Set(); // 存储当前高亮的流水线列/音符
+    let highlightedSnapshotGridCells = new Set(); // 存储当前高亮的方格谱格子
     let highlightedKeys = new Set(); // 存储当前高亮的琴键
     let lineToNoteMap = new Map(); // 存储代码行到音符索引的反向映射
     const CONFIG_CODE_LINE_COUNT = 5;
     const NOTATION_BEATS_PER_MEASURE = 4;
     const NOTATION_MEASURES_PER_LINE = 4;
+    const SNAPSHOT_GRID_COLUMNS = 8;
+    const SNAPSHOT_GRID_ROWS = 4;
+    const SNAPSHOT_GRID_CELLS_PER_PAGE = SNAPSHOT_GRID_COLUMNS * SNAPSHOT_GRID_ROWS;
 
     // 1. 解密工具核心代码
     const enc_ragus = [
@@ -1746,7 +1896,7 @@
     let projectFiles = [];
     let activeProjectId = null;
     let currentPreviewDisplayMode = 'code';
-    const previewDisplayModes = ['hidden', 'code', 'notation', 'pipeline'];
+    const previewDisplayModes = ['hidden', 'code', 'notation', 'pipeline', 'snapshot'];
     const keyOrder = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
     const PIPELINE_KEY_ORDER = [...keyOrder].reverse();
     const keyLabelMap = {
@@ -1841,6 +1991,9 @@
             if (currentPreviewDisplayMode === 'pipeline') {
                 updatePipelineLayoutMetrics();
             }
+        }
+        if (snapshotGridContainer) {
+            snapshotGridContainer.style.display = currentPreviewDisplayMode === 'snapshot' ? 'block' : 'none';
         }
 
         document.querySelectorAll('input[name="previewDisplayMode"]').forEach(input => {
@@ -2112,13 +2265,19 @@
         codeContainer.innerHTML = '';
         notationContainer.innerHTML = '';
         pipelineContainer.innerHTML = '';
+        snapshotGridContainer.innerHTML = '';
         codeLineMap.clear();
         notationNoteMap.clear();
         pipelineNoteMap.clear();
+        snapshotGridNoteMap.clear();
+        snapshotGridCellElements.clear();
+        snapshotGridPages = [];
+        currentSnapshotGridPageIndex = 0;
         lineToNoteMap.clear();
         highlightedLines.clear();
         highlightedNotationEvents.clear();
         highlightedPipelineElements.clear();
+        highlightedSnapshotGridCells.clear();
         highlightedKeys.clear();
         notesData = [];
         previewSleepUnits = [];
@@ -2162,6 +2321,7 @@
         displayFormattedCode(item.generatedCode);
         displayFormattedNotation(item);
         displayFormattedPipeline(item);
+        displayFormattedSnapshotGrid(item);
         scrollPreviewToTop();
 
         downloadButton.style.display = 'inline-block';
@@ -3265,6 +3425,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
                     }
                     highlightNotationEvent(i);
                     highlightPipelineColumn(i);
+                    highlightSnapshotGridCell(i);
                     requestPreviewScroll(i);
                 }
 
@@ -3708,6 +3869,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         if (activeItem && Array.isArray(activeItem.notesData)) {
             displayFormattedNotation(activeItem);
             displayFormattedPipeline(activeItem);
+            displayFormattedSnapshotGrid(activeItem);
         }
     });
 
@@ -4100,6 +4262,151 @@ zdjl.setStorage('appName',temp,'scmf')`;
         updatePipelineLayoutMetrics();
     }
 
+    function buildSnapshotGridPages(songNotes) {
+        const timingModel = buildTimingModel(songNotes);
+        const unit = timingModel.unit || 1;
+        let maxSlotIndex = 0;
+        const slotNotes = new Map();
+        snapshotGridNoteMap.clear();
+
+        songNotes.forEach((note, noteIndex) => {
+            const time = Math.max(0, Math.round(Number(note.time) || 0));
+            const slotIndex = Math.max(0, Math.round(time / unit));
+            const pageIndex = Math.floor(slotIndex / SNAPSHOT_GRID_CELLS_PER_PAGE);
+            const cellIndex = slotIndex % SNAPSHOT_GRID_CELLS_PER_PAGE;
+
+            maxSlotIndex = Math.max(maxSlotIndex, slotIndex);
+            if (!slotNotes.has(slotIndex)) {
+                slotNotes.set(slotIndex, []);
+            }
+
+            const noteInfo = {
+                note,
+                noteIndex,
+                slotIndex,
+                pageIndex,
+                cellIndex
+            };
+            slotNotes.get(slotIndex).push(noteInfo);
+            snapshotGridNoteMap.set(noteIndex, noteInfo);
+        });
+
+        const pageCount = Math.max(1, Math.ceil((maxSlotIndex + 1) / SNAPSHOT_GRID_CELLS_PER_PAGE));
+        return Array.from({ length: pageCount }, (_, pageIndex) => (
+            Array.from({ length: SNAPSHOT_GRID_CELLS_PER_PAGE }, (_, cellIndex) => {
+                const slotIndex = (pageIndex * SNAPSHOT_GRID_CELLS_PER_PAGE) + cellIndex;
+                return {
+                    slotIndex,
+                    pageIndex,
+                    cellIndex,
+                    notes: slotNotes.get(slotIndex) || []
+                };
+            })
+        ));
+    }
+
+    function createSnapshotKeyGrid(notes) {
+        const pressedKeys = new Set(notes.map(noteInfo => noteInfo.note.key));
+        const keyGrid = document.createElement('div');
+        keyGrid.className = 'snapshot-key-grid';
+
+        keyOrder.forEach(keyName => {
+            const keyState = document.createElement('span');
+            keyState.className = [
+                'snapshot-key-state',
+                pressedKeys.has(keyName) ? 'on' : ''
+            ].filter(Boolean).join(' ');
+            keyGrid.appendChild(keyState);
+        });
+
+        return keyGrid;
+    }
+
+    function createSnapshotGridCell(cellData) {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = [
+            'snapshot-grid-cell',
+            cellData.notes.length === 0 ? 'empty' : ''
+        ].filter(Boolean).join(' ');
+        cell.dataset.slotIndex = String(cellData.slotIndex);
+
+        if (cellData.notes.length > 0) {
+            cell.appendChild(createSnapshotKeyGrid(cellData.notes));
+            cell.addEventListener('click', () => {
+                jumpToNoteIndex(cellData.notes[0].noteIndex, `方格第 ${cellData.cellIndex + 1} 格`);
+            });
+        } else {
+            cell.setAttribute('aria-disabled', 'true');
+        }
+
+        return cell;
+    }
+
+    function renderSnapshotGridPage(pageIndex) {
+        if (!snapshotGridContainer || snapshotGridPages.length === 0) {
+            return;
+        }
+
+        currentSnapshotGridPageIndex = Math.max(0, Math.min(snapshotGridPages.length - 1, pageIndex));
+        snapshotGridContainer.innerHTML = '';
+        snapshotGridCellElements.clear();
+
+        const board = document.createElement('div');
+        board.className = 'snapshot-grid-board';
+        snapshotGridPages[currentSnapshotGridPageIndex].forEach(cellData => {
+            const cell = createSnapshotGridCell(cellData);
+            snapshotGridCellElements.set(cellData.cellIndex, cell);
+            board.appendChild(cell);
+        });
+
+        const prevButton = document.createElement('button');
+        prevButton.type = 'button';
+        prevButton.className = 'snapshot-page-button prev';
+        prevButton.textContent = '‹';
+        prevButton.disabled = currentSnapshotGridPageIndex === 0;
+        prevButton.addEventListener('click', () => {
+            renderSnapshotGridPage(currentSnapshotGridPageIndex - 1);
+        });
+
+        const nextButton = document.createElement('button');
+        nextButton.type = 'button';
+        nextButton.className = 'snapshot-page-button next';
+        nextButton.textContent = '›';
+        nextButton.disabled = currentSnapshotGridPageIndex >= snapshotGridPages.length - 1;
+        nextButton.addEventListener('click', () => {
+            renderSnapshotGridPage(currentSnapshotGridPageIndex + 1);
+        });
+
+        const pageLabel = document.createElement('div');
+        pageLabel.className = 'snapshot-page-label';
+        pageLabel.textContent = `P${currentSnapshotGridPageIndex + 1}`;
+
+        snapshotGridContainer.appendChild(board);
+        snapshotGridContainer.appendChild(prevButton);
+        snapshotGridContainer.appendChild(nextButton);
+        snapshotGridContainer.appendChild(pageLabel);
+    }
+
+    function displayFormattedSnapshotGrid(item) {
+        snapshotGridContainer.innerHTML = '';
+        snapshotGridNoteMap.clear();
+        snapshotGridCellElements.clear();
+        snapshotGridPages = [];
+        currentSnapshotGridPageIndex = 0;
+
+        if (!item || !Array.isArray(item.notesData) || item.notesData.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'snapshot-grid-empty';
+            empty.textContent = '暂无可显示的方格谱';
+            snapshotGridContainer.appendChild(empty);
+            return;
+        }
+
+        snapshotGridPages = buildSnapshotGridPages(item.notesData);
+        renderSnapshotGridPage(0);
+    }
+
     // 代码框相关函数
     function displayFormattedCode(code) {
         // 清空代码容器
@@ -4224,6 +4531,30 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
     }
 
+    function highlightSnapshotGridCell(noteIndex) {
+        const noteInfo = snapshotGridNoteMap.get(noteIndex);
+        if (!noteInfo || snapshotGridPages.length === 0 || currentPreviewDisplayMode !== 'snapshot') {
+            return;
+        }
+
+        if (noteInfo.pageIndex !== currentSnapshotGridPageIndex) {
+            renderSnapshotGridPage(noteInfo.pageIndex);
+        }
+
+        const cell = snapshotGridCellElements.get(noteInfo.cellIndex);
+        if (cell) {
+            cell.classList.add('active');
+            highlightedSnapshotGridCells.add(cell);
+        }
+    }
+
+    function removeSnapshotGridHighlight(cell) {
+        if (cell) {
+            cell.classList.remove('active');
+            highlightedSnapshotGridCells.delete(cell);
+        }
+    }
+
     function removePipelineHighlight(element) {
         if (element) {
             element.classList.remove('active');
@@ -4245,6 +4576,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
         highlightNotationEvent(noteIndex);
         highlightPipelineColumn(noteIndex);
+        highlightSnapshotGridCell(noteIndex);
     }
 
     function getVisiblePreviewContainer() {
@@ -4256,6 +4588,9 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
         if (currentPreviewDisplayMode === 'pipeline') {
             return pipelineContainer;
+        }
+        if (currentPreviewDisplayMode === 'snapshot') {
+            return snapshotGridContainer;
         }
         return null;
     }
@@ -4369,6 +4704,9 @@ zdjl.setStorage('appName',temp,'scmf')`;
         [scorePreview, codeContainer, notationContainer, pipelineContainer].forEach(container => {
             setPreviewScrollPosition(container, 0, 0);
         });
+        if (snapshotGridPages.length > 0) {
+            renderSnapshotGridPage(0);
+        }
 
         const resetAgain = function() {
             [scorePreview, codeContainer, notationContainer, pipelineContainer].forEach(container => {
@@ -4421,6 +4759,8 @@ zdjl.setStorage('appName',temp,'scmf')`;
             scrollElementIntoPreview(notationNoteMap.get(noteIndex), notationContainer);
         } else if (currentPreviewDisplayMode === 'pipeline') {
             scrollPipelineNoteIntoPreview(noteIndex);
+        } else if (currentPreviewDisplayMode === 'snapshot') {
+            highlightSnapshotGridCell(noteIndex);
         }
     }
 
@@ -4442,6 +4782,12 @@ zdjl.setStorage('appName',temp,'scmf')`;
             removePipelineHighlight(element);
         });
         highlightedPipelineElements.clear();
+
+        // 清除所有方格谱高亮
+        highlightedSnapshotGridCells.forEach(cell => {
+            removeSnapshotGridHighlight(cell);
+        });
+        highlightedSnapshotGridCells.clear();
 
         // 清除所有琴键高亮
         highlightedKeys.forEach(keyIndex => {
