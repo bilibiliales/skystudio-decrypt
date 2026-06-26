@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <title>sky studio解密解析工具</title>
+    <title>Sky Studio解密解析工具</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
@@ -37,12 +37,14 @@
             --panel-card-bg: #ffffff;
             --panel-soft-bg: rgba(255,255,255,0.78);
             --panel-border-color: rgba(0,0,0,0.12);
+            --range-track-color: #d8d8d8;
             --key-face-color: #2c2c2cb0;
             --key-face-down-color: #9d9c9ca6;
             --key-border-color: #909090d1;
             --key-shape-color: #484848a0;
             --key-shape-fill-color: #2c2c2c30;
             --key-size: 150px;
+            --piano-preview-width: 790px;
             --key-border-width: 3px;
             --key-opacity: 1;
             --bg-image: none;
@@ -57,6 +59,7 @@
             --panel-card-bg: #262626;
             --panel-soft-bg: rgba(255,255,255,0.08);
             --panel-border-color: rgba(255,255,255,0.14);
+            --range-track-color: rgba(255,255,255,0.22);
         }
 
         /* 强制WordPress主题的根容器直接父元素使用flex布局 */
@@ -76,6 +79,10 @@
             left: 0;
             top: 0;
             z-index: 10;
+        }
+
+        .sidebar-container.collapsed {
+            pointer-events: none;
         }
 
         .sidebar {
@@ -414,6 +421,52 @@
             font-size: 0.95em;
         }
 
+        .song-info-edit-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .song-info-field {
+            display: grid !important;
+            grid-template-columns: 68px minmax(0, 1fr);
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            font-size: 13px;
+            color: var(--panel-text-color);
+        }
+
+        .song-info-field span {
+            color: var(--panel-muted-color);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .song-info-field input {
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 4px;
+            background: var(--panel-soft-bg);
+            color: var(--panel-text-color);
+            padding: 6px 8px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .song-info-field input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76,175,80,0.14);
+        }
+
+        .song-info-readonly {
+            border-top: 1px solid var(--panel-border-color);
+            padding-top: 8px;
+        }
+
         .info-error h4 {
             color: #d66;
         }
@@ -449,13 +502,21 @@
 
         /* 预览区样式 */
         #scorePreview {
-            width: 80%;
-            height: 280px;
+            width: 900px;
+            height: 240px;
             margin-bottom: 20px;
+            opacity: 1;
+            transform: translateY(0);
+            overflow: hidden;
+            transition: height 0.28s ease, margin-bottom 0.28s ease, opacity 0.22s ease, transform 0.28s ease;
         }
 
         #scorePreview.preview-hidden {
-            display: none;
+            height: 0;
+            margin-bottom: 0;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-12px);
         }
 
         /* 代码框样式 */
@@ -514,6 +575,27 @@
             border-radius: 4px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.78) rgba(255,255,255,0.18);
+        }
+
+        #pipelineContainer::-webkit-scrollbar {
+            height: 12px;
+        }
+
+        #pipelineContainer::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.18);
+            border-radius: 999px;
+        }
+
+        #pipelineContainer::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.78);
+            border: 2px solid #25282d;
+            border-radius: 999px;
+        }
+
+        #pipelineContainer::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.92);
         }
 
         .pipeline-track {
@@ -940,7 +1022,12 @@
             padding: 20px;
             position: relative;
             z-index: 1;
-            transition: all 0.3s ease;
+            transform: translateY(0);
+            transition: transform 0.28s ease, padding 0.3s ease;
+        }
+
+        #scorePreview.preview-hidden + #PianoPanel {
+            transform: translateY(-18px);
         }
 
         .piano-wrap {
@@ -1126,6 +1213,10 @@
             transition: transform 0.3s ease;
         }
 
+        .stylepanel-container.collapsed {
+            pointer-events: none;
+        }
+
         #stylePanel {
             width: 300px;
             height: 100%;
@@ -1196,7 +1287,7 @@
             appearance: none;
             height: 6px;
             border-radius: 999px;
-            background: #4CAF50;
+            background: linear-gradient(to right, #4CAF50 0%, #4CAF50 var(--range-progress, 50%), var(--range-track-color) var(--range-progress, 50%), var(--range-track-color) 100%);
             outline: none;
             cursor: pointer;
         }
@@ -1395,7 +1486,7 @@
 
         .speed-control label {
             font-weight: bold;
-            color: #333;
+            color: var(--panel-text-color);
             white-space: nowrap;
         }
 
@@ -1405,7 +1496,7 @@
             width: 92px;
             height: 6px;
             border-radius: 999px;
-            background: linear-gradient(to right, #4CAF50 0%, #4CAF50 var(--speed-progress, 27%), #d8d8d8 var(--speed-progress, 27%), #d8d8d8 100%);
+            background: linear-gradient(to right, #4CAF50 0%, #4CAF50 var(--speed-progress, 27%), var(--range-track-color) var(--speed-progress, 27%), var(--range-track-color) 100%);
             outline: none;
             cursor: pointer;
         }
@@ -1437,7 +1528,7 @@
 
         #speedValue {
             min-width: 32px;
-            color: #333;
+            color: var(--panel-text-color);
             font-size: 13px;
             font-variant-numeric: tabular-nums;
         }
@@ -1503,7 +1594,7 @@
 <body>
 <div class="sidebar-container">
     <div id="sidebar" class="sidebar">
-        <h1>Skyscript转换工具</h1>
+        <h1>Sky Studio解密解析工具</h1>
 
         <div class="upload-area" id="uploadArea">
             <h3>点击或拖拽文件到此处上传</h3>
@@ -1545,12 +1636,29 @@
             </div>
             <div id="songInfoSuccess" class="info-success" style="display:none;">
                 <h4>当前乐谱信息：</h4>
-                <p>乐谱名称：<span id="infoName"></span></p>
-                <p>作者：<span id="infoAuthor"></span></p>
-                <p>BPM：<span id="infoBpm"></span></p>
-                <p>拍子：<span id="infoPaizi"></span></p>
-                <p>加密：<span id="infoEncrypted"></span></p>
-                <p>数据长度：<span id="infoNoteCount"></span></p>
+                <div class="song-info-edit-grid">
+                    <label class="song-info-field">
+                        <span>乐谱名称</span>
+                        <input type="text" id="infoNameInput" data-song-meta-field="name">
+                    </label>
+                    <label class="song-info-field">
+                        <span>作者</span>
+                        <input type="text" id="infoAuthorInput" data-song-meta-field="author">
+                    </label>
+                    <label class="song-info-field">
+                        <span>BPM</span>
+                        <input type="number" id="infoBpmInput" data-song-meta-field="bpm" min="1" max="999" step="1">
+                    </label>
+                    <label class="song-info-field">
+                        <span>改编者</span>
+                        <input type="text" id="infoTranscribedByInput" data-song-meta-field="transcribedBy">
+                    </label>
+                </div>
+                <div class="song-info-readonly">
+                    <p>拍子：<span id="infoPaizi"></span></p>
+                    <p>加密：<span id="infoEncrypted"></span></p>
+                    <p>数据长度：<span id="infoNoteCount"></span></p>
+                </div>
             </div>
         </div>
 
@@ -1990,6 +2098,10 @@
             pipelineContainer.style.display = currentPreviewDisplayMode === 'pipeline' ? 'block' : 'none';
             if (currentPreviewDisplayMode === 'pipeline') {
                 updatePipelineLayoutMetrics();
+                if (window.requestAnimationFrame) {
+                    window.requestAnimationFrame(updatePipelineLayoutMetrics);
+                }
+                setTimeout(updatePipelineLayoutMetrics, 320);
             }
         }
         if (snapshotGridContainer) {
@@ -2201,12 +2313,125 @@
         songInfoError.style.display = 'none';
         songInfoSuccess.style.display = 'block';
 
-        document.getElementById('infoName').textContent = escapeHtml(item.meta.name);
-        document.getElementById('infoAuthor').textContent = escapeHtml(item.meta.author);
-        document.getElementById('infoBpm').textContent = escapeHtml(item.meta.bpm);
-        document.getElementById('infoPaizi').textContent = escapeHtml(item.meta.paizi);
+        document.getElementById('infoNameInput').value = item.meta.name || '';
+        document.getElementById('infoAuthorInput').value = item.meta.author || '';
+        document.getElementById('infoBpmInput').value = item.meta.bpm || 120;
+        document.getElementById('infoTranscribedByInput').value = item.meta.transcribedBy || '';
+        document.getElementById('infoPaizi').textContent = item.meta.paizi;
         document.getElementById('infoEncrypted').textContent = item.meta.isEncrypted ? '是' : '否';
-        document.getElementById('infoNoteCount').textContent = escapeHtml(item.meta.noteCount);
+        document.getElementById('infoNoteCount').textContent = item.meta.noteCount;
+    }
+
+    function getSongInfoEditorValues() {
+        const name = document.getElementById('infoNameInput').value.trim() || '未知';
+        const author = document.getElementById('infoAuthorInput').value.trim() || '未知';
+        const transcribedBy = document.getElementById('infoTranscribedByInput').value.trim() || '未知';
+        const bpm = Math.round(clampNumber(document.getElementById('infoBpmInput').value, 1, 999, BPM || 120));
+
+        return {
+            name,
+            author,
+            transcribedBy,
+            bpm
+        };
+    }
+
+    function getEditableProjectContent(item) {
+        if (!item) {
+            throw new Error('没有可编辑的乐谱');
+        }
+
+        if (item.decryptedSourceContent) {
+            return item.decryptedSourceContent;
+        }
+
+        if (item.sourceIsEncrypted) {
+            item.decryptedSourceContent = decryptContent(item.content, addLog);
+            return item.decryptedSourceContent;
+        }
+
+        return item.content;
+    }
+
+    function updateProjectContentMeta(content, values) {
+        const dataArray = JSON.parse(content);
+        if (!Array.isArray(dataArray) || dataArray.length === 0 || !dataArray[0] || typeof dataArray[0] !== 'object') {
+            throw new Error('工程内容格式错误，无法更新乐谱信息');
+        }
+
+        const songData = dataArray[0];
+        songData.name = values.name;
+        songData.author = values.author;
+        songData.bpm = values.bpm;
+        songData.transcribedBy = values.transcribedBy;
+        songData.isEncrypted = false;
+
+        return JSON.stringify(dataArray);
+    }
+
+    function rebuildProjectOutputsFromContent(item, projectContent) {
+        const normalizedContent = normalizeKeyNames(projectContent);
+        const songData = getProjectData(normalizedContent);
+
+        if (songData.isEncrypted) {
+            throw new Error('工程仍处于加密状态，无法重建预览');
+        }
+
+        const songNotes = Array.isArray(songData.songNotes) ? songData.songNotes : [];
+        if (songNotes.length === 0) {
+            throw new Error('工程没有可预览的音符数据');
+        }
+
+        const bpm = songData.bpm || 120;
+        const paizi = getPaizi(songData.bitsPerPage || 0);
+        const formattedStrings = buildFormattedCode(songData, paizi);
+
+        item.content = projectContent;
+        item.decryptedSourceContent = projectContent;
+        item.meta = parseProjectMeta(normalizedContent);
+        item.generatedCode = formattedStrings;
+        item.scriptCode = buildScriptCode(formattedStrings);
+        item.notesData = songNotes;
+        item.bpm = bpm;
+        item.paizi = paizi;
+    }
+
+    function applySongInfoEdits() {
+        const item = getActiveProject();
+        if (!item || !item.meta.valid) {
+            return;
+        }
+
+        const values = getSongInfoEditorValues();
+        if (
+            values.name === item.meta.name &&
+            values.author === item.meta.author &&
+            values.transcribedBy === item.meta.transcribedBy &&
+            values.bpm === Number(item.meta.bpm)
+        ) {
+            renderSongInfo(item);
+            return;
+        }
+
+        try {
+            if (isPreviewing) {
+                stopPreview();
+            }
+
+            const updatedContent = updateProjectContentMeta(getEditableProjectContent(item), values);
+            rebuildProjectOutputsFromContent(item, updatedContent);
+            modifiedContent = item.content;
+            renderSongInfo(item);
+            showConvertedProject(item);
+            renderFileList();
+            persistProjectFiles();
+            addLog(`[+] 已更新乐谱信息: ${item.meta.name} / BPM ${item.meta.bpm}`);
+            showToast('乐谱信息已更新', 'success');
+        } catch (error) {
+            renderSongInfo(item);
+            addLog(`[!] 乐谱信息更新失败: ${error.message}`);
+            showToast('乐谱信息更新失败', 'error');
+        }
     }
 
     function renderFileList() {
@@ -3574,22 +3799,30 @@ zdjl.setStorage('appName',temp,'scmf')`;
     // 侧边栏收缩控制
     const toggleSidebar = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
+    const sidebarContainer = sidebar.closest('.sidebar-container');
     const mainContent = document.getElementById('mainContent');
 
     toggleSidebar.addEventListener('click', function() {
-        sidebar.classList.toggle('collapsed');
-        toggleSidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('sidebar-collapsed');
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        toggleSidebar.classList.toggle('collapsed', isCollapsed);
+        mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
+        if (sidebarContainer) {
+            sidebarContainer.classList.toggle('collapsed', isCollapsed);
+        }
     });
 
     // 样式面板收缩控制
     const toggleStylePanel = document.getElementById('toggleStylePanel');
     const stylePanel = document.getElementById('stylePanel');
+    const stylePanelContainer = stylePanel.closest('.stylepanel-container');
 
     toggleStylePanel.addEventListener('click', function() {
-        stylePanel.classList.toggle('collapsed');
-        toggleStylePanel.classList.toggle('collapsed');
-        mainContent.classList.toggle('stylepanel-collapsed');
+        const isCollapsed = stylePanel.classList.toggle('collapsed');
+        toggleStylePanel.classList.toggle('collapsed', isCollapsed);
+        mainContent.classList.toggle('stylepanel-collapsed', isCollapsed);
+        if (stylePanelContainer) {
+            stylePanelContainer.classList.toggle('collapsed', isCollapsed);
+        }
     });
 
     function clampNumber(value, min, max, fallback) {
@@ -3605,15 +3838,31 @@ zdjl.setStorage('appName',temp,'scmf')`;
         return alpha.length === 1 ? `0${alpha}` : alpha;
     }
 
+    function updateRangeProgress(input) {
+        if (!input) {
+            return;
+        }
+
+        const min = parseFloat(input.min || '0');
+        const max = parseFloat(input.max || '100');
+        const value = parseFloat(input.value);
+        const progress = max > min && isFinite(value)
+            ? ((value - min) / (max - min)) * 100
+            : 0;
+        input.style.setProperty('--range-progress', `${Math.min(100, Math.max(0, progress))}%`);
+    }
+
     // 键盘样式调整
     function updatePianoStyle() {
         const keySize = document.getElementById('keySize').value;
         const keySpacing = document.getElementById('keySpacing').value;
         const fontSize = document.getElementById('fontSize').value;
         const keyBorderWidth = document.getElementById('keyBorderWidth').value;
+        const previewWidth = (parseFloat(keySize) * 5) + (parseFloat(keySpacing) * 4);
 
         document.documentElement.style.setProperty('--key-size', `${keySize}px`);
         document.documentElement.style.setProperty('--piano-gap', `${keySpacing}px`);
+        document.documentElement.style.setProperty('--piano-preview-width', `${previewWidth}px`);
         document.documentElement.style.setProperty('--key-font-size', `${fontSize}px`);
         document.documentElement.style.setProperty('--key-border-width', `${keyBorderWidth}px`);
 
@@ -3621,6 +3870,9 @@ zdjl.setStorage('appName',temp,'scmf')`;
         document.getElementById('keySpacingValue').textContent = `${keySpacing}px`;
         document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
         document.getElementById('keyBorderWidthValue').textContent = `${parseFloat(keyBorderWidth).toFixed(1).replace(/\.0$/, '')}px`;
+        ['keySize', 'keySpacing', 'fontSize', 'keyBorderWidth'].forEach(id => {
+            updateRangeProgress(document.getElementById(id));
+        });
 
         // 新增背景颜色控制
         const bgColor = document.getElementById('bgColor').value.toUpperCase();
@@ -3631,11 +3883,13 @@ zdjl.setStorage('appName',temp,'scmf')`;
         document.documentElement.style.setProperty('--main-bg-layer-color', `${bgColor}${opacityToHex(bgOpacity)}`);
         document.getElementById('bgOpacity').value = bgOpacity;
         document.getElementById('bgOpacityValue').textContent = bgOpacity.toFixed(2).replace(/\.?0+$/, '');
+        updateRangeProgress(document.getElementById('bgOpacity'));
 
         // 新增琴键透明度控制
         const keyOpacity = document.getElementById('keyOpacity').value;
         document.documentElement.style.setProperty('--key-opacity', keyOpacity);
         document.getElementById('keyOpacityValue').textContent = parseFloat(keyOpacity).toFixed(2).replace(/\.?0+$/, '');
+        updateRangeProgress(document.getElementById('keyOpacity'));
 
         // 保存键盘样式到localStorage
         saveKeyboardStyle();
@@ -3806,6 +4060,16 @@ zdjl.setStorage('appName',temp,'scmf')`;
         });
     });
 
+    document.querySelectorAll('[data-song-meta-field]').forEach(input => {
+        input.addEventListener('change', applySongInfoEdits);
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                this.blur();
+            }
+        });
+    });
+
     // 绑定样式控制事件
     document.getElementById('keySize').addEventListener('input', updatePianoStyle);
     document.getElementById('keySpacing').addEventListener('input', updatePianoStyle);
@@ -3881,7 +4145,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
     });
 
     // 初始化日志
-    addLog('Skyscript转换工具（支持加密文件）');
+    addLog('Sky Studio解密解析工具（支持加密文件）');
     addLog('━━━━━━━━━━━━━━━━━━━━');
     addLog('点击或拖拽文件到上传区域开始');
     addLog('支持加密/未加密文件转换');
