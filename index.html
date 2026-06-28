@@ -1,10 +1,146 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <title>Sky Studio解密解析工具</title>
+    <meta charset="UTF-8">
+    <title>Sky Studio乐谱解密解析工具 - TXT在线解密、预览、转换和MP3导出 | Sky Studio Tool</title>
+    <meta name="description" content="Sky Studio乐谱解密解析工具，支持光遇乐谱、Sky Studio TXT、加密乐谱文件的本地解密、在线预览、简谱转换、MP3音频导出、键盘可视化、批量下载和ZIP导出。Decrypt, preview, convert, and export Sky Studio TXT sheets in the browser.">
+    <meta name="keywords" content="Sky Studio, Sky Studio decrypt, Sky Studio sheet, Sky Studio TXT, Sky Studio music, Sky Studio encrypted file, Sky music tool, Sky Studio converter, 光遇乐谱, Sky Studio解密, 光遇乐谱解密">
+    <meta name="author" content="bilibiliales">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="theme-color" content="#4CAF50">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="canonical" href="https://bilibiliales.github.io/skystudio-decrypt/">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://bilibiliales.github.io">
+    <link rel="dns-prefetch" href="//bilibiliales.github.io">
+    <meta property="og:title" content="Sky Studio乐谱解密解析工具 - TXT在线解密、预览、转换和MP3导出">
+    <meta property="og:description" content="纯静态浏览器工具，支持TXT乐谱解密、预览、简谱转换、MP3导出、键盘可视化、批量下载和ZIP导出。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bilibiliales.github.io/skystudio-decrypt/">
+    <meta property="og:image" content="https://bilibiliales.github.io/skystudio-decrypt/assets/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="zh_CN">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sky Studio乐谱解密解析工具">
+    <meta name="twitter:description" content="在浏览器中本地解密、预览、转换、导出MP3，并批量导出TXT乐谱。">
+    <meta name="twitter:image" content="https://bilibiliales.github.io/skystudio-decrypt/assets/og-image.png">
+    <link rel="image_src" href="https://bilibiliales.github.io/skystudio-decrypt/assets/social-preview.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "SoftwareApplication",
+                "@id": "https://bilibiliales.github.io/skystudio-decrypt/#software",
+                "name": "Sky Studio乐谱解密解析工具 / Sky Studio Music Decrypt Tool",
+                "description": "一个纯静态浏览器工具，用于TXT乐谱本地解密、光遇乐谱预览、简谱转换、MP3音频导出、键盘可视化、批量下载和ZIP导出。",
+                "url": "https://bilibiliales.github.io/skystudio-decrypt/",
+                "operatingSystem": "Windows, macOS, Linux, Android, iOS",
+                "applicationCategory": "MusicApplication",
+                "isAccessibleForFree": true,
+                "softwareRequirements": "Modern web browser with JavaScript enabled",
+                "creator": {
+                    "@type": "Person",
+                    "name": "bilibiliales"
+                }
+            },
+            {
+                "@type": "WebSite",
+                "@id": "https://bilibiliales.github.io/skystudio-decrypt/#website",
+                "name": "Sky Studio乐谱解密解析工具",
+                "url": "https://bilibiliales.github.io/skystudio-decrypt/",
+                "description": "TXT乐谱解密、预览、转换和导出工具。",
+                "inLanguage": ["en", "zh-CN"]
+            },
+            {
+                "@type": "BreadcrumbList",
+                "@id": "https://bilibiliales.github.io/skystudio-decrypt/#breadcrumb",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "首页",
+                        "item": "https://bilibiliales.github.io/skystudio-decrypt/"
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "乐谱解密解析工具",
+                        "item": "https://bilibiliales.github.io/skystudio-decrypt/"
+                    }
+                ]
+            },
+            {
+                "@type": "FAQPage",
+                "@id": "https://bilibiliales.github.io/skystudio-decrypt/#faq",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "What is a Sky Studio encrypted file?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "A Sky Studio encrypted file is usually a TXT music sheet exported or shared in a protected Sky Studio format. The readable metadata and note timing may be encoded, so a decrypt tool is needed before the sheet can be previewed, edited, converted, or archived."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How do I decrypt Sky Studio TXT files?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Upload or drag one or more TXT files into the tool. The page reads the file in your browser, detects whether it is encrypted, decrypts supported Sky Studio data, displays song information, and enables preview, copy, download, notation image export, and ZIP export."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Does the tool upload files?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "No. The Sky Studio TXT files are processed locally by JavaScript in the browser. The tool fetches local sound assets for preview playback, but the sheet files you choose are not uploaded to a server."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How to export Sky Studio music to MP3?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Upload and convert a supported Sky Studio TXT sheet, then click the MP3 export button. The page renders the note timeline with the built-in key audio files in the browser and encodes the rendered result as an MP3 download, so microphone recording is not required."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "这个工具会收集个人信息吗？",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "不会。这个网站是纯静态GitHub Pages页面，不提供账号登录、数据库、表单提交或服务端上传流程。用户选择的Sky Studio TXT乐谱文件由浏览器本地读取和处理，不会被上传到站点服务器。"
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Can I batch decrypt files?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Yes. The file picker accepts multiple TXT files. You can select files from the local list, download selected decrypted results, or generate a ZIP archive for batch export."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Is the source code open source?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Yes. The source code is available in the bilibiliales skystudio-decrypt GitHub repository, and the public tool is deployed as a static GitHub Pages site."
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    </script>
     <style>
         * {
             margin: 0;
@@ -123,7 +259,7 @@
 
         .sidebar h1 {
             color: var(--panel-text-color);
-            font-size: 2em !important;
+            font-size: 1.75em !important;
             font-weight: bold !important;
             text-align: center;
             margin-bottom: 20px;
@@ -527,6 +663,7 @@
             opacity: 1;
             transform: translateY(0);
             overflow: hidden;
+            position: relative;
             transition: height 0.28s ease, margin-bottom 0.28s ease, opacity 0.22s ease, transform 0.28s ease;
         }
 
@@ -536,6 +673,73 @@
             opacity: 0;
             pointer-events: none;
             transform: translateY(-12px);
+        }
+
+        .copy-code-float {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 3;
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(255,255,255,0.28);
+            border-radius: 6px;
+            background: rgba(24,24,24,0.78);
+            color: #ffffff;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+        }
+
+        .copy-code-float:hover {
+            background: rgba(40,40,40,0.92);
+        }
+
+        .copy-code-float svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .copy-code-float .copy-success-icon {
+            display: none;
+        }
+
+        .copy-code-float.copied {
+            background: rgba(46,125,50,0.95);
+            border-color: rgba(255,255,255,0.36);
+        }
+
+        .copy-code-float.copied .copy-icon {
+            display: none;
+        }
+
+        .copy-code-float.copied .copy-success-icon {
+            display: block;
+        }
+
+        .preview-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            z-index: 4;
+            background: rgba(0,0,0,0.18);
+            pointer-events: none;
+        }
+
+        .preview-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.16s linear;
         }
 
         /* 代码框样式 */
@@ -1649,6 +1853,44 @@
             white-space: nowrap;
         }
 
+        .export-progress {
+            flex: 1 0 100%;
+            margin-top: 8px;
+            padding: 9px 10px;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background: var(--panel-soft-bg);
+        }
+
+        .export-progress[hidden] {
+            display: none;
+        }
+
+        .export-progress-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
+            color: var(--panel-text-color);
+            font-size: 12px;
+        }
+
+        .export-progress-track {
+            height: 7px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: var(--range-track-color);
+        }
+
+        .export-progress-bar {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: #4CAF50;
+            transition: width 0.18s ease;
+        }
+
         /* 自定义滚动条样式 */
         ::-webkit-scrollbar {
             width: 8px;
@@ -1690,33 +1932,118 @@
         #notationContainer::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.5);
         }
+
+        #seo-content {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--panel-border-color);
+            color: var(--panel-text-color);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        #seo-content,
+        #seo-content * {
+            user-select: text;
+        }
+
+        #seo-content summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--panel-text-color);
+        }
+
+        #seo-content h2 {
+            font-size: 1.15em;
+            margin: 14px 0 8px;
+        }
+
+        #seo-content h3 {
+            font-size: 1.05em;
+            margin: 12px 0 6px;
+        }
+
+        #seo-content p {
+            margin: 8px 0;
+        }
+
+        #seo-content ul,
+        #seo-content ol {
+            margin: 8px 0 8px 18px;
+        }
+
+        #seo-content .seo-faq details {
+            margin: 8px 0;
+            padding: 8px;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background: var(--panel-soft-bg);
+        }
+
+        .seo-lang-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 12px 0;
+        }
+
+        .seo-lang-tab {
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background: var(--panel-card-bg);
+            color: var(--panel-text-color);
+            cursor: pointer;
+            padding: 7px 8px;
+            font-size: 13px;
+        }
+
+        .seo-lang-tab[aria-selected="true"] {
+            border-color: #4CAF50;
+            background: #4CAF50;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .seo-lang-panel[hidden] {
+            display: none;
+        }
+
+        .site-footer {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px solid var(--panel-border-color);
+            color: var(--panel-muted-color);
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-<div class="sidebar-container">
+<aside class="sidebar-container" aria-label="TXT乐谱解密控制区">
     <div id="sidebar" class="sidebar">
-        <h1>Sky Studio解密解析工具</h1>
+        <header class="app-header">
+            <h1>Sky Studio乐谱解密解析工具</h1>
+        </header>
 
-        <div class="upload-area" id="uploadArea">
-            <h3>点击或拖拽文件到此处上传</h3>
-            <p>支持 .txt 格式的加密/未加密文件</p>
-            <input type="file" id="fileInput" accept=".txt" multiple>
-        </div>
+        <section class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="上传TXT乐谱文件" title="上传TXT乐谱文件">
+            <h3>上传TXT乐谱文件</h3>
+            <p>支持 .txt 格式的加密或未加密乐谱</p>
+            <input type="file" id="fileInput" accept=".txt" multiple aria-label="选择一个或多个TXT乐谱文件" title="选择TXT乐谱文件">
+        </section>
 
-        <div class="file-list-panel">
+        <section class="file-list-panel" aria-label="TXT文件列表">
             <div class="file-list-toolbar">
-                <button class="btn" id="toggleSelectButton" disabled>全选</button>
-                <button class="btn" id="downloadSelectedButton" disabled>下载选中解密文件</button>
-                <button class="btn" id="zipSelectedButton" disabled>生成ZIP</button>
-                <button class="btn" id="clearListButton" disabled>清空列表</button>
+                <button class="btn" id="toggleSelectButton" disabled aria-label="全选文件" title="全选文件">全选</button>
+                <button class="btn" id="downloadSelectedButton" disabled aria-label="下载选中解密文件" title="下载选中解密文件">下载选中解密文件</button>
+                <button class="btn" id="zipSelectedButton" disabled aria-label="生成ZIP压缩包" title="生成ZIP压缩包">生成ZIP</button>
+                <button class="btn" id="clearListButton" disabled aria-label="清空文件列表" title="清空文件列表">清空列表</button>
             </div>
-            <div id="fileList">
+            <div id="fileList" role="list" aria-live="polite">
                 <div class="empty-file-list">暂无文件，上传后会自动保存到本地列表</div>
             </div>
-        </div>
+        </section>
 
-        <div id="conversionFlow" class="conversion-flow">
-            <span class="flow-step" data-flow-step="upload">上传</span>
+        <nav id="conversionFlow" class="conversion-flow" aria-label="TXT解密流程">
+            <span class="flow-step" data-flow-step="upload">上传TXT</span>
             <span class="flow-arrow">→</span>
             <span class="flow-step" data-flow-step="read">识别</span>
             <span class="flow-arrow">→</span>
@@ -1725,10 +2052,10 @@
             <span class="flow-step" data-flow-step="convert">转换</span>
             <span class="flow-arrow">→</span>
             <span class="flow-step" data-flow-step="preview">预览/下载</span>
-            <span id="flowHint" class="flow-hint">拖入文件后会先读取乐谱信息</span>
-        </div>
+            <span id="flowHint" class="flow-hint" role="status">拖入TXT文件后会先读取乐谱信息</span>
+        </nav>
 
-        <div id="songInfo" class="info-panel">
+        <section id="songInfo" class="info-panel" aria-label="乐谱信息">
             <div id="songInfoEmpty" class="info-empty"></div>
             <div id="songInfoError" class="info-error" style="display:none;">
                 <h4>文件识别失败</h4>
@@ -1740,19 +2067,19 @@
                 <div class="song-info-edit-grid">
                     <label class="song-info-field">
                         <span>乐谱名称</span>
-                        <input type="text" id="infoNameInput" data-song-meta-field="name">
+                        <input type="text" id="infoNameInput" data-song-meta-field="name" aria-label="乐谱名称" title="乐谱名称">
                     </label>
                     <label class="song-info-field">
                         <span>作者</span>
-                        <input type="text" id="infoAuthorInput" data-song-meta-field="author">
+                        <input type="text" id="infoAuthorInput" data-song-meta-field="author" aria-label="乐谱作者" title="乐谱作者">
                     </label>
                     <label class="song-info-field">
                         <span>BPM</span>
-                        <input type="number" id="infoBpmInput" data-song-meta-field="bpm" min="1" max="999" step="1">
+                        <input type="number" id="infoBpmInput" data-song-meta-field="bpm" min="1" max="999" step="1" aria-label="乐谱BPM" title="乐谱BPM">
                     </label>
                     <label class="song-info-field">
                         <span>改编者</span>
-                        <input type="text" id="infoTranscribedByInput" data-song-meta-field="transcribedBy">
+                        <input type="text" id="infoTranscribedByInput" data-song-meta-field="transcribedBy" aria-label="乐谱改编者" title="乐谱改编者">
                     </label>
                 </div>
                 <div class="song-info-readonly">
@@ -1761,48 +2088,202 @@
                     <p>数据长度：<span id="infoNoteCount"></span></p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="previewControls">
-            <button class="btn download-btn" id="downloadButton" style="display:none;">下载代码</button>
-            <button class="btn download-btn" id="scriptDownloadButton" style="display:none;">下载脚本</button>
-            <button class="btn download-btn" id="notationDownloadButton" style="display:none;">下载简谱</button>
-            <button class="btn download-btn" id="copyButton" style="display:none;">复制代码</button>
-        </div>
+        <section id="previewControls" aria-label="解密结果下载">
+            <button class="btn download-btn" id="downloadButton" style="display:none;" aria-label="下载当前解密文件" title="下载当前解密文件">下载当前解密文件</button>
+            <button class="btn download-btn" id="scriptDownloadButton" style="display:none;" aria-label="下载脚本" title="下载脚本">下载脚本</button>
+            <button class="btn download-btn" id="notationDownloadButton" style="display:none;" aria-label="下载简谱图片" title="下载简谱图片">下载简谱</button>
+            <button class="btn download-btn" id="mp3DownloadButton" style="display:none;" aria-label="导出MP3音频" title="导出MP3音频">导出MP3</button>
+            <div id="exportProgress" class="export-progress" hidden aria-live="polite">
+                <div class="export-progress-meta">
+                    <span id="exportProgressLabel">准备导出</span>
+                    <span id="exportProgressValue">0%</span>
+                </div>
+                <div class="export-progress-track" aria-hidden="true">
+                    <div id="exportProgressBar" class="export-progress-bar"></div>
+                </div>
+            </div>
+        </section>
 
-        <div id="previewControlsInSidebar" style="display: none;">
+        <section id="previewControlsInSidebar" style="display: none;" aria-label="乐谱预览控制">
             <!-- 预览控制区域容器 - 确保同一行显示 -->
             <div class="preview-controls-container">
                 <!-- 倍速调节控件 -->
                 <div class="speed-control">
                     <label for="speedSelector">倍速:</label>
-                    <input type="range" id="speedSelector" min="0.25" max="3" step="0.05" value="1" disabled>
+                    <input type="range" id="speedSelector" min="0.25" max="3" step="0.05" value="1" disabled aria-label="乐谱预览倍速" title="乐谱预览倍速">
                     <span id="speedValue">1x</span>
                 </div>
-                <button class="btn" id="previewButton" disabled>开始预览</button>
-                <button class="btn" id="stopPreviewButton" disabled>停止预览</button>
+                <button class="btn" id="previewButton" disabled aria-label="开始预览乐谱" title="开始预览乐谱">开始预览</button>
+                <button class="btn" id="stopPreviewButton" disabled aria-label="停止预览乐谱" title="停止预览乐谱">停止预览</button>
             </div>
-        </div>
+        </section>
 
         <details class="log-panel" id="logPanel">
             <summary>日志</summary>
             <div class="log" id="log"></div>
         </details>
+
+        <section id="seo-content" aria-label="乐谱解密帮助和FAQ">
+            <details>
+                <summary>乐谱解密帮助和FAQ</summary>
+
+                <div class="seo-lang-tabs" role="tablist" aria-label="帮助语言切换">
+                    <button type="button" class="seo-lang-tab" role="tab" id="seoTabZh" data-seo-lang="zh" aria-controls="seoPanelZh" aria-selected="true">中文</button>
+                    <button type="button" class="seo-lang-tab" role="tab" id="seoTabEn" data-seo-lang="en" aria-controls="seoPanelEn" aria-selected="false">English</button>
+                </div>
+
+                <div id="seoPanelZh" class="seo-lang-panel" role="tabpanel" aria-labelledby="seoTabZh">
+                    <h2>功能特点</h2>
+                    <p>Sky Studio乐谱解密解析工具是一个纯静态、单页面的浏览器工具，面向需要处理 Sky Studio TXT 乐谱文件的光遇玩家、制谱者和乐谱整理者。它可以识别明文或加密的 TXT 乐谱，解密支持的内容，预览按键和节奏，将结果转换成代码、简谱、时间轴或方格谱，并支持 MP3 音频导出、单文件下载、批量下载和 ZIP 打包。</p>
+                    <ul>
+                        <li>支持 Sky Studio TXT 加密乐谱文件的本地解密。</li>
+                        <li>支持键盘可视化和音频播放，方便检查节奏。</li>
+                        <li>支持代码、简谱、时间轴和方格谱等预览方式。</li>
+                        <li>支持直接导出 MP3 音频，不需要录制预览声音。</li>
+                        <li>支持多文件选择、批量下载和 ZIP 导出。</li>
+                    </ul>
+
+                    <h2>使用方法</h2>
+                    <ol>
+                        <li>准备一个或多个 Sky Studio TXT 乐谱文件。</li>
+                        <li>点击上传区域，或将 TXT 文件拖入上传框。</li>
+                        <li>在文件列表中选择乐谱，检查名称、作者、BPM、拍子、加密状态和音符数量。</li>
+                        <li>使用预览控制播放乐谱，确认节奏和旋律。</li>
+                        <li>按需要下载当前解密文件、下载脚本、导出简谱图片、导出 MP3、复制代码，或生成 ZIP。</li>
+                    </ol>
+
+                    <h2>如何把 Sky Studio 音乐导出为 MP3？</h2>
+                    <p>上传并转换支持的 Sky Studio TXT 乐谱后，点击“导出MP3”。页面会根据解密后的按键时间线，在浏览器中离线渲染整首曲子的音频，再编码成 MP3 文件下载。这个过程不需要麦克风权限，不需要录屏，也不需要播放时录制系统声音。</p>
+                    <p>为了得到更稳定的结果，建议先预览一次并确认 BPM、歌曲信息和节奏正常，再导出最终 MP3。导出的音频适合保存试听版本、检查改编效果，或分享给不需要 TXT 乐谱源文件的人。</p>
+
+                    <h2>支持的文件类型</h2>
+                    <p>主要支持 <strong>.txt</strong> 乐谱文件。文件可能是 Sky Studio 加密格式，也可能是解析器能识别的明文格式。由于社区文件来源和版本不同，不是所有未知 TXT 布局都能保证成功转换；如果文件无法识别，页面会显示错误原因。</p>
+
+                    <h2>关于 Sky Studio 加密</h2>
+                    <p>Sky Studio 加密通常用于以非明文形式分享或保存乐谱数据。对玩家来说，这会让预览旋律、确认 BPM、归档歌曲或转换记谱方式变得不方便。本工具会在浏览器中处理支持的编码方式，把数据重建成可预览、可下载、可导出的乐谱结构。</p>
+
+                    <h2 id="privacy-policy">隐私政策</h2>
+                    <p>本工具部署在 GitHub Pages 上，是纯静态网页，不提供账号登录、表单提交、数据库存储或服务端文件上传功能。你选择的 TXT 乐谱文件由浏览器本地读取和处理，解密、转换、预览和导出都在当前浏览器环境中完成。</p>
+                    <p>为了播放预览音效，页面会加载音频文件；导出 MP3 时，页面会按需加载浏览器端 MP3 编码器。这些静态资源请求不包含你上传的 TXT 乐谱内容。工具可能使用浏览器本地存储保存界面设置、背景图设置或工作列表，你可以通过浏览器设置清除站点数据。</p>
+
+                    <h2>常见问题</h2>
+                    <div class="seo-faq">
+                        <details>
+                            <summary>什么是 Sky Studio 加密文件？</summary>
+                            <p>它通常是一个经过编码的 TXT 乐谱文件，歌曲信息和音符事件不是普通可读文本。需要先解密或解析，才能预览、转换或导出。</p>
+                        </details>
+                        <details>
+                            <summary>工具会上传文件吗？</summary>
+                            <p>不会。乐谱文件由浏览器本地读取和处理，不会被本项目上传到转换服务器。</p>
+                        </details>
+                        <details>
+                            <summary>可以批量解密文件吗？</summary>
+                            <p>可以。文件选择器支持多个 TXT 文件，你可以选择文件、下载选中结果，或生成 ZIP 压缩包。</p>
+                        </details>
+                        <details>
+                            <summary>导出 MP3 需要录音权限吗？</summary>
+                            <p>不需要。MP3 导出使用离线音频渲染和浏览器端编码，不调用麦克风。</p>
+                        </details>
+                        <details>
+                            <summary>源码是开源的吗？</summary>
+                            <p>是。项目托管在 bilibiliales 的 skystudio-decrypt GitHub 仓库中。<strong>️ 郑重提醒：本项目完全免费且开源，绝无任何付费渠道。市面上任何收费售卖的版本均为盗版或诈骗，请注意甄别，谨防上当！</strong></p>
+                        </details>
+                    </div>
+                </div>
+
+                <div id="seoPanelEn" class="seo-lang-panel" role="tabpanel" aria-labelledby="seoTabEn" hidden>
+                    <h2>Features</h2>
+                    <p>Sky Studio Music Decrypt Tool is a static single-page browser utility for players and sheet makers who work with Sky Studio TXT files. It can detect readable or encrypted TXT sheets, decrypt supported content, preview the rhythm on a keyboard, convert the result into code or notation views, export MP3 audio, download individual files, batch download selected results, and create ZIP archives.</p>
+                    <ul>
+                        <li>Browser-side Sky Studio TXT decryption for supported encrypted sheets.</li>
+                        <li>Online preview with keyboard visualization and audio playback.</li>
+                        <li>Code, simplified notation, timeline, and grid-style preview modes.</li>
+                        <li>Direct MP3 export without recording preview playback.</li>
+                        <li>Batch download and ZIP export for multiple files.</li>
+                    </ul>
+
+                    <h2>How to use</h2>
+                    <ol>
+                        <li>Prepare one or more supported Sky Studio TXT sheet files.</li>
+                        <li>Click the upload area or drag TXT files into the page.</li>
+                        <li>Select a sheet from the file list and check its metadata, BPM, encryption status, and note count.</li>
+                        <li>Preview the music to confirm the timing and melody.</li>
+                        <li>Download the decrypted result, export notation, export MP3, copy generated code, or create a ZIP archive.</li>
+                    </ol>
+
+                    <h2>How to export Sky Studio music to MP3?</h2>
+                    <p>To export Sky Studio music to MP3, upload a supported Sky Studio TXT sheet, wait for the page to decrypt and convert it, then click the <strong>导出MP3</strong> button. The tool does not record your microphone, screen, or system audio. It uses the note timeline from the decrypted sheet and the same key audio files used by the preview player, renders the full song locally in the browser, and encodes that rendered audio as an MP3 file.</p>
+                    <p>Preview the sheet first and confirm that the BPM, metadata, and rhythm are correct. The exported MP3 is useful for saving a playable audio version, sharing a quick preview, or checking an arrangement without asking the user to record playback manually.</p>
+
+                    <h2>Supported file types</h2>
+                    <p>The main supported input is a <strong>.txt</strong> Sky Studio music sheet file. It may contain encrypted Sky Studio data or a readable text format recognized by the parser. Community files can come from different tool versions, so unsupported layouts may fail with an error message instead of being treated as valid conversions.</p>
+
+                    <h2>About Sky Studio encryption</h2>
+                    <p>Sky Studio encryption stores sheet data in a form that is not immediately readable as normal note text. This can make it difficult to preview a melody, verify BPM, archive a song, or convert a score into another format. This tool handles supported formats in the browser and rebuilds the data into a usable music structure.</p>
+
+                    <h2>Privacy Policy</h2>
+                    <p>This project is a static GitHub Pages site. It has no user accounts, form submission, database, or server-side file upload workflow. Selected TXT sheets are read and processed locally by your browser.</p>
+                    <p>The page loads static audio and interface assets. MP3 export loads a browser-side MP3 encoder on demand to convert locally rendered audio into a downloadable file. Your sheet content is not uploaded by this project. Local browser storage may be used for interface settings, background image settings, or the local working list.</p>
+
+                    <h2>FAQ</h2>
+                    <div class="seo-faq">
+                        <details>
+                            <summary>What is a Sky Studio encrypted file?</summary>
+                            <p>It is usually a TXT sheet whose song metadata and note events are encoded rather than written as readable note text.</p>
+                        </details>
+                        <details>
+                            <summary>Does the tool upload files?</summary>
+                            <p>No. Selected TXT sheets are processed locally in the browser and are not uploaded by this project.</p>
+                        </details>
+                        <details>
+                            <summary>Can I batch decrypt files?</summary>
+                            <p>Yes. You can select multiple TXT files, download selected converted results, or generate a ZIP archive.</p>
+                        </details>
+                        <details>
+                            <summary>Does MP3 export need microphone permission?</summary>
+                            <p>No. MP3 export uses offline audio rendering and browser-side encoding, not microphone recording.</p>
+                        </details>
+                        <details>
+                            <summary>Is the source code open source?</summary>
+                            <p>Yes. The project is available in the bilibiliales skystudio-decrypt GitHub repository.</p>
+                        </details>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <footer class="site-footer">
+            <p>Sky Studio乐谱解密解析工具：支持TXT解密、预览、转换、MP3和ZIP导出。隐私政策见本页“隐私政策 / Privacy Policy”。</p>
+        </footer>
     </div>
-</div>
+</aside>
 
-<button id="toggleSidebar" class="toggle-btn"></button>
+<button id="toggleSidebar" class="toggle-btn" aria-label="显示或隐藏控制栏" title="显示或隐藏控制栏" aria-expanded="true"></button>
 
-<div id="mainContent">
+<main id="mainContent" role="main" aria-label="乐谱预览和键盘可视化">
     <!-- 预览容器 -->
-    <div id="scorePreview">
-        <div id="codeContainer"></div>
-        <div id="notationContainer"></div>
-        <div id="pipelineContainer"></div>
-        <div id="snapshotGridContainer"></div>
-    </div>
+    <section id="scorePreview" aria-label="乐谱代码、简谱、时间轴和方格预览">
+        <div id="previewProgress" class="preview-progress" role="progressbar" aria-label="预览进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" title="预览进度 0%">
+            <div id="previewProgressBar" class="preview-progress-bar"></div>
+        </div>
+        <button type="button" id="copyCodeFloatButton" class="copy-code-float" aria-label="复制代码" title="复制代码">
+            <svg class="copy-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="8" y="8" width="12" height="12" rx="2"></rect>
+                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <svg class="copy-success-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5"></path>
+            </svg>
+        </button>
+        <div id="codeContainer" role="region" aria-label="解密代码预览"></div>
+        <div id="notationContainer" role="region" aria-label="简谱预览"></div>
+        <div id="pipelineContainer" role="region" aria-label="时间轴预览"></div>
+        <div id="snapshotGridContainer" role="region" aria-label="方格谱预览"></div>
+    </section>
 
-    <div id="PianoPanel">
+    <section id="PianoPanel" aria-label="键盘可视化">
         <div class="piano-wrap">
             <div><div class="piano-key shape-combo" data-key="A1"><span class="key-shape"></span><span class="key-label">A1</span></div></div>
             <div><div class="piano-key shape-diamond" data-key="A2"><span class="key-shape"></span><span class="key-label">A2</span></div></div>
@@ -1820,11 +2301,11 @@
             <div><div class="piano-key shape-diamond" data-key="B7"><span class="key-shape"></span><span class="key-label">B7</span></div></div>
             <div><div class="piano-key shape-combo" data-key="C1"><span class="key-shape"></span><span class="key-label">C1</span></div></div>
         </div>
-    </div>
-    <div id="loadding">加载音频中...</div>
-</div>
+    </section>
+    <div id="loadding" role="status">加载音频中...</div>
+</main>
 
-<div class="stylepanel-container">
+<aside class="stylepanel-container" aria-label="预览样式设置">
     <div id="stylePanel" class="sidebar">
         <h3>键盘样式</h3>
 
@@ -1841,22 +2322,22 @@
 
         <div class="style-control range-row">
             <label for="keySize">按键大小 <span class="control-value" id="keySizeValue">90px</span></label>
-            <input type="range" id="keySize" min="40" max="150" value="90">
+            <input type="range" id="keySize" min="40" max="150" value="90" aria-label="键盘按键大小" title="键盘按键大小">
         </div>
 
         <div class="style-control range-row">
             <label for="keySpacing">按键间距 <span class="control-value" id="keySpacingValue">30px</span></label>
-            <input type="range" id="keySpacing" min="1" max="100" value="30">
+            <input type="range" id="keySpacing" min="1" max="100" value="30" aria-label="键盘按键间距" title="键盘按键间距">
         </div>
 
         <div class="style-control range-row">
             <label for="fontSize">字体大小 <span class="control-value" id="fontSizeValue">14px</span></label>
-            <input type="range" id="fontSize" min="10" max="30" value="14">
+            <input type="range" id="fontSize" min="10" max="30" value="14" aria-label="键盘字体大小" title="键盘字体大小">
         </div>
 
         <div class="style-control range-row">
             <label for="keyBorderWidth">边框宽度 <span class="control-value" id="keyBorderWidthValue">3px</span></label>
-            <input type="range" id="keyBorderWidth" min="1" max="5" step="0.1" value="3">
+            <input type="range" id="keyBorderWidth" min="1" max="5" step="0.1" value="3" aria-label="键盘边框宽度" title="键盘边框宽度">
         </div>
 
         <div class="style-control">
@@ -1871,41 +2352,41 @@
 
         <div class="style-control">
             <label for="bgColor">背景颜色</label>
-            <input type="color" id="bgColor" value="#F5F5F5">
+            <input type="color" id="bgColor" value="#F5F5F5" aria-label="预览背景颜色" title="预览背景颜色">
         </div>
 
         <div class="style-control range-row">
             <label for="bgOpacity">背景透明度 <span class="control-value" id="bgOpacityValue">1</span></label>
-            <input type="range" id="bgOpacity" min="0" max="1" step="0.01" value="1">
+            <input type="range" id="bgOpacity" min="0" max="1" step="0.01" value="1" aria-label="预览背景透明度" title="预览背景透明度">
         </div>
 
         <div class="style-control range-row">
             <label for="keyOpacity">琴键透明度 <span class="control-value" id="keyOpacityValue">1</span></label>
-            <input type="range" id="keyOpacity" min="0.1" max="1" step="0.01" value="1">
+            <input type="range" id="keyOpacity" min="0.1" max="1" step="0.01" value="1" aria-label="键盘透明度" title="键盘透明度">
         </div>
 
         <div class="style-control toggle-row">
             <label for="panelThemeToggle">深色侧栏</label>
-            <input type="checkbox" id="panelThemeToggle" class="switch-input">
+            <input type="checkbox" id="panelThemeToggle" class="switch-input" aria-label="切换控制栏深色模式" title="切换控制栏深色模式">
         </div>
 
         <div class="style-control">
             <label for="bgImageUpload">自定义壁纸</label>
-            <div class="upload-area" id="bgImageUploadArea" style="border: 2px dashed #ccc; border-radius: 8px; padding: 8px; text-align: center; cursor: pointer;">
-                <p>点击或拖拽上传图片</p>
-                <input type="file" id="bgImageUpload" accept="image/*" style="display: none;">
+            <div class="upload-area" id="bgImageUploadArea" role="button" tabindex="0" aria-label="上传预览背景图片" title="上传预览背景图片" style="border: 2px dashed #ccc; border-radius: 8px; padding: 8px; text-align: center; cursor: pointer;">
+                <p>点击或拖拽上传背景图片</p>
+                <input type="file" id="bgImageUpload" accept="image/*" style="display: none;" aria-label="选择预览背景图片" title="选择预览背景图片">
             </div>
-            <button class="btn" id="removeBgImageBtn" style="margin-top: 10px; display: none;">移除背景图</button>
+            <button class="btn" id="removeBgImageBtn" style="margin-top: 10px; display: none;" aria-label="移除预览背景图" title="移除预览背景图">移除背景图</button>
         </div>
 
         <div class="style-control">
-            <button class="btn" id="resetDefaultsBtn" style="margin-top: 10px;">恢复默认设置</button>
+            <button class="btn" id="resetDefaultsBtn" style="margin-top: 10px;" aria-label="恢复预览默认设置" title="恢复预览默认设置">恢复默认设置</button>
         </div>
     </div>
-</div>
+</aside>
 
-<button id="toggleStylePanel" class="toggle-btn"></button>
-<div id="toastContainer" class="toast-container"></div>
+<button id="toggleStylePanel" class="toggle-btn" aria-label="显示或隐藏样式设置栏" title="显示或隐藏样式设置栏" aria-expanded="true"></button>
+<div id="toastContainer" class="toast-container" role="status" aria-live="polite"></div>
 
 <script>
     // 平台判断
@@ -1928,7 +2409,16 @@
     let audioCtx;
     let audioDatas = [];
     let pianoKeys = document.querySelectorAll(".piano-key");
+    pianoKeys.forEach(key => {
+        const keyName = key.getAttribute('data-key') || key.textContent.trim();
+        key.setAttribute('role', 'button');
+        key.setAttribute('tabindex', '0');
+        key.setAttribute('aria-label', `播放键位 ${keyName}`);
+        key.setAttribute('title', `播放键位 ${keyName}`);
+    });
     let scorePreview = document.getElementById('scorePreview');
+    let previewProgress = document.getElementById('previewProgress');
+    let previewProgressBar = document.getElementById('previewProgressBar');
     let codeContainer = document.getElementById('codeContainer');
     let notationContainer = document.getElementById('notationContainer');
     let pipelineContainer = document.getElementById('pipelineContainer');
@@ -1959,6 +2449,7 @@
     let highlightedPipelineElements = new Set(); // 存储当前高亮的流水线列/音符
     let highlightedSnapshotGridCells = new Set(); // 存储当前高亮的方格谱格子
     let highlightedKeys = new Set(); // 存储当前高亮的琴键
+    let manualPressedKeys = new Set(); // 存储用户手动按住的琴键
     let lineToNoteMap = new Map(); // 存储代码行到音符索引的反向映射
     const CONFIG_CODE_LINE_COUNT = 5;
     const NOTATION_BEATS_PER_MEASURE = 4;
@@ -2091,7 +2582,12 @@
     const downloadButton = document.getElementById('downloadButton');
     const scriptDownloadButton = document.getElementById('scriptDownloadButton');
     const notationDownloadButton = document.getElementById('notationDownloadButton');
-    const copyButton = document.getElementById('copyButton');
+    const mp3DownloadButton = document.getElementById('mp3DownloadButton');
+    const exportProgress = document.getElementById('exportProgress');
+    const exportProgressLabel = document.getElementById('exportProgressLabel');
+    const exportProgressValue = document.getElementById('exportProgressValue');
+    const exportProgressBar = document.getElementById('exportProgressBar');
+    const copyCodeFloatButton = document.getElementById('copyCodeFloatButton');
     const fileListDiv = document.getElementById('fileList');
     const toggleSelectButton = document.getElementById('toggleSelectButton');
     const downloadSelectedButton = document.getElementById('downloadSelectedButton');
@@ -2106,6 +2602,8 @@
     const speedSelector = document.getElementById('speedSelector');
     const speedValue = document.getElementById('speedValue');
     const STORAGE_KEY = 'skystudio-decrypt-project-list-v1';
+    const MP3_ENCODER_SRC = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
+    let mp3EncoderLoadPromise = null;
     const STORAGE_ACTIVE_KEY = 'skystudio-decrypt-active-project-v1';
     const PANEL_THEME_KEY = 'skystudio-decrypt-panel-theme-v1';
     const KEY_LABEL_MODE_KEY = 'skystudio-decrypt-key-label-mode-v1';
@@ -2238,6 +2736,84 @@
         if (shouldPersist) {
             localStorage.setItem(PREVIEW_DISPLAY_MODE_KEY, currentPreviewDisplayMode);
         }
+
+        updateCopyCodeButton();
+    }
+
+    function getCopyableCode() {
+        const item = getActiveProject();
+        if (!item) {
+            return '';
+        }
+        return item.generatedCode || '';
+    }
+
+    function updateCopyCodeButton() {
+        if (!copyCodeFloatButton) {
+            return;
+        }
+        const hasCode = getCopyableCode().length > 0;
+        const shouldShow = currentPreviewDisplayMode === 'code' ? hasCode : false;
+        copyCodeFloatButton.style.display = shouldShow ? 'flex' : 'none';
+        if (!shouldShow) {
+            copyCodeFloatButton.classList.remove('copied');
+        }
+    }
+
+    function copyTextFallback(text) {
+        const tempTextarea = document.createElement('textarea');
+        tempTextarea.value = text;
+        tempTextarea.setAttribute('readonly', '');
+        tempTextarea.style.position = 'fixed';
+        tempTextarea.style.top = '-1000px';
+        document.body.appendChild(tempTextarea);
+        tempTextarea.select();
+        const copied = document.execCommand('copy');
+        document.body.removeChild(tempTextarea);
+        if (!copied) {
+            throw new Error('复制失败');
+        }
+    }
+
+    async function copyTextToClipboard(text) {
+        if (!text) {
+            throw new Error('没有可复制的代码');
+        }
+        if (navigator.clipboard) {
+            if (navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return;
+            }
+        }
+        copyTextFallback(text);
+    }
+
+    function markCopyCodeSuccess() {
+        if (!copyCodeFloatButton) {
+            return;
+        }
+        copyCodeFloatButton.classList.add('copied');
+        copyCodeFloatButton.setAttribute('aria-label', '复制成功');
+        copyCodeFloatButton.setAttribute('title', '复制成功');
+        setTimeout(() => {
+            copyCodeFloatButton.classList.remove('copied');
+            copyCodeFloatButton.setAttribute('aria-label', '复制代码');
+            copyCodeFloatButton.setAttribute('title', '复制代码');
+        }, 1200);
+    }
+
+    if (copyCodeFloatButton) {
+        copyCodeFloatButton.addEventListener('click', async () => {
+            try {
+                await copyTextToClipboard(getCopyableCode());
+                markCopyCodeSuccess();
+                addLog('[+] 代码已复制到剪贴板');
+                showToast('代码已复制', 'success');
+            } catch (error) {
+                addLog(`[!] 复制失败: ${error.message}`);
+                showToast('复制失败', 'error');
+            }
+        });
     }
 
     function safeFileName(value, fallback) {
@@ -2402,7 +2978,7 @@
             }
         });
 
-        flowHint.textContent = message || '拖入文件后会先读取乐谱信息';
+        flowHint.textContent = message || '拖入TXT文件后会先读取乐谱信息';
     }
 
     function renderSongInfo(item) {
@@ -2580,17 +3156,17 @@
             ].filter(Boolean).join(' ');
 
             return `
-                <div class="${rowClass}" data-id="${escapeHtml(item.id)}">
-                    <input type="checkbox" class="file-select" data-id="${escapeHtml(item.id)}" ${item.selected ? 'checked' : ''} aria-label="选择下载">
-                    <button type="button" class="file-main" data-action="activate" data-id="${escapeHtml(item.id)}">
+                <div class="${rowClass}" data-id="${escapeHtml(item.id)}" role="listitem">
+                    <input type="checkbox" class="file-select" data-id="${escapeHtml(item.id)}" ${item.selected ? 'checked' : ''} aria-label="选择下载文件 ${escapeHtml(item.fileName)}" title="选择下载文件">
+                    <button type="button" class="file-main" data-action="activate" data-id="${escapeHtml(item.id)}" aria-label="打开乐谱 ${escapeHtml(item.fileName)}" title="打开乐谱">
                         <span class="file-name">${escapeHtml(item.fileName)}</span>
                         <span class="file-meta">${escapeHtml(metaText)}</span>
                     </button>
                     <label class="preview-radio">
-                        <input type="radio" name="activeProject" class="file-preview-radio" data-id="${escapeHtml(item.id)}" ${item.id === activeProjectId ? 'checked' : ''}>
+                        <input type="radio" name="activeProject" class="file-preview-radio" data-id="${escapeHtml(item.id)}" ${item.id === activeProjectId ? 'checked' : ''} aria-label="预览乐谱 ${escapeHtml(item.fileName)}" title="预览乐谱">
                         预览
                     </label>
-                    <button type="button" class="file-delete-btn" data-action="delete" data-id="${escapeHtml(item.id)}">删除</button>
+                    <button type="button" class="file-delete-btn" data-action="delete" data-id="${escapeHtml(item.id)}" aria-label="删除乐谱 ${escapeHtml(item.fileName)}" title="删除乐谱">删除</button>
                 </div>
             `;
         }).join('');
@@ -2631,15 +3207,18 @@
         notesData = [];
         previewSleepUnits = [];
         currentNoteIndex = 0;
+        updatePreviewProgress(0);
+        hideExportProgress();
         
         downloadButton.style.display = 'none';
         scriptDownloadButton.style.display = 'none';
         notationDownloadButton.style.display = 'none';
-        copyButton.style.display = 'none';
+        mp3DownloadButton.style.display = 'none';
         downloadButton.onclick = null;
         scriptDownloadButton.onclick = null;
         notationDownloadButton.onclick = null;
-        copyButton.onclick = null;
+        mp3DownloadButton.onclick = null;
+        updateCopyCodeButton();
         previewButton.disabled = true;
         stopPreviewButton.disabled = true;
         speedSelector.disabled = true;
@@ -2667,6 +3246,8 @@
         noteDuration = 600 / BPM;
         previewSleepUnits = buildTimingModel(notesData).sleepUnits;
         rebuildPreviewMaps(notesData);
+        updatePreviewProgress(0);
+        hideExportProgress();
         displayFormattedCode(item.generatedCode);
         displayFormattedNotation(item);
         displayFormattedPipeline(item);
@@ -2676,7 +3257,8 @@
         downloadButton.style.display = 'inline-block';
         scriptDownloadButton.style.display = 'inline-block';
         notationDownloadButton.style.display = 'inline-block';
-        copyButton.style.display = 'inline-block';
+        mp3DownloadButton.style.display = 'inline-block';
+        updateCopyCodeButton();
         previewButton.disabled = false;
         speedSelector.disabled = false;
         document.getElementById('previewControlsInSidebar').style.display = 'block';
@@ -2694,16 +3276,26 @@
             downloadNotationImage(item, downloadBaseName);
         };
 
-        copyButton.onclick = function () {
-            const tempTextarea = document.createElement('textarea');
-            tempTextarea.value = item.generatedCode;
-            document.body.appendChild(tempTextarea);
-            tempTextarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextarea);
-            addLog('[+] 代码已复制到剪贴板');
-            showToast('代码已复制', 'success');
+        mp3DownloadButton.onclick = async function () {
+            const originalText = mp3DownloadButton.textContent;
+            mp3DownloadButton.disabled = true;
+            mp3DownloadButton.textContent = '生成中...';
+            setExportProgress('准备导出MP3', 0);
+            try {
+                await downloadMp3Audio(item, downloadBaseName, setExportProgress);
+                addLog('[+] 已导出MP3音频');
+                showToast('MP3已导出', 'success');
+                setTimeout(hideExportProgress, 1400);
+            } catch (error) {
+                addLog(`[!] MP3导出失败: ${error.message}`);
+                showToast('MP3导出失败', 'error');
+                setExportProgress('MP3导出失败', 0);
+            } finally {
+                mp3DownloadButton.disabled = false;
+                mp3DownloadButton.textContent = originalText;
+            }
         };
+
     }
 
     function convertProjectItem(item) {
@@ -3052,6 +3644,46 @@ zdjl.setStorage('appName',temp,'scmf')`;
         downloadBlob(fileName, new Blob([content], { type: 'text/plain;charset=utf-8' }));
     }
 
+    function updatePreviewProgress(noteIndex = currentNoteIndex) {
+        const total = notesData.length;
+        const progress = total > 0
+            ? Math.min(100, Math.max(0, (noteIndex / total) * 100))
+            : 0;
+        const rounded = Math.round(progress);
+
+        if (previewProgressBar) {
+            previewProgressBar.style.width = `${progress}%`;
+        }
+        if (previewProgress) {
+            previewProgress.setAttribute('aria-valuenow', String(rounded));
+            previewProgress.title = `预览进度 ${rounded}%`;
+        }
+    }
+
+    function setExportProgress(label, percent, options = {}) {
+        const { visible = true } = options;
+        const normalized = Math.min(100, Math.max(0, Math.round(percent || 0)));
+
+        if (exportProgress) {
+            exportProgress.hidden = !visible;
+        }
+        if (exportProgressLabel) {
+            exportProgressLabel.textContent = label;
+        }
+        if (exportProgressValue) {
+            exportProgressValue.textContent = `${normalized}%`;
+        }
+        if (exportProgressBar) {
+            exportProgressBar.style.width = `${normalized}%`;
+        }
+    }
+
+    function hideExportProgress() {
+        if (exportProgress) {
+            exportProgress.hidden = true;
+        }
+    }
+
     function drawFittedCanvasText(ctx, text, x, y, maxWidth, align = 'center') {
         let output = String(text || '');
         while (output.length > 1) {
@@ -3234,6 +3866,304 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
     }
 
+    function ensureMp3Encoder() {
+        if (hasMp3Encoder()) {
+            return Promise.resolve();
+        }
+
+        if (mp3EncoderLoadPromise) {
+            return mp3EncoderLoadPromise;
+        }
+
+        mp3EncoderLoadPromise = new Promise((resolve, reject) => {
+            const existingScript = document.querySelector(`script[src="${MP3_ENCODER_SRC}"]`);
+            if (existingScript) {
+                existingScript.addEventListener('load', () => {
+                    if (hasMp3Encoder()) {
+                        resolve();
+                    } else {
+                        reject(new Error('MP3编码器加载失败'));
+                    }
+                }, { once: true });
+                existingScript.addEventListener('error', () => reject(new Error('MP3编码器加载失败')), { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = MP3_ENCODER_SRC;
+            script.async = true;
+            script.onload = () => {
+                if (hasMp3Encoder()) {
+                    resolve();
+                    return;
+                }
+                reject(new Error('MP3编码器加载失败'));
+            };
+            script.onerror = () => reject(new Error('MP3编码器加载失败'));
+            document.head.appendChild(script);
+        });
+
+        return mp3EncoderLoadPromise;
+    }
+
+    function hasMp3Encoder() {
+        if (!window.lamejs) {
+            return false;
+        }
+        return Boolean(window.lamejs.Mp3Encoder);
+    }
+
+    function getAudioExportSchedule(item) {
+        if (!item || !Array.isArray(item.notesData) || item.notesData.length === 0) {
+            throw new Error('没有可导出的音符数据');
+        }
+
+        if (!Array.isArray(audioDatas) || audioDatas.length < keyOrder.length) {
+            throw new Error('音频尚未加载完成');
+        }
+
+        const bpm = item.bpm || BPM || 120;
+        const timingModel = buildTimingModel(item.notesData);
+        const schedule = [];
+        let cursor = 0;
+        let totalDuration = 0;
+
+        item.notesData.forEach((note, index) => {
+            const keyIndex = keyOrder.indexOf(note.key);
+            const buffer = keyIndex >= 0 ? audioDatas[keyIndex] : null;
+            if (buffer) {
+                schedule.push({
+                    keyIndex,
+                    startTime: cursor
+                });
+                totalDuration = Math.max(totalDuration, cursor + buffer.duration);
+            }
+
+            const sleepUnit = timingModel.sleepUnits[index] || 0;
+            cursor += (sleepUnit * (60000 / bpm)) / 1000;
+        });
+
+        if (schedule.length === 0) {
+            throw new Error('没有可播放的音符');
+        }
+
+        return {
+            schedule,
+            totalDuration: Math.max(totalDuration, cursor + 0.35)
+        };
+    }
+
+    async function renderProjectAudioBuffer(item) {
+        const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!OfflineCtx) {
+            throw new Error('当前浏览器不支持离线音频渲染');
+        }
+
+        const { schedule, totalDuration } = getAudioExportSchedule(item);
+        const sampleRate = 44100;
+        const frameCount = Math.ceil(totalDuration * sampleRate);
+        const offlineCtx = new OfflineCtx(1, frameCount, sampleRate);
+        const masterGain = offlineCtx.createGain();
+        masterGain.gain.value = 0.72;
+        masterGain.connect(offlineCtx.destination);
+
+        schedule.forEach(event => {
+            const source = offlineCtx.createBufferSource();
+            source.buffer = audioDatas[event.keyIndex];
+            source.connect(masterGain);
+            source.start(event.startTime);
+        });
+
+        return offlineCtx.startRendering();
+    }
+
+    function encodeSynchsafeInt(size) {
+        return new Uint8Array([
+            (size >> 21) & 0x7F,
+            (size >> 14) & 0x7F,
+            (size >> 7) & 0x7F,
+            size & 0x7F
+        ]);
+    }
+
+    function encodeUint32BigEndian(size) {
+        return new Uint8Array([
+            (size >>> 24) & 0xFF,
+            (size >>> 16) & 0xFF,
+            (size >>> 8) & 0xFF,
+            size & 0xFF
+        ]);
+    }
+
+    function encodeAsciiBytes(value) {
+        return new Uint8Array(String(value).split('').map(char => char.charCodeAt(0) & 0xFF));
+    }
+
+    function encodeUtf16LeWithBom(value) {
+        const text = String(value || '');
+        const bytes = new Uint8Array(2 + (text.length * 2));
+        bytes[0] = 0xFF;
+        bytes[1] = 0xFE;
+        for (let i = 0; i < text.length; i++) {
+            const code = text.charCodeAt(i);
+            bytes[2 + (i * 2)] = code & 0xFF;
+            bytes[3 + (i * 2)] = (code >>> 8) & 0xFF;
+        }
+        return bytes;
+    }
+
+    function concatUint8Arrays(parts) {
+        const totalLength = parts.reduce((sum, part) => sum + part.length, 0);
+        const result = new Uint8Array(totalLength);
+        let offset = 0;
+        parts.forEach(part => {
+            result.set(part, offset);
+            offset += part.length;
+        });
+        return result;
+    }
+
+    function createId3Frame(frameId, payload) {
+        return concatUint8Arrays([
+            encodeAsciiBytes(frameId),
+            encodeUint32BigEndian(payload.length),
+            new Uint8Array([0, 0]),
+            payload
+        ]);
+    }
+
+    function createId3TextFrame(frameId, value) {
+        const text = String(value || '').trim();
+        if (!text) {
+            return null;
+        }
+        return createId3Frame(frameId, concatUint8Arrays([
+            new Uint8Array([1]),
+            encodeUtf16LeWithBom(text)
+        ]));
+    }
+
+    function createId3CommentFrame(value) {
+        const text = String(value || '').trim();
+        if (!text) {
+            return null;
+        }
+        return createId3Frame('COMM', concatUint8Arrays([
+            new Uint8Array([1]),
+            encodeAsciiBytes('zho'),
+            new Uint8Array([0, 0]),
+            encodeUtf16LeWithBom(text)
+        ]));
+    }
+
+    function getMeaningfulMetaValue(value) {
+        const text = String(value || '').trim();
+        return text === '未知' ? '' : text;
+    }
+
+    function createMp3Id3Tag(item) {
+        const title = getMeaningfulMetaValue(item?.meta?.name)
+            || stripTxtExtension(item?.fileName)
+            || '未命名乐谱';
+        const artist = getMeaningfulMetaValue(item?.meta?.author);
+        const transcribedBy = getMeaningfulMetaValue(item?.meta?.transcribedBy);
+        const comment = transcribedBy ? `改编者：${transcribedBy}` : '';
+
+        const frames = [
+            createId3TextFrame('TIT2', title),
+            createId3TextFrame('TPE1', artist),
+            createId3TextFrame('TPE4', transcribedBy),
+            createId3CommentFrame(comment)
+        ].filter(Boolean);
+
+        if (frames.length === 0) {
+            return new Uint8Array();
+        }
+
+        const frameBytes = concatUint8Arrays(frames);
+        return concatUint8Arrays([
+            encodeAsciiBytes('ID3'),
+            new Uint8Array([3, 0, 0]),
+            encodeSynchsafeInt(frameBytes.length),
+            frameBytes
+        ]);
+    }
+
+    function addMp3Metadata(mp3Blob, item) {
+        const tag = createMp3Id3Tag(item);
+        if (!tag || tag.length === 0) {
+            return mp3Blob;
+        }
+        return new Blob([tag, mp3Blob], { type: 'audio/mpeg' });
+    }
+
+    async function audioBufferToMp3Blob(audioBuffer, onProgress) {
+        if (!window.lamejs || !window.lamejs.Mp3Encoder) {
+            throw new Error('MP3编码器不可用');
+        }
+
+        const samples = audioBuffer.getChannelData(0);
+        const encoder = new window.lamejs.Mp3Encoder(1, audioBuffer.sampleRate, 128);
+        const mp3Parts = [];
+        const blockSize = 1152;
+
+        for (let i = 0; i < samples.length; i += blockSize) {
+            const sampleBlock = samples.subarray(i, i + blockSize);
+            const pcmBlock = new Int16Array(sampleBlock.length);
+            for (let j = 0; j < sampleBlock.length; j++) {
+                const sample = Math.max(-1, Math.min(1, sampleBlock[j]));
+                pcmBlock[j] = sample < 0 ? sample * 32768 : sample * 32767;
+            }
+
+            const mp3Buffer = encoder.encodeBuffer(pcmBlock);
+            if (mp3Buffer.length > 0) {
+                mp3Parts.push(new Uint8Array(mp3Buffer));
+            }
+
+            if (typeof onProgress === 'function' && i % (blockSize * 48) === 0) {
+                onProgress(Math.min(1, i / samples.length));
+                await wait(0);
+            }
+        }
+
+        const flushBuffer = encoder.flush();
+        if (flushBuffer.length > 0) {
+            mp3Parts.push(new Uint8Array(flushBuffer));
+        }
+        if (typeof onProgress === 'function') {
+            onProgress(1);
+        }
+
+        return new Blob(mp3Parts, { type: 'audio/mpeg' });
+    }
+
+    async function downloadMp3Audio(item, downloadBaseName, onProgress) {
+        if (typeof onProgress === 'function') {
+            onProgress('加载MP3编码器', 5);
+        }
+        await ensureMp3Encoder();
+        if (typeof onProgress === 'function') {
+            onProgress('离线渲染音频', 18);
+        }
+        const renderedBuffer = await renderProjectAudioBuffer(item);
+        if (typeof onProgress === 'function') {
+            onProgress('编码MP3', 62);
+        }
+        const mp3Blob = await audioBufferToMp3Blob(renderedBuffer, progress => {
+            if (typeof onProgress === 'function') {
+                onProgress('编码MP3', 62 + (progress * 32));
+            }
+        });
+        if (typeof onProgress === 'function') {
+            onProgress('写入音频属性', 96);
+        }
+        const taggedMp3Blob = addMp3Metadata(mp3Blob, item);
+        downloadBlob(`${downloadBaseName || 'skystudio_project'}_audio.mp3`, taggedMp3Blob);
+        if (typeof onProgress === 'function') {
+            onProgress('完成', 100);
+        }
+    }
+
     function getSourceFileName(item) {
         if (!item.sourceIsEncrypted) {
             return item.fileName;
@@ -3384,6 +4314,13 @@ zdjl.setStorage('appName',temp,'scmf')`;
     // 点击上传
     uploadArea.addEventListener('click', () => {
         fileInput.click();
+    });
+
+    uploadArea.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            fileInput.click();
+        }
     });
 
     fileInput.addEventListener('change', (e) => {
@@ -3685,6 +4622,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         previewAbortController = null;
         previewAbortReason = '';
         currentNoteIndex = 0;
+        updatePreviewProgress(0);
         if (clearHighlights) {
             clearAllHighlights();
         }
@@ -3793,6 +4731,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
                 }
 
                 currentNoteIndex = i + 1;
+                updatePreviewProgress(currentNoteIndex);
                 const sleepUnit = previewSleepUnits[i] || 0;
                 const delay = sleepUnit * (60000 / BPM);
 
@@ -3807,6 +4746,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
             // 预览结束
             currentNoteIndex = 0;
+            updatePreviewProgress(notesData.length);
             clearAllHighlights();
             resolve();
         } catch (error) {
@@ -3839,6 +4779,31 @@ zdjl.setStorage('appName',temp,'scmf')`;
             } catch (error) {
                 reject(error);
             }
+        });
+    }
+
+    function pressManualKey(index) {
+        const key = pianoKeys[index];
+        if (!key || manualPressedKeys.has(index)) {
+            return;
+        }
+
+        manualPressedKeys.add(index);
+        playSound(index);
+        key.classList.add('piano-key-down');
+    }
+
+    function releaseManualKey(index) {
+        const key = pianoKeys[index];
+        manualPressedKeys.delete(index);
+        if (key && !highlightedKeys.has(index)) {
+            key.classList.remove('piano-key-down');
+        }
+    }
+
+    function releaseAllManualKeys() {
+        Array.from(manualPressedKeys).forEach(index => {
+            releaseManualKey(index);
         });
     }
 
@@ -3885,32 +4850,45 @@ zdjl.setStorage('appName',temp,'scmf')`;
             pianoKeys.forEach((key, index) => {
                 key._index = index;
 
-                const handleKeyDown = () => {
-                    playSound(index);
-                    key.classList.add('piano-key-down');
-                    highlightedKeys.add(index);
-
-                    // 自动移除高亮
-                    setTimeout(() => {
-                        key.classList.remove('piano-key-down');
-                        highlightedKeys.delete(index);
-                    }, 200);
-                };
-
-                if (isMobile) {
-                    key.addEventListener("touchstart", handleKeyDown);
-                } else {
-                    key.addEventListener("mousedown", handleKeyDown);
-                }
+                key.addEventListener("mousedown", event => {
+                    event.preventDefault();
+                    pressManualKey(index);
+                });
+                key.addEventListener("mouseup", () => releaseManualKey(index));
+                key.addEventListener("mouseleave", () => releaseManualKey(index));
+                key.addEventListener("touchstart", event => {
+                    event.preventDefault();
+                    pressManualKey(index);
+                }, { passive: false });
+                key.addEventListener("touchend", () => releaseManualKey(index));
+                key.addEventListener("touchcancel", () => releaseManualKey(index));
+                key.addEventListener("keydown", event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        if (!event.repeat) {
+                            pressManualKey(index);
+                        }
+                    }
+                });
+                key.addEventListener("keyup", event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        releaseManualKey(index);
+                    }
+                });
             });
+            document.addEventListener('mouseup', releaseAllManualKeys);
+            window.addEventListener('blur', releaseAllManualKeys);
         })
         .catch(error => {
             console.error("音频加载失败:", error);
+            showToast('音频加载失败', 'error');
             document.getElementById('loadding').textContent = "音频加载失败，请检查网络连接";
         });
 
     function soundLoaded() {
         document.getElementById('loadding').style.display = 'none';
+        showToast('音频加载成功', 'success');
     }
 
     function playSound(index) {
@@ -3934,6 +4912,18 @@ zdjl.setStorage('appName',temp,'scmf')`;
         log.innerHTML = '';
     }
 
+    document.querySelectorAll('.seo-lang-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const selectedLang = tab.getAttribute('data-seo-lang');
+            document.querySelectorAll('.seo-lang-tab').forEach(item => {
+                item.setAttribute('aria-selected', String(item === tab));
+            });
+            document.querySelectorAll('.seo-lang-panel').forEach(panel => {
+                panel.hidden = panel.id !== `seoPanel${selectedLang === 'zh' ? 'Zh' : 'En'}`;
+            });
+        });
+    });
+
     // 侧边栏收缩控制
     const toggleSidebar = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
@@ -3943,6 +4933,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
     toggleSidebar.addEventListener('click', function() {
         const isCollapsed = sidebar.classList.toggle('collapsed');
         toggleSidebar.classList.toggle('collapsed', isCollapsed);
+        toggleSidebar.setAttribute('aria-expanded', String(!isCollapsed));
         mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
         if (sidebarContainer) {
             sidebarContainer.classList.toggle('collapsed', isCollapsed);
@@ -3957,6 +4948,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
     toggleStylePanel.addEventListener('click', function() {
         const isCollapsed = stylePanel.classList.toggle('collapsed');
         toggleStylePanel.classList.toggle('collapsed', isCollapsed);
+        toggleStylePanel.setAttribute('aria-expanded', String(!isCollapsed));
         mainContent.classList.toggle('stylepanel-collapsed', isCollapsed);
         if (stylePanelContainer) {
             stylePanelContainer.classList.toggle('collapsed', isCollapsed);
@@ -4132,6 +5124,13 @@ zdjl.setStorage('appName',temp,'scmf')`;
         bgImageUpload.click();
     });
 
+    bgImageUploadArea.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            bgImageUpload.click();
+        }
+    });
+
     bgImageUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         const hasSelectedImage = file
@@ -4294,9 +5293,9 @@ zdjl.setStorage('appName',temp,'scmf')`;
     });
 
     // 初始化日志
-    addLog('Sky Studio解密解析工具（支持加密文件）');
+    addLog('Sky Studio乐谱解密解析工具（支持加密文件）');
     addLog('━━━━━━━━━━━━━━━━━━━━');
-    addLog('点击或拖拽文件到上传区域开始');
+    addLog('点击或拖拽TXT文件到上传区域开始');
     addLog('支持加密/未加密文件转换');
     addLog('');
     setFlowState('empty');
@@ -4890,6 +5889,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         clearAllHighlights();
 
         currentNoteIndex = noteIndex;
+        updatePreviewProgress(noteIndex);
         highlightPreviewPosition(noteIndex);
         requestPreviewScroll(noteIndex);
         startPreview();
@@ -5221,7 +6221,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         // 清除所有琴键高亮
         highlightedKeys.forEach(keyIndex => {
             const keyElement = pianoKeys[keyIndex];
-            if (keyElement) {
+            if (keyElement && !manualPressedKeys.has(keyIndex)) {
                 keyElement.classList.remove('piano-key-down');
             }
         });

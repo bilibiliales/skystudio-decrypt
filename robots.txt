@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap:
+https://bilibiliales.github.io/skystudio-decrypt/sitemap.xml
