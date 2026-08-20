@@ -6,11 +6,15 @@
 
 ## 中文说明
 
-Sky Studio乐谱解密解析工具是一个纯静态单页面网页，用于处理 Sky Studio TXT 乐谱文件。它支持光遇乐谱解密、TXT 加密文件识别、在线预览、简谱转换、键盘可视化、MP3 音频导出、批量下载和 ZIP 导出。
+Sky Studio乐谱解密解析工具是一个纯静态单页面网页，用于处理 Sky Studio TXT 和 MusicXML 乐谱文件。它支持光遇乐谱解密、TXT 加密文件识别、在线预览、简谱转换、键盘可视化、MP3 音频导出，以及 MusicXML 节拍解析、61 键钢琴预览和脚本导出。
 
 ## 功能
 
 - 支持加密 TXT 乐谱文件的本地解密。
+- 支持 .musicxml / .xml 的 divisions、休止符、和弦、连音线和多声部节拍解析。
+- MusicXML 使用 C2–C7 的 61 键钢琴预览（36 个白键、25 个黑键），支持“钢琴”和“明亮钢琴”两种音色。
+- MusicXML 可直接导出当前音色的 MP3；超出 C2–C7 的音符仍会保留在脚本中。
+- MusicXML 脚本键位会按音高从低到高动态生成 A1、A2……B1、B2……。
 - 支持光遇乐谱预览、键盘高亮和音频播放。
 - 支持代码、简谱、时间轴、方格谱等多种预览方式。
 - 支持直接导出 MP3 音频，不需要通过预览录音生成。
@@ -22,23 +26,27 @@ Sky Studio乐谱解密解析工具是一个纯静态单页面网页，用于处�
 ## 使用方法
 
 1. 打开在线工具：[https://bilibiliales.github.io/skystudio-decrypt/](https://bilibiliales.github.io/skystudio-decrypt/)
-2. 上传或拖拽一个或多个 Sky Studio `.txt` 乐谱文件。
-3. 在文件列表中选择乐谱，查看元数据并进行预览。
-4. 下载解密结果、复制生成代码、导出简谱图片、导出 MP3，或批量生成 ZIP。
+2. 上传或拖拽一个或多个 Sky Studio `.txt`、`.musicxml` 或 `.xml` 乐谱文件。
+3. TXT 乐谱使用 15 键布局预览；MusicXML 使用 C2–C7 的 61 键钢琴预览，并可切换两种音色。
+4. 下载脚本、解密结果、简谱图片、MP3，或批量生成 ZIP。
 
 ## 隐私说明
 
-本项目是纯静态网页，不提供账号登录、数据库、表单提交或服务端文件上传功能。你选择的 TXT 乐谱文件会由浏览器本地读取和处理，不会被本项目上传到服务器。
+本项目是纯静态网页，不提供账号登录、数据库、表单提交或服务端文件上传功能。你选择的 TXT 或 MusicXML 乐谱文件会由浏览器本地读取和处理，不会被本项目上传到服务器。
 
 页面会从 GitHub Pages 加载预览所需的音频、图片、CSS 和脚本等静态资源。导出 MP3 时，页面会按需加载浏览器端 MP3 编码器，用于把本地离线渲染的音频转换成文件。浏览器可能在本地保存界面设置、背景图片设置或工作列表，用于恢复使用体验；你可以通过浏览器设置清除站点数据。
 
 ## English
 
-Sky Studio Music Decrypt Tool is a pure static single-page website for Sky Studio TXT sheet files. It supports encrypted sheet detection, browser-side decryption, online preview, notation conversion, keyboard visualization, MP3 audio export, batch download, and ZIP export.
+Sky Studio Music Decrypt Tool is a pure static single-page website for Sky Studio TXT and MusicXML sheet files. It supports encrypted TXT detection and decryption, online preview, notation conversion, keyboard visualization, MP3 export, plus rhythm-aware MusicXML piano preview and script export.
 
 ## Features
 
 - Decrypt supported encrypted TXT music sheet files in the browser.
+- Parse .musicxml / .xml divisions, rests, chords, ties, and multiple parts for script timing.
+- Preview MusicXML on a C2–C7 61-key piano (36 white and 25 black keys) with normal or bright piano samples.
+- Export MusicXML to MP3 with the selected timbre; out-of-range pitches remain in the generated script.
+- Generate MusicXML script keys dynamically in ascending pitch order (A1, A2 … B1, B2 …).
 - Preview music with keyboard visualization and audio playback.
 - View converted content as code, simplified notation, timeline, or grid notation.
 - Export MP3 audio directly from the note timeline without recording preview playback.
@@ -50,13 +58,13 @@ Sky Studio Music Decrypt Tool is a pure static single-page website for Sky Studi
 ## Usage
 
 1. Open the online tool: [https://bilibiliales.github.io/skystudio-decrypt/](https://bilibiliales.github.io/skystudio-decrypt/)
-2. Upload or drag one or more Sky Studio `.txt` sheet files into the upload area.
-3. Select a file from the local list to inspect metadata and preview the music.
-4. Download the decrypted result, copy generated code, export notation, export MP3, or create a ZIP archive.
+2. Upload or drag one or more `.txt`, `.musicxml`, or `.xml` sheet files into the upload area.
+3. Preview TXT sheets with the 15-key layout or MusicXML with the C2–C7 piano keyboard.
+4. Download scripts or decrypted sources, export MP3 for TXT and MusicXML, export TXT notation, or create a ZIP archive.
 
 ## Privacy
 
-This project is a static website. It does not provide user accounts, a database, form submission, or a server-side file upload workflow. Selected TXT files are read and processed locally by your browser and are not uploaded by this project.
+This project is a static website. It does not provide user accounts, a database, form submission, or a server-side file upload workflow. Selected TXT and MusicXML files are read and processed locally by your browser and are not uploaded by this project.
 
 The page loads static assets such as audio files, images, CSS, and scripts from GitHub Pages. MP3 export loads a browser-side MP3 encoder on demand, then converts locally rendered audio into a downloadable file. Your browser may store local UI settings, background image settings, or the local working list so the page can restore your experience later. You can clear this data through your browser site settings.
 

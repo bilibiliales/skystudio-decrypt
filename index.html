@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Sky Studio乐谱解密解析工具 - TXT在线解密、预览、转换和MP3导出 | Sky Studio Tool</title>
-    <meta name="description" content="Sky Studio乐谱解密解析工具，支持光遇乐谱、Sky Studio TXT、加密乐谱文件的本地解密、在线预览、简谱转换、MP3音频导出、键盘可视化、批量下载和ZIP导出。Decrypt, preview, convert, and export Sky Studio TXT sheets in the browser.">
-    <meta name="keywords" content="Sky Studio, Sky Studio decrypt, Sky Studio sheet, Sky Studio TXT, Sky Studio music, Sky Studio encrypted file, Sky music tool, Sky Studio converter, 光遇乐谱, Sky Studio解密, 光遇乐谱解密">
+    <meta name="description" content="Sky Studio乐谱解密解析工具，支持TXT本地解密、在线预览、MP3导出，以及MusicXML节拍解析、C2-C7 61键双音色钢琴预览和动态键位脚本导出。">
+    <meta name="keywords" content="Sky Studio, Sky Studio decrypt, Sky Studio sheet, Sky Studio TXT, MusicXML, MusicXML converter, Sky Studio music, Sky Studio encrypted file, Sky music tool, 光遇乐谱, Sky Studio解密, 光遇乐谱解密">
     <meta name="author" content="bilibiliales">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://bilibiliales.github.io">
     <link rel="dns-prefetch" href="//bilibiliales.github.io">
     <meta property="og:title" content="Sky Studio乐谱解密解析工具 - TXT在线解密、预览、转换和MP3导出">
-    <meta property="og:description" content="纯静态浏览器工具，支持TXT乐谱解密、预览、简谱转换、MP3导出、键盘可视化、批量下载和ZIP导出。">
+    <meta property="og:description" content="纯静态浏览器工具，支持TXT乐谱解密与预览，以及MusicXML 61键钢琴预览、MP3和动态键位脚本导出。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://bilibiliales.github.io/skystudio-decrypt/">
     <meta property="og:image" content="https://bilibiliales.github.io/skystudio-decrypt/assets/og-image.png">
@@ -26,7 +26,7 @@
     <meta property="og:locale" content="zh_CN">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Sky Studio乐谱解密解析工具">
-    <meta name="twitter:description" content="在浏览器中本地解密、预览、转换、导出MP3，并批量导出TXT乐谱。">
+    <meta name="twitter:description" content="在浏览器中处理TXT与MusicXML乐谱，支持61键钢琴预览、双音色MP3和动态键位脚本。">
     <meta name="twitter:image" content="https://bilibiliales.github.io/skystudio-decrypt/assets/og-image.png">
     <link rel="image_src" href="https://bilibiliales.github.io/skystudio-decrypt/assets/social-preview.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
@@ -39,7 +39,7 @@
                 "@type": "SoftwareApplication",
                 "@id": "https://bilibiliales.github.io/skystudio-decrypt/#software",
                 "name": "Sky Studio乐谱解密解析工具 / Sky Studio Music Decrypt Tool",
-                "description": "一个纯静态浏览器工具，用于TXT乐谱本地解密、光遇乐谱预览、简谱转换、MP3音频导出、键盘可视化、批量下载和ZIP导出。",
+                "description": "一个纯静态浏览器工具，用于TXT乐谱本地解密与预览，以及MusicXML节拍解析、61键钢琴预览、MP3和动态键位脚本导出。",
                 "url": "https://bilibiliales.github.io/skystudio-decrypt/",
                 "operatingSystem": "Windows, macOS, Linux, Android, iOS",
                 "applicationCategory": "MusicApplication",
@@ -55,7 +55,7 @@
                 "@id": "https://bilibiliales.github.io/skystudio-decrypt/#website",
                 "name": "Sky Studio乐谱解密解析工具",
                 "url": "https://bilibiliales.github.io/skystudio-decrypt/",
-                "description": "TXT乐谱解密、预览、转换和导出工具。",
+                "description": "TXT乐谱解密预览与MusicXML 61键钢琴预览、MP3和脚本转换工具。",
                 "inLanguage": ["en", "zh-CN"]
             },
             {
@@ -101,7 +101,7 @@
                         "name": "Does the tool upload files?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "No. The Sky Studio TXT files are processed locally by JavaScript in the browser. The tool fetches local sound assets for preview playback, but the sheet files you choose are not uploaded to a server."
+                            "text": "No. Sky Studio TXT and MusicXML files are processed locally by JavaScript in the browser. The tool fetches sound assets for preview playback, but the sheets you choose are not uploaded to a server."
                         }
                     },
                     {
@@ -109,7 +109,7 @@
                         "name": "How to export Sky Studio music to MP3?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "Upload and convert a supported Sky Studio TXT sheet, then click the MP3 export button. The page renders the note timeline with the built-in key audio files in the browser and encodes the rendered result as an MP3 download, so microphone recording is not required."
+                            "text": "Upload and convert a supported Sky Studio TXT or MusicXML sheet, then click the MP3 export button. The page renders the note timeline with built-in key or piano samples and encodes the result locally, so microphone recording is not required."
                         }
                     },
                     {
@@ -117,7 +117,7 @@
                         "name": "这个工具会收集个人信息吗？",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "不会。这个网站是纯静态GitHub Pages页面，不提供账号登录、数据库、表单提交或服务端上传流程。用户选择的Sky Studio TXT乐谱文件由浏览器本地读取和处理，不会被上传到站点服务器。"
+                            "text": "不会。这个网站是纯静态GitHub Pages页面，不提供账号登录、数据库、表单提交或服务端上传流程。用户选择的Sky Studio TXT或MusicXML乐谱由浏览器本地读取和处理，不会被上传到站点服务器。"
                         }
                     },
                     {
@@ -675,6 +675,33 @@
             transform: translateY(-12px);
         }
 
+        #scorePreview.musicxml-mode {
+            height: auto;
+            min-height: 170px;
+            overflow: visible;
+        }
+
+        .musicxml-notice {
+            display: none;
+            width: min(760px, calc(100% - 32px));
+            margin: 42px auto 0;
+            padding: 18px 22px;
+            box-sizing: border-box;
+            border: 1px solid rgba(76, 175, 80, 0.45);
+            border-radius: 10px;
+            background: rgba(76, 175, 80, 0.12);
+            color: #245b29;
+            font-size: 15px;
+            line-height: 1.65;
+            text-align: center;
+        }
+
+        body.panel-dark .musicxml-notice {
+            border-color: rgba(129, 199, 132, 0.55);
+            background: rgba(129, 199, 132, 0.14);
+            color: #d9f2dc;
+        }
+
         .copy-code-float {
             position: absolute;
             top: 10px;
@@ -1053,6 +1080,27 @@
                 overflow: auto;
             }
 
+            #MusicXmlPianoPanel {
+                padding: 4px 8px 14px;
+            }
+
+            .musicxml-piano-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 3px;
+                padding: 0 2px;
+            }
+
+            .musicxml-audio-status {
+                width: 100%;
+                text-align: left;
+            }
+
+            .musicxml-piano-keyboard {
+                min-width: 980px;
+                height: 176px;
+            }
+
             #scorePreview.preview-hidden + #PianoPanel {
                 transform: translateY(-10px);
             }
@@ -1334,6 +1382,151 @@
         #scorePreview.preview-hidden + #PianoPanel {
             transform: translateY(-18px);
         }
+
+        #MusicXmlPianoPanel {
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 18px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .musicxml-piano-header {
+            width: min(100%, 1220px);
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: rgba(32, 32, 32, 0.78);
+            font-size: 13px;
+        }
+
+        body.panel-dark .musicxml-piano-header {
+            color: rgba(245, 245, 245, 0.8);
+        }
+
+        .musicxml-audio-status {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .musicxml-piano-scroll {
+            width: min(100%, 1220px);
+            margin: 0 auto;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 4px 0 10px;
+            scrollbar-color: rgba(76, 175, 80, 0.7) rgba(0, 0, 0, 0.12);
+            scrollbar-width: thin;
+        }
+
+        .musicxml-piano-keyboard {
+            position: relative;
+            width: 100%;
+            min-width: 1080px;
+            height: clamp(170px, 24vw, 224px);
+            box-sizing: border-box;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 7px;
+            background: #181818;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+            user-select: none;
+            touch-action: none;
+        }
+
+        .musicxml-piano-key {
+            position: absolute;
+            top: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.08s ease, background 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .musicxml-piano-key.white {
+            z-index: 1;
+            height: 100%;
+            border-right: 1px solid rgba(0, 0, 0, 0.34);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+            border-radius: 0 0 5px 5px;
+            background: linear-gradient(90deg, #fafafa 0%, #ffffff 48%, #ececec 100%);
+            box-shadow: inset 0 -10px 18px rgba(0, 0, 0, 0.05);
+            color: #3d4148;
+        }
+
+        .musicxml-piano-key.black {
+            z-index: 2;
+            height: 60%;
+            border: 1px solid #090909;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(90deg, #090909 0%, #2c2c2c 52%, #0b0b0b 100%);
+            box-shadow: inset 0 -8px 6px rgba(255, 255, 255, 0.08), 0 4px 5px rgba(0, 0, 0, 0.42);
+            color: #f4f4f4;
+        }
+
+        .musicxml-piano-key:hover {
+            filter: brightness(1.04);
+        }
+
+        .musicxml-piano-key:focus-visible {
+            outline: 3px solid rgba(33, 150, 243, 0.8);
+            outline-offset: -3px;
+        }
+
+        .musicxml-piano-key.white.musicxml-key-down {
+            z-index: 3;
+            transform: translateY(4px);
+            background: linear-gradient(90deg, #b9e8ff 0%, #e5f7ff 50%, #8fd2f2 100%);
+            box-shadow: inset 0 0 18px rgba(0, 145, 220, 0.44), 0 0 12px rgba(0, 174, 255, 0.68);
+        }
+
+        .musicxml-piano-key.black.musicxml-key-down {
+            z-index: 4;
+            transform: translateY(3px);
+            background: linear-gradient(90deg, #063248 0%, #168ac0 52%, #052c40 100%);
+            box-shadow: inset 0 0 10px rgba(139, 222, 255, 0.5), 0 0 12px rgba(0, 174, 255, 0.82);
+        }
+
+        .musicxml-key-label {
+            position: absolute;
+            left: 50%;
+            bottom: 8px;
+            transform: translateX(-50%);
+            min-width: 25px;
+            padding: 3px 4px;
+            border-radius: 3px;
+            background: rgba(97, 110, 125, 0.2);
+            color: inherit;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .musicxml-piano-key.black .musicxml-key-label {
+            bottom: 7px;
+            min-width: 0;
+            padding: 2px;
+            background: transparent;
+            font-size: 9px;
+            opacity: 0;
+        }
+
+        .musicxml-piano-key[data-octave="3"] .musicxml-key-label { background: rgba(3, 169, 244, 0.2); }
+        .musicxml-piano-key[data-octave="4"] .musicxml-key-label { background: rgba(76, 175, 80, 0.22); }
+        .musicxml-piano-key[data-octave="5"] .musicxml-key-label { background: rgba(255, 152, 0, 0.24); }
+        .musicxml-piano-key[data-octave="6"] .musicxml-key-label { background: rgba(255, 87, 34, 0.22); }
+        .musicxml-piano-key[data-octave="7"] .musicxml-key-label { background: rgba(233, 30, 99, 0.2); }
 
         .piano-wrap {
             display: grid;
@@ -1853,6 +2046,29 @@
             white-space: nowrap;
         }
 
+        .musicxml-audio-toolbar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 0 0 10px;
+            padding: 8px 10px;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 6px;
+            background: var(--panel-soft-bg);
+            color: var(--panel-text-color);
+            font-size: 13px;
+        }
+
+        .musicxml-audio-toolbar select {
+            min-width: 118px;
+            padding: 6px 8px;
+            border: 1px solid var(--panel-border-color);
+            border-radius: 5px;
+            background: var(--panel-bg-color);
+            color: var(--panel-text-color);
+        }
+
         .export-progress {
             flex: 1 0 100%;
             margin-top: 8px;
@@ -2018,22 +2234,22 @@
     </style>
 </head>
 <body>
-<aside class="sidebar-container" aria-label="TXT乐谱解密控制区">
+<aside class="sidebar-container" aria-label="乐谱文件处理控制区">
     <div id="sidebar" class="sidebar">
         <header class="app-header">
             <h1>Sky Studio乐谱解密解析工具</h1>
         </header>
 
-        <section class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="上传TXT乐谱文件" title="上传TXT乐谱文件">
-            <h3>上传TXT乐谱文件</h3>
-            <p>支持 .txt 格式的加密或未加密乐谱</p>
-            <input type="file" id="fileInput" accept=".txt" multiple aria-label="选择一个或多个TXT乐谱文件" title="选择TXT乐谱文件">
+        <section class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="上传TXT或MusicXML乐谱文件" title="上传TXT或MusicXML乐谱文件">
+            <h3>上传TXT / MusicXML乐谱文件</h3>
+            <p>支持 .txt、.musicxml 和 .xml；MusicXML 可使用 61 键钢琴预览并导出 MP3</p>
+            <input type="file" id="fileInput" accept=".txt,.musicxml,.xml,text/plain,application/xml,text/xml" multiple aria-label="选择一个或多个TXT或MusicXML乐谱文件" title="选择乐谱文件">
         </section>
 
-        <section class="file-list-panel" aria-label="TXT文件列表">
+        <section class="file-list-panel" aria-label="乐谱文件列表">
             <div class="file-list-toolbar">
                 <button class="btn" id="toggleSelectButton" disabled aria-label="全选文件" title="全选文件">全选</button>
-                <button class="btn" id="downloadSelectedButton" disabled aria-label="下载选中解密文件" title="下载选中解密文件">下载选中解密文件</button>
+                <button class="btn" id="downloadSelectedButton" disabled aria-label="下载选中源文件" title="下载选中源文件">下载选中源文件</button>
                 <button class="btn" id="zipSelectedButton" disabled aria-label="生成ZIP压缩包" title="生成ZIP压缩包">生成ZIP</button>
                 <button class="btn" id="clearListButton" disabled aria-label="清空文件列表" title="清空文件列表">清空列表</button>
             </div>
@@ -2042,8 +2258,8 @@
             </div>
         </section>
 
-        <nav id="conversionFlow" class="conversion-flow" aria-label="TXT解密流程">
-            <span class="flow-step" data-flow-step="upload">上传TXT</span>
+        <nav id="conversionFlow" class="conversion-flow" aria-label="乐谱处理流程">
+            <span class="flow-step" data-flow-step="upload">上传文件</span>
             <span class="flow-arrow">→</span>
             <span class="flow-step" data-flow-step="read">识别</span>
             <span class="flow-arrow">→</span>
@@ -2052,7 +2268,7 @@
             <span class="flow-step" data-flow-step="convert">转换</span>
             <span class="flow-arrow">→</span>
             <span class="flow-step" data-flow-step="preview">预览/下载</span>
-            <span id="flowHint" class="flow-hint" role="status">拖入TXT文件后会先读取乐谱信息</span>
+            <span id="flowHint" class="flow-hint" role="status">拖入乐谱文件后会先读取文件信息</span>
         </nav>
 
         <section id="songInfo" class="info-panel" aria-label="乐谱信息">
@@ -2085,13 +2301,13 @@
                 <div class="song-info-readonly">
                     <p>拍子：<span id="infoPaizi"></span></p>
                     <p>加密：<span id="infoEncrypted"></span></p>
-                    <p>数据长度：<span id="infoNoteCount"></span></p>
+                    <p>音符数量：<span id="infoNoteCount"></span></p>
                 </div>
             </div>
         </section>
 
         <section id="previewControls" aria-label="解密结果下载">
-            <button class="btn download-btn" id="downloadButton" style="display:none;" aria-label="下载当前解密文件" title="下载当前解密文件">下载当前解密文件</button>
+            <button class="btn download-btn" id="downloadButton" style="display:none;" aria-label="下载当前转换代码" title="下载当前转换代码">下载当前转换代码</button>
             <button class="btn download-btn" id="scriptDownloadButton" style="display:none;" aria-label="下载脚本" title="下载脚本">下载脚本</button>
             <button class="btn download-btn" id="notationDownloadButton" style="display:none;" aria-label="下载简谱图片" title="下载简谱图片">下载简谱</button>
             <button class="btn download-btn" id="mp3DownloadButton" style="display:none;" aria-label="导出MP3音频" title="导出MP3音频">导出MP3</button>
@@ -2107,6 +2323,13 @@
         </section>
 
         <section id="previewControlsInSidebar" style="display: none;" aria-label="乐谱预览控制">
+            <div id="musicXmlAudioToolbar" class="musicxml-audio-toolbar">
+                <label for="musicXmlTimbreSelector">MusicXML 音色</label>
+                <select id="musicXmlTimbreSelector" aria-label="选择 MusicXML 预览和导出音色" title="选择 MusicXML 预览和导出音色">
+                    <option value="piano">钢琴</option>
+                    <option value="bright">明亮钢琴</option>
+                </select>
+            </div>
             <!-- 预览控制区域容器 - 确保同一行显示 -->
             <div class="preview-controls-container">
                 <!-- 倍速调节控件 -->
@@ -2136,9 +2359,11 @@
 
                 <div id="seoPanelZh" class="seo-lang-panel" role="tabpanel" aria-labelledby="seoTabZh">
                     <h2>功能特点</h2>
-                    <p>Sky Studio乐谱解密解析工具是一个纯静态、单页面的浏览器工具，面向需要处理 Sky Studio TXT 乐谱文件的光遇玩家、制谱者和乐谱整理者。它可以识别明文或加密的 TXT 乐谱，解密支持的内容，预览按键和节奏，将结果转换成代码、简谱、时间轴或方格谱，并支持 MP3 音频导出、单文件下载、批量下载和 ZIP 打包。</p>
+                    <p>Sky Studio乐谱解密解析工具是一个纯静态、单页面的浏览器工具，面向需要处理 Sky Studio TXT 或 MusicXML 乐谱的玩家、制谱者和乐谱整理者。它可以解密 TXT 乐谱，解析 MusicXML 节拍，用 15 键或 C2–C7 的 61 键钢琴预览，并支持脚本、MP3、简谱图片、单文件和 ZIP 导出。</p>
                     <ul>
                         <li>支持 Sky Studio TXT 加密乐谱文件的本地解密。</li>
+                        <li>支持 MusicXML 节拍解析、61 键钢琴预览和按音高动态生成 A1、A2……键位脚本。</li>
+                        <li>MusicXML 可在“钢琴”和“明亮钢琴”两种音色之间切换。</li>
                         <li>支持键盘可视化和音频播放，方便检查节奏。</li>
                         <li>支持代码、简谱、时间轴和方格谱等预览方式。</li>
                         <li>支持直接导出 MP3 音频，不需要录制预览声音。</li>
@@ -2147,25 +2372,25 @@
 
                     <h2>使用方法</h2>
                     <ol>
-                        <li>准备一个或多个 Sky Studio TXT 乐谱文件。</li>
-                        <li>点击上传区域，或将 TXT 文件拖入上传框。</li>
+                        <li>准备一个或多个 Sky Studio TXT、MusicXML 或 XML 乐谱文件。</li>
+                        <li>点击上传区域，或将乐谱文件拖入上传框。</li>
                         <li>在文件列表中选择乐谱，检查名称、作者、BPM、拍子、加密状态和音符数量。</li>
-                        <li>使用预览控制播放乐谱，确认节奏和旋律。</li>
-                        <li>按需要下载当前解密文件、下载脚本、导出简谱图片、导出 MP3、复制代码，或生成 ZIP。</li>
+                        <li>TXT 使用 15 键布局预览；MusicXML 使用 C2–C7 的 61 键钢琴预览，并显示动态脚本键位数量。</li>
+                        <li>按需要下载源文件、脚本或 MP3；TXT 还可导出简谱图片、复制代码，或生成 ZIP。</li>
                     </ol>
 
                     <h2>如何把 Sky Studio 音乐导出为 MP3？</h2>
-                    <p>上传并转换支持的 Sky Studio TXT 乐谱后，点击“导出MP3”。页面会根据解密后的按键时间线，在浏览器中离线渲染整首曲子的音频，再编码成 MP3 文件下载。这个过程不需要麦克风权限，不需要录屏，也不需要播放时录制系统声音。</p>
-                    <p>为了得到更稳定的结果，建议先预览一次并确认 BPM、歌曲信息和节奏正常，再导出最终 MP3。导出的音频适合保存试听版本、检查改编效果，或分享给不需要 TXT 乐谱源文件的人。</p>
+                    <p>上传并转换支持的 Sky Studio TXT 或 MusicXML 乐谱后，点击“导出MP3”。页面会根据音符时间线，在浏览器中离线渲染整首曲子的音频，再编码成 MP3 文件下载。MusicXML 会使用当前选择的钢琴音色。这个过程不需要麦克风权限、录屏或系统声音录制。</p>
+                    <p>为了得到更稳定的结果，建议先预览一次并确认 BPM、歌曲信息、音色和节奏正常，再导出最终 MP3。</p>
 
                     <h2>支持的文件类型</h2>
-                    <p>主要支持 <strong>.txt</strong> 乐谱文件。文件可能是 Sky Studio 加密格式，也可能是解析器能识别的明文格式。由于社区文件来源和版本不同，不是所有未知 TXT 布局都能保证成功转换；如果文件无法识别，页面会显示错误原因。</p>
+                    <p>支持 <strong>.txt</strong>、<strong>.musicxml</strong> 和 <strong>.xml</strong> 乐谱文件。TXT 文件支持解密、15 键预览、简谱和音频导出；partwise MusicXML 支持 divisions、休止符、和弦、连音线、多声部和速度变化，并可在 C2–C7 的 61 键范围内预览与导出 MP3。超出该范围的音符仍会保留在动态键位脚本中。</p>
 
                     <h2>关于 Sky Studio 加密</h2>
                     <p>Sky Studio 加密通常用于以非明文形式分享或保存乐谱数据。对玩家来说，这会让预览旋律、确认 BPM、归档歌曲或转换记谱方式变得不方便。本工具会在浏览器中处理支持的编码方式，把数据重建成可预览、可下载、可导出的乐谱结构。</p>
 
                     <h2 id="privacy-policy">隐私政策</h2>
-                    <p>本工具部署在 GitHub Pages 上，是纯静态网页，不提供账号登录、表单提交、数据库存储或服务端文件上传功能。你选择的 TXT 乐谱文件由浏览器本地读取和处理，解密、转换、预览和导出都在当前浏览器环境中完成。</p>
+                    <p>本工具部署在 GitHub Pages 上，是纯静态网页，不提供账号登录、表单提交、数据库存储或服务端文件上传功能。你选择的 TXT 或 MusicXML 乐谱文件由浏览器本地读取和处理，解密、转换、预览和导出都在当前浏览器环境中完成。</p>
                     <p>为了播放预览音效，页面会加载音频文件；导出 MP3 时，页面会按需加载浏览器端 MP3 编码器。这些静态资源请求不包含你上传的 TXT 乐谱内容。工具可能使用浏览器本地存储保存界面设置、背景图设置或工作列表，你可以通过浏览器设置清除站点数据。</p>
 
                     <h2>常见问题</h2>
@@ -2195,9 +2420,11 @@
 
                 <div id="seoPanelEn" class="seo-lang-panel" role="tabpanel" aria-labelledby="seoTabEn" hidden>
                     <h2>Features</h2>
-                    <p>Sky Studio Music Decrypt Tool is a static single-page browser utility for players and sheet makers who work with Sky Studio TXT files. It can detect readable or encrypted TXT sheets, decrypt supported content, preview the rhythm on a keyboard, convert the result into code or notation views, export MP3 audio, download individual files, batch download selected results, and create ZIP archives.</p>
+                    <p>Sky Studio Music Decrypt Tool is a static single-page browser utility for Sky Studio TXT and MusicXML scores. TXT sheets support decryption, preview, notation, and MP3 export. MusicXML scores add a C2–C7 61-key piano, two timbres, MP3 export, and dynamically keyed scripts.</p>
                     <ul>
                         <li>Browser-side Sky Studio TXT decryption for supported encrypted sheets.</li>
+                        <li>Rhythm-aware MusicXML parsing with a 61-key piano and dynamically generated script keys.</li>
+                        <li>Normal and bright piano timbres for MusicXML preview and MP3 export.</li>
                         <li>Online preview with keyboard visualization and audio playback.</li>
                         <li>Code, simplified notation, timeline, and grid-style preview modes.</li>
                         <li>Direct MP3 export without recording preview playback.</li>
@@ -2206,25 +2433,25 @@
 
                     <h2>How to use</h2>
                     <ol>
-                        <li>Prepare one or more supported Sky Studio TXT sheet files.</li>
-                        <li>Click the upload area or drag TXT files into the page.</li>
+                        <li>Prepare one or more TXT, MusicXML, or XML score files.</li>
+                        <li>Click the upload area or drag score files into the page.</li>
                         <li>Select a sheet from the file list and check its metadata, BPM, encryption status, and note count.</li>
-                        <li>Preview the music to confirm the timing and melody.</li>
-                        <li>Download the decrypted result, export notation, export MP3, copy generated code, or create a ZIP archive.</li>
+                        <li>Preview TXT music with the 15-key layout or MusicXML with the C2–C7 piano keyboard.</li>
+                        <li>Download source files, scripts, or MP3 audio. TXT sheets can also export notation and generated code.</li>
                     </ol>
 
                     <h2>How to export Sky Studio music to MP3?</h2>
-                    <p>To export Sky Studio music to MP3, upload a supported Sky Studio TXT sheet, wait for the page to decrypt and convert it, then click the <strong>导出MP3</strong> button. The tool does not record your microphone, screen, or system audio. It uses the note timeline from the decrypted sheet and the same key audio files used by the preview player, renders the full song locally in the browser, and encodes that rendered audio as an MP3 file.</p>
+                    <p>To export Sky Studio music to MP3, upload a supported TXT or MusicXML sheet and click <strong>导出MP3</strong>. The tool renders the note timeline locally with the current key or piano samples and encodes it in the browser; it does not record your microphone, screen, or system audio.</p>
                     <p>Preview the sheet first and confirm that the BPM, metadata, and rhythm are correct. The exported MP3 is useful for saving a playable audio version, sharing a quick preview, or checking an arrangement without asking the user to record playback manually.</p>
 
                     <h2>Supported file types</h2>
-                    <p>The main supported input is a <strong>.txt</strong> Sky Studio music sheet file. It may contain encrypted Sky Studio data or a readable text format recognized by the parser. Community files can come from different tool versions, so unsupported layouts may fail with an error message instead of being treated as valid conversions.</p>
+                    <p>The tool accepts Sky Studio <strong>.txt</strong> sheets and partwise <strong>.musicxml</strong> / <strong>.xml</strong> scores. TXT files support decryption, 15-key preview, notation, and audio export. MusicXML supports rhythm-aware scripts plus C2–C7 61-key preview and MP3 export; pitches outside that audio range remain available in the generated script.</p>
 
                     <h2>About Sky Studio encryption</h2>
                     <p>Sky Studio encryption stores sheet data in a form that is not immediately readable as normal note text. This can make it difficult to preview a melody, verify BPM, archive a song, or convert a score into another format. This tool handles supported formats in the browser and rebuilds the data into a usable music structure.</p>
 
                     <h2>Privacy Policy</h2>
-                    <p>This project is a static GitHub Pages site. It has no user accounts, form submission, database, or server-side file upload workflow. Selected TXT sheets are read and processed locally by your browser.</p>
+                    <p>This project is a static GitHub Pages site. It has no user accounts, form submission, database, or server-side file upload workflow. Selected TXT and MusicXML sheets are read and processed locally by your browser.</p>
                     <p>The page loads static audio and interface assets. MP3 export loads a browser-side MP3 encoder on demand to convert locally rendered audio into a downloadable file. Your sheet content is not uploaded by this project. Local browser storage may be used for interface settings, background image settings, or the local working list.</p>
 
                     <h2>FAQ</h2>
@@ -2255,7 +2482,7 @@
         </section>
 
         <footer class="site-footer">
-            <p>Sky Studio乐谱解密解析工具：支持TXT解密、预览、转换、MP3和ZIP导出。隐私政策见本页“隐私政策 / Privacy Policy”。</p>
+            <p>Sky Studio乐谱解密解析工具：支持TXT解密与预览、MusicXML 61键钢琴预览、脚本转换、MP3和ZIP导出。隐私政策见本页“隐私政策 / Privacy Policy”。</p>
         </footer>
     </div>
 </aside>
@@ -2281,6 +2508,9 @@
         <div id="notationContainer" role="region" aria-label="简谱预览"></div>
         <div id="pipelineContainer" role="region" aria-label="时间轴预览"></div>
         <div id="snapshotGridContainer" role="region" aria-label="方格谱预览"></div>
+        <div id="musicXmlNotice" class="musicxml-notice" role="status">
+            MusicXML 已完成节拍解析，可使用下方 61 键钢琴预览，并导出 MP3 或脚本。
+        </div>
     </section>
 
     <section id="PianoPanel" aria-label="键盘可视化">
@@ -2300,6 +2530,15 @@
             <div><div class="piano-key shape-circle" data-key="B6"><span class="key-shape"></span><span class="key-label">B6</span></div></div>
             <div><div class="piano-key shape-diamond" data-key="B7"><span class="key-shape"></span><span class="key-label">B7</span></div></div>
             <div><div class="piano-key shape-combo" data-key="C1"><span class="key-shape"></span><span class="key-label">C1</span></div></div>
+        </div>
+    </section>
+    <section id="MusicXmlPianoPanel" aria-label="MusicXML 61键钢琴可视化">
+        <div class="musicxml-piano-header">
+            <span>MusicXML 钢琴键盘 · C2–C7 · 61 键</span>
+            <span id="musicXmlAudioStatus" class="musicxml-audio-status" role="status">等待加载音色</span>
+        </div>
+        <div id="musicXmlPianoScroll" class="musicxml-piano-scroll">
+            <div id="musicXmlPianoKeyboard" class="musicxml-piano-keyboard" role="group" aria-label="C2到C7钢琴键盘"></div>
         </div>
     </section>
     <div id="loadding" role="status">加载音频中...</div>
@@ -2427,6 +2666,7 @@
     let currentNoteIndex = 0;
     let notesData = [];
     let previewSleepUnits = [];
+    let previewDelayMilliseconds = [];
     let BPM = 120;
     let noteDuration = 600 / BPM; // 每个音符的基础时长(ms)
     let currentSpeed = 1; // 当前倍速
@@ -2450,6 +2690,9 @@
     let highlightedSnapshotGridCells = new Set(); // 存储当前高亮的方格谱格子
     let highlightedKeys = new Set(); // 存储当前高亮的琴键
     let manualPressedKeys = new Set(); // 存储用户手动按住的琴键
+    let musicXmlPianoKeys = new Map(); // MIDI音高到MusicXML钢琴键元素
+    let highlightedMusicXmlMidis = new Set();
+    let manualPressedMusicXmlMidis = new Set();
     let lineToNoteMap = new Map(); // 存储代码行到音符索引的反向映射
     const CONFIG_CODE_LINE_COUNT = 5;
     const NOTATION_BEATS_PER_MEASURE = 4;
@@ -2576,6 +2819,599 @@
     const searchList2 = ["\"2Key0\"", "\"2Key1\"", "\"2Key2\"", "\"2Key3\"", "\"2Key4\"", "\"2Key5\"", "\"2Key6\"", "\"2Key7\"", "\"2Key8\"", "\"2Key9\"", "\"2Key10\"", "\"2Key11\"", "\"2Key12\"", "\"2Key13\"", "\"2Key14\""];
     const replaceList = ["\"A1\"", "\"A2\"", "\"A3\"", "\"A4\"", "\"A5\"", "\"A6\"", "\"A7\"", "\"B1\"", "\"B2\"", "\"B3\"", "\"B4\"", "\"B5\"", "\"B6\"", "\"B7\"", "\"C1\""];
 
+    // MusicXML 解析：脚本使用按音高从低到高分配的 A1、A2……B1、B2……键位。
+    // 解析单位统一为四分音符（quarter beats），这样可以保留 MusicXML 的精确节拍，
+    // 同时不影响旧 TXT 工程继续使用毫秒时间线。
+    const MUSICXML_FILE_PATTERN = /\.(musicxml|xml)$/i;
+    const MUSICXML_KEY_GROUP_SIZE = 7;
+    const MUSICXML_DEFAULT_BPM = 120;
+    const MUSICXML_MIN_MIDI = 36; // C2
+    const MUSICXML_MAX_MIDI = 96; // C7
+    const MUSICXML_PITCH_CLASS_LABELS = Object.freeze(['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']);
+    const MUSICXML_PITCH_CLASS_FILES = Object.freeze(['C', 'Cs', 'D', 'Ds', 'E', 'F', 'Fs', 'G', 'Gs', 'A', 'As', 'B']);
+    const MUSICXML_WHITE_PITCH_CLASSES = new Set([0, 2, 4, 5, 7, 9, 11]);
+    // piano_samples 的后缀是原虚拟钢琴键盘的键码，顺序分别为 1…0 / Q…P / A…L / Z…M。
+    const MUSICXML_PIANO_WHITE_CODES = Object.freeze([
+        49, 50, 51, 52, 53, 54, 55, 56, 57, 48,
+        81, 87, 69, 82, 84, 89, 85, 73, 79, 80,
+        65, 83, 68, 70, 71, 72, 74, 75, 76,
+        90, 88, 67, 86, 66, 78, 77
+    ]);
+    const MUSICXML_PIANO_BLACK_CODES = Object.freeze([
+        49, 50, 52, 53, 54, 56, 57,
+        81, 87, 69, 84, 89, 73, 79, 80,
+        83, 68, 71, 72, 74, 76,
+        90, 67, 86, 66
+    ]);
+    const MUSICXML_PIANO_SAMPLE_CODE_BY_MIDI = (() => {
+        const map = new Map();
+        let whiteIndex = 0;
+        let blackIndex = 0;
+        for (let midi = MUSICXML_MIN_MIDI; midi <= MUSICXML_MAX_MIDI; midi++) {
+            const pitchClass = ((midi % 12) + 12) % 12;
+            if (MUSICXML_WHITE_PITCH_CLASSES.has(pitchClass)) {
+                map.set(midi, `a${MUSICXML_PIANO_WHITE_CODES[whiteIndex++]}`);
+            } else {
+                map.set(midi, `b${MUSICXML_PIANO_BLACK_CODES[blackIndex++]}`);
+            }
+        }
+        return map;
+    })();
+    const MUSICXML_STEP_SEMITONES = Object.freeze({
+        C: 0,
+        D: 2,
+        E: 4,
+        F: 5,
+        G: 7,
+        A: 9,
+        B: 11
+    });
+
+    function isMusicXmlFileName(fileName) {
+        return MUSICXML_FILE_PATTERN.test(String(fileName || ''));
+    }
+
+    function getSourceType(fileName, content = '') {
+        if (isMusicXmlFileName(fileName)) {
+            return 'musicxml';
+        }
+
+        const text = String(content || '').trimStart();
+        if (text.startsWith('<?xml') || /^<score-(partwise|timewise)\b/i.test(text)) {
+            return 'musicxml';
+        }
+        return 'txt';
+    }
+
+    function musicXmlLocalName(node) {
+        if (!node) return '';
+        return String(node.localName || node.nodeName || '').split(':').pop().toLowerCase();
+    }
+
+    function musicXmlChildren(node, name) {
+        if (!node || !node.children) return [];
+        if (!name) return Array.from(node.children);
+        const expected = String(name || '').toLowerCase();
+        return Array.from(node.children).filter(child => musicXmlLocalName(child) === expected);
+    }
+
+    function musicXmlChild(node, name) {
+        return musicXmlChildren(node, name)[0] || null;
+    }
+
+    function musicXmlDescendants(node, name) {
+        if (!node || !node.getElementsByTagName) return [];
+        const expected = String(name || '').toLowerCase();
+        return Array.from(node.getElementsByTagName('*')).filter(child => musicXmlLocalName(child) === expected);
+    }
+
+    function musicXmlDescendant(node, name) {
+        return musicXmlDescendants(node, name)[0] || null;
+    }
+
+    function musicXmlText(node, name, fallback = '') {
+        const child = musicXmlChild(node, name);
+        if (!child) return fallback;
+        const value = String(child.textContent || '').trim();
+        return value || fallback;
+    }
+
+    function musicXmlNumber(node, name, fallback = 0) {
+        const text = musicXmlText(node, name, '');
+        if (text === '') return fallback;
+        const value = Number(text);
+        return Number.isFinite(value) ? value : fallback;
+    }
+
+    function musicXmlAttributeNumber(node, name, fallback = 0) {
+        if (!node || !node.getAttribute) return fallback;
+        const text = node.getAttribute(name);
+        if (text === null || String(text).trim() === '') return fallback;
+        const value = Number(text);
+        return Number.isFinite(value) ? value : fallback;
+    }
+
+    function musicXmlPitchFromNote(note) {
+        const pitch = musicXmlChild(note, 'pitch');
+        if (!pitch) {
+            const unpitched = musicXmlChild(note, 'unpitched');
+            if (!unpitched) return null;
+            const displayStep = musicXmlText(unpitched, 'display-step', 'C').toUpperCase();
+            const displayOctave = musicXmlNumber(unpitched, 'display-octave', 4);
+            const stepValue = MUSICXML_STEP_SEMITONES[displayStep];
+            if (stepValue === undefined || !Number.isFinite(displayOctave)) return null;
+            return {
+                midi: ((displayOctave + 1) * 12) + stepValue,
+                label: `${displayStep}${displayOctave}`,
+                step: displayStep,
+                alter: 0,
+                octave: displayOctave
+            };
+        }
+
+        const step = musicXmlText(pitch, 'step', '').toUpperCase();
+        const octave = musicXmlNumber(pitch, 'octave', NaN);
+        const alter = musicXmlNumber(pitch, 'alter', 0);
+        const stepValue = MUSICXML_STEP_SEMITONES[step];
+        if (stepValue === undefined || !Number.isFinite(octave) || !Number.isFinite(alter)) {
+            return null;
+        }
+
+        const midi = ((octave + 1) * 12) + stepValue + alter;
+        const alterLabel = alter > 0
+            ? '#'.repeat(Math.min(4, Math.round(alter)))
+            : alter < 0
+                ? 'b'.repeat(Math.min(4, Math.round(Math.abs(alter))))
+                : '';
+        return {
+            midi,
+            label: `${step}${alterLabel}${octave}`,
+            step,
+            alter,
+            octave
+        };
+    }
+
+    function musicXmlTieTypes(note) {
+        const types = new Set();
+        musicXmlChildren(note, 'tie').forEach(tie => {
+            const type = String(tie.getAttribute('type') || '').toLowerCase();
+            if (type) types.add(type);
+        });
+        const notations = musicXmlChild(note, 'notations');
+        musicXmlChildren(notations, 'tied').forEach(tied => {
+            const type = String(tied.getAttribute('type') || '').toLowerCase();
+            if (type) types.add(type);
+        });
+        return types;
+    }
+
+    function musicXmlTempoFromDirection(direction) {
+        const sound = musicXmlDescendant(direction, 'sound');
+        const soundTempo = musicXmlAttributeNumber(sound, 'tempo', NaN);
+        if (Number.isFinite(soundTempo) && soundTempo > 0) {
+            return soundTempo;
+        }
+
+        const metronome = musicXmlDescendant(direction, 'metronome');
+        if (!metronome) return null;
+        const perMinute = musicXmlNumber(metronome, 'per-minute', NaN);
+        if (!Number.isFinite(perMinute) || perMinute <= 0) return null;
+
+        const beatUnit = musicXmlText(metronome, 'beat-unit', 'quarter').toLowerCase();
+        const beatUnitQuarterValues = {
+            whole: 4,
+            half: 2,
+            quarter: 1,
+            eighth: 0.5,
+            '16th': 0.25,
+            '32nd': 0.125,
+            '64th': 0.0625
+        };
+        const unitValue = beatUnitQuarterValues[beatUnit] || 1;
+        const isDotted = musicXmlChildren(metronome, 'beat-unit-dot').length > 0;
+        return perMinute * unitValue * (isDotted ? 1.5 : 1);
+    }
+
+    function musicXmlTimeSignatureFromAttributes(attributes) {
+        const time = musicXmlChild(attributes, 'time');
+        if (!time) return null;
+        const beats = musicXmlText(time, 'beats', '');
+        const beatType = musicXmlNumber(time, 'beat-type', NaN);
+        if (!beats || !Number.isFinite(beatType) || beatType <= 0) return null;
+        const beatParts = beats.split('+').map(value => Number(value.trim())).filter(Number.isFinite);
+        const beatCount = beatParts.length > 0 ? beatParts.reduce((sum, value) => sum + value, 0) : Number(beats);
+        if (!Number.isFinite(beatCount) || beatCount <= 0) return null;
+        return { beats: beatCount, beatType, text: `${beats}/${beatType}` };
+    }
+
+    function createMusicXmlKeyName(index) {
+        let groupIndex = Math.floor(Math.max(0, index) / MUSICXML_KEY_GROUP_SIZE);
+        let group = '';
+        do {
+            group = String.fromCharCode(65 + (groupIndex % 26)) + group;
+            groupIndex = Math.floor(groupIndex / 26) - 1;
+        } while (groupIndex >= 0);
+        return `${group}${(Math.max(0, index) % MUSICXML_KEY_GROUP_SIZE) + 1}`;
+    }
+
+    function formatMusicXmlNumber(value, precision = 6) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return '0';
+        const rounded = Number(number.toFixed(precision));
+        return String(rounded);
+    }
+
+    function normalizeMusicXmlTempoMap(tempoEvents, defaultBpm = MUSICXML_DEFAULT_BPM) {
+        const sorted = (Array.isArray(tempoEvents) ? tempoEvents : [])
+            .filter(event => event && Number.isFinite(Number(event.beat)) && Number(event.bpm) > 0)
+            .map(event => ({ beat: Math.max(0, Number(event.beat)), bpm: Number(event.bpm), order: event.order || 0 }))
+            .sort((a, b) => a.beat - b.beat || a.order - b.order);
+
+        const result = [];
+        sorted.forEach(event => {
+            const previous = result[result.length - 1];
+            if (previous && Math.abs(previous.beat - event.beat) < 1e-9) {
+                previous.bpm = event.bpm;
+            } else {
+                result.push({ beat: event.beat, bpm: event.bpm });
+            }
+        });
+
+        const fallback = Number(defaultBpm) > 0 ? Number(defaultBpm) : MUSICXML_DEFAULT_BPM;
+        if (result.length === 0 || result[0].beat > 0) {
+            result.unshift({ beat: 0, bpm: fallback });
+        }
+        return result;
+    }
+
+    function musicXmlBeatToMilliseconds(beat, tempoMap) {
+        const target = Math.max(0, Number(beat) || 0);
+        const map = normalizeMusicXmlTempoMap(tempoMap);
+        let elapsed = 0;
+        let previousBeat = 0;
+        let currentBpm = map[0]?.bpm || MUSICXML_DEFAULT_BPM;
+
+        for (let index = 1; index < map.length; index++) {
+            const segment = map[index];
+            if (segment.beat >= target) break;
+            const segmentBeats = Math.max(0, segment.beat - previousBeat);
+            elapsed += segmentBeats * (60000 / currentBpm);
+            previousBeat = segment.beat;
+            currentBpm = segment.bpm;
+        }
+
+        elapsed += Math.max(0, target - previousBeat) * (60000 / currentBpm);
+        return elapsed;
+    }
+
+    function isMusicXmlMidiSupported(midi) {
+        const value = Number(midi);
+        return Number.isInteger(value) && value >= MUSICXML_MIN_MIDI && value <= MUSICXML_MAX_MIDI;
+    }
+
+    function musicXmlMidiToLabel(midi) {
+        const value = Math.round(Number(midi) || 0);
+        const pitchClass = ((value % 12) + 12) % 12;
+        const octave = Math.floor(value / 12) - 1;
+        return `${MUSICXML_PITCH_CLASS_LABELS[pitchClass]}${octave}`;
+    }
+
+    function getMusicXmlSamplePath(midi, timbre = currentMusicXmlTimbre) {
+        const value = Math.round(Number(midi));
+        if (!isMusicXmlMidiSupported(value)) return '';
+        const selectedTimbre = MUSICXML_TIMBRES[timbre] ? timbre : 'piano';
+        if (selectedTimbre === 'bright') {
+            const pitchClass = ((value % 12) + 12) % 12;
+            const octave = Math.floor(value / 12) - 1;
+            return `${MUSICXML_TIMBRES.bright.folder}/${MUSICXML_PITCH_CLASS_FILES[pitchClass]}${octave}.mp3`;
+        }
+        const sampleCode = MUSICXML_PIANO_SAMPLE_CODE_BY_MIDI.get(value);
+        return sampleCode ? `${MUSICXML_TIMBRES.piano.folder}/${sampleCode}.mp3` : '';
+    }
+
+    function getMusicXmlProjectMidis(item, supportedOnly = true) {
+        const midis = Array.isArray(item?.notesData)
+            ? item.notesData.map(note => Number(note.midi))
+            : (Array.isArray(item?.musicXmlData?.events) ? item.musicXmlData.events.map(event => Number(event.midi)) : []);
+        return Array.from(new Set(midis.filter(midi => (
+            Number.isInteger(midi) && (!supportedOnly || isMusicXmlMidiSupported(midi))
+        )))).sort((a, b) => a - b);
+    }
+
+    function refreshMusicXmlEventTimes(parsed) {
+        if (!parsed || !Array.isArray(parsed.events)) return;
+        const tempoMap = normalizeMusicXmlTempoMap(parsed.tempoMap, parsed.bpm || MUSICXML_DEFAULT_BPM);
+        parsed.tempoMap = tempoMap;
+        parsed.events.forEach(event => {
+            event.time = musicXmlBeatToMilliseconds(event.startBeat, tempoMap);
+        });
+    }
+
+    function buildMusicXmlNotesData(parsed) {
+        if (!parsed || !Array.isArray(parsed.events)) return [];
+        refreshMusicXmlEventTimes(parsed);
+        return parsed.events.map(event => ({
+            time: event.time,
+            key: event.key,
+            startBeat: event.startBeat,
+            durationBeat: event.durationBeat,
+            midi: event.midi,
+            pitchLabel: event.pitchLabel
+        }));
+    }
+
+    function syncMusicXmlProjectNotes(item) {
+        if (!item || item.sourceType !== 'musicxml' || !item.musicXmlData) return;
+        item.notesData = buildMusicXmlNotesData(item.musicXmlData);
+    }
+
+    function parseMusicXmlPart(part, partIndex, parserState) {
+        let partPositionQuarter = 0;
+        let divisions = 1;
+        let currentTimeSignature = null;
+        const activeTies = new Map();
+        const events = [];
+        const measures = musicXmlChildren(part, 'measure');
+
+        measures.forEach(measure => {
+            let cursorQuarter = 0;
+            let maxCursorQuarter = 0;
+            const lastStartByVoice = new Map();
+
+            musicXmlChildren(measure).forEach(child => {
+                const childName = musicXmlLocalName(child);
+
+                if (childName === 'attributes') {
+                    const nextDivisions = musicXmlNumber(child, 'divisions', NaN);
+                    if (Number.isFinite(nextDivisions) && nextDivisions > 0) {
+                        divisions = nextDivisions;
+                    }
+                    const nextTimeSignature = musicXmlTimeSignatureFromAttributes(child);
+                    if (nextTimeSignature) {
+                        currentTimeSignature = nextTimeSignature;
+                        parserState.timeSignatures.push({
+                            beat: partPositionQuarter + cursorQuarter,
+                            ...nextTimeSignature
+                        });
+                    }
+                    return;
+                }
+
+                if (childName === 'direction') {
+                    const tempo = musicXmlTempoFromDirection(child);
+                    if (Number.isFinite(tempo) && tempo > 0) {
+                        const offsetDivisions = musicXmlNumber(child, 'offset', 0);
+                        const offsetQuarter = offsetDivisions / divisions;
+                        parserState.tempoEvents.push({
+                            beat: Math.max(0, partPositionQuarter + cursorQuarter + offsetQuarter),
+                            bpm: tempo,
+                            order: parserState.order++
+                        });
+                    }
+                    return;
+                }
+
+                if (childName === 'backup' || childName === 'forward') {
+                    const durationDivisions = musicXmlNumber(child, 'duration', 0);
+                    const durationQuarter = durationDivisions > 0 ? durationDivisions / divisions : 0;
+                    cursorQuarter += childName === 'backup' ? -durationQuarter : durationQuarter;
+                    if (cursorQuarter < -1e-9) {
+                        parserState.warnings.push(`声部 ${partIndex + 1} 的第 ${measure.getAttribute('number') || '?'} 小节出现负时间位置，已修正`);
+                        cursorQuarter = 0;
+                    }
+                    maxCursorQuarter = Math.max(maxCursorQuarter, cursorQuarter);
+                    return;
+                }
+
+                if (childName !== 'note') return;
+
+                const voice = musicXmlText(child, 'voice', '1');
+                const staff = musicXmlText(child, 'staff', '1');
+                const isChord = !!musicXmlChild(child, 'chord');
+                const isGrace = !!musicXmlChild(child, 'grace');
+                const durationDivisions = musicXmlNumber(child, 'duration', 0);
+                const durationQuarter = durationDivisions > 0 ? durationDivisions / divisions : 0;
+                const previousStart = lastStartByVoice.get(voice);
+                const startQuarter = isChord && Number.isFinite(previousStart)
+                    ? previousStart
+                    : cursorQuarter;
+
+                if (!isChord) {
+                    lastStartByVoice.set(voice, startQuarter);
+                    cursorQuarter += isGrace ? 0 : durationQuarter;
+                }
+                maxCursorQuarter = Math.max(maxCursorQuarter, startQuarter + durationQuarter);
+
+                const pitch = musicXmlPitchFromNote(child);
+                if (!pitch || isGrace || durationQuarter <= 0) {
+                    if (!pitch && !musicXmlChild(child, 'rest') && !isGrace) {
+                        parserState.warnings.push(`跳过无法识别的音符（声部 ${partIndex + 1}，小节 ${measure.getAttribute('number') || '?'}）`);
+                    }
+                    return;
+                }
+
+                const tieTypes = musicXmlTieTypes(child);
+                const tieStarts = tieTypes.has('start') || tieTypes.has('continue');
+                const tieStops = tieTypes.has('stop') || tieTypes.has('continue');
+                const tieKey = `${staff}|${voice}|${pitch.midi}`;
+                const activeTie = activeTies.get(tieKey);
+                const isTieContinuation = tieStops && !!activeTie;
+
+                if (!isTieContinuation) {
+                    events.push({
+                        startBeat: partPositionQuarter + startQuarter,
+                        durationBeat: durationQuarter,
+                        midi: pitch.midi,
+                        pitchLabel: pitch.label,
+                        partIndex,
+                        voice,
+                        order: parserState.order++
+                    });
+                }
+
+                if (tieStarts) {
+                    activeTies.set(tieKey, {
+                        endBeat: partPositionQuarter + startQuarter + durationQuarter
+                    });
+                } else if (tieStops) {
+                    activeTies.delete(tieKey);
+                }
+            });
+
+            const expectedQuarter = currentTimeSignature
+                ? (currentTimeSignature.beats * 4) / currentTimeSignature.beatType
+                : 0;
+            const isImplicitMeasure = String(measure.getAttribute('implicit') || '').toLowerCase() === 'yes';
+            const measureDurationQuarter = maxCursorQuarter > 0
+                ? (isImplicitMeasure ? maxCursorQuarter : Math.max(maxCursorQuarter, expectedQuarter))
+                : expectedQuarter;
+            partPositionQuarter += measureDurationQuarter;
+        });
+
+        return { events, durationBeat: partPositionQuarter };
+    }
+
+    function parseMusicXmlProject(content, fileName = 'project.musicxml') {
+        if (typeof DOMParser === 'undefined') {
+            throw new Error('当前浏览器不支持 MusicXML 解析');
+        }
+
+        const parser = new DOMParser();
+        const documentNode = parser.parseFromString(String(content || ''), 'application/xml');
+        const parserError = musicXmlLocalName(documentNode.documentElement) === 'parsererror'
+            ? documentNode.documentElement
+            : musicXmlDescendant(documentNode, 'parsererror');
+        if (parserError) {
+            throw new Error(`MusicXML 解析失败：${String(parserError.textContent || 'XML格式错误').trim()}`);
+        }
+
+        const root = documentNode.documentElement;
+        const rootName = musicXmlLocalName(root);
+        if (rootName !== 'score-partwise') {
+            if (rootName === 'score-timewise') {
+                throw new Error('暂不支持 score-timewise MusicXML，请导出为 score-partwise');
+            }
+            throw new Error('文件格式错误：不是有效的 MusicXML score-partwise 文件');
+        }
+
+        const work = musicXmlChild(root, 'work');
+        const title = musicXmlText(work, 'work-title', '')
+            || musicXmlText(root, 'movement-title', '')
+            || String(fileName || 'project').replace(/\.(musicxml|xml)$/i, '')
+            || '未命名乐谱';
+        const identification = musicXmlChild(root, 'identification');
+        const creators = musicXmlChildren(identification, 'creator');
+        const composer = creators.find(node => /composer|creator|lyricist/i.test(String(node.getAttribute('type') || '')))
+            || creators[0];
+        const arranger = creators.find(node => /arranger|transcrib|adapter/i.test(String(node.getAttribute('type') || '')));
+        const author = composer ? String(composer.textContent || '').trim() : '未知';
+        const transcribedBy = arranger ? String(arranger.textContent || '').trim() : '未知';
+
+        const parserState = {
+            order: 0,
+            tempoEvents: [],
+            timeSignatures: [],
+            warnings: []
+        };
+        const parts = musicXmlChildren(root, 'part');
+        if (parts.length === 0) {
+            throw new Error('文件格式错误：MusicXML 中没有 part 声部');
+        }
+
+        const allEvents = [];
+        const partDurations = [];
+        parts.forEach((part, partIndex) => {
+            const result = parseMusicXmlPart(part, partIndex, parserState);
+            allEvents.push(...result.events);
+            partDurations.push(result.durationBeat);
+        });
+
+        if (allEvents.length === 0) {
+            throw new Error('MusicXML 中没有可导出的带音高音符');
+        }
+
+        const tempoMap = normalizeMusicXmlTempoMap(parserState.tempoEvents, MUSICXML_DEFAULT_BPM);
+        const firstTempo = tempoMap[0]?.bpm || MUSICXML_DEFAULT_BPM;
+        const distinctTempos = [];
+        tempoMap.forEach(entry => {
+            if (!distinctTempos.some(value => Math.abs(value - entry.bpm) < 1e-9)) {
+                distinctTempos.push(entry.bpm);
+            }
+        });
+        if (distinctTempos.length > 1) {
+            parserState.warnings.push('检测到多个速度标记，脚本将使用毫秒间隔保留速度变化');
+        }
+
+        const sortedMidis = Array.from(new Set(allEvents.map(event => event.midi))).sort((a, b) => a - b);
+        const pitchToKey = new Map(sortedMidis.map((midi, index) => [midi, createMusicXmlKeyName(index)]));
+        const keyNames = sortedMidis.map((midi, index) => createMusicXmlKeyName(index));
+        const pitchMap = sortedMidis.map((midi, index) => ({
+            midi,
+            key: createMusicXmlKeyName(index),
+            pitchLabel: allEvents.find(event => event.midi === midi)?.pitchLabel || String(midi)
+        }));
+
+        const deduplicated = new Map();
+        allEvents
+            .sort((a, b) => a.startBeat - b.startBeat || a.midi - b.midi || a.order - b.order)
+            .forEach(event => {
+                const startKey = formatMusicXmlNumber(event.startBeat, 9);
+                const dedupeKey = `${startKey}|${event.midi}`;
+                if (!deduplicated.has(dedupeKey)) {
+                    deduplicated.set(dedupeKey, {
+                        ...event,
+                        key: pitchToKey.get(event.midi),
+                        time: musicXmlBeatToMilliseconds(event.startBeat, tempoMap)
+                    });
+                }
+            });
+
+        const events = Array.from(deduplicated.values()).sort((a, b) => (
+            a.startBeat - b.startBeat || a.midi - b.midi || a.order - b.order
+        ));
+        const totalBeats = Math.max(
+            ...partDurations,
+            ...events.map(event => event.startBeat + event.durationBeat)
+        );
+        const firstTimeSignature = parserState.timeSignatures[0] || { beats: 4, beatType: 4, text: '4/4' };
+
+        const parsed = {
+            sourceType: 'musicxml',
+            name: title,
+            author: author || '未知',
+            transcribedBy: transcribedBy || '未知',
+            bpm: firstTempo,
+            paizi: firstTimeSignature.text,
+            beats: firstTimeSignature.beats,
+            beatType: firstTimeSignature.beatType,
+            tempoMap,
+            events,
+            keyNames,
+            pitchMap,
+            totalBeats,
+            warnings: parserState.warnings,
+            meta: {
+                valid: true,
+                name: title,
+                author: author || '未知',
+                transcribedBy: transcribedBy || '未知',
+                bpm: Math.round(firstTempo),
+                bitsPerPage: null,
+                paizi: firstTimeSignature.text,
+                isEncrypted: false,
+                noteCount: events.length,
+                keyCount: keyNames.length,
+                sourceType: 'musicxml',
+                previewSupported: true,
+                partCount: parts.length,
+                durationBeats: totalBeats
+            }
+        };
+
+        return parsed;
+    }
+
     // 3. 文件上传处理
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
@@ -2595,6 +3431,14 @@
     const clearListButton = document.getElementById('clearListButton');
     const flowHint = document.getElementById('flowHint');
     const toastContainer = document.getElementById('toastContainer');
+    const musicXmlNotice = document.getElementById('musicXmlNotice');
+    const pianoPanel = document.getElementById('PianoPanel');
+    const musicXmlPianoPanel = document.getElementById('MusicXmlPianoPanel');
+    const musicXmlPianoKeyboard = document.getElementById('musicXmlPianoKeyboard');
+    const musicXmlPianoScroll = document.getElementById('musicXmlPianoScroll');
+    const musicXmlAudioToolbar = document.getElementById('musicXmlAudioToolbar');
+    const musicXmlTimbreSelector = document.getElementById('musicXmlTimbreSelector');
+    const musicXmlAudioStatus = document.getElementById('musicXmlAudioStatus');
     const log = document.getElementById('log');
     const songInfoDiv = document.getElementById('songInfo');
     const previewButton = document.getElementById('previewButton');
@@ -2610,6 +3454,15 @@
     const PREVIEW_DISPLAY_MODE_KEY = 'skystudio-decrypt-preview-display-mode-v1';
     const KEYBOARD_STYLE_KEY = 'skystudio-decrypt-keyboard-style-v1';
     const BG_IMAGE_KEY = 'skystudio-decrypt-bg-image-v1';
+    const MUSICXML_TIMBRE_KEY = 'skystudio-decrypt-musicxml-timbre-v1';
+    const MUSICXML_TIMBRES = Object.freeze({
+        piano: Object.freeze({ label: '钢琴', folder: 'sounds/piano_samples' }),
+        bright: Object.freeze({ label: '明亮钢琴', folder: 'sounds/bright_piano_samples' })
+    });
+    let currentMusicXmlTimbre = 'piano';
+    const musicXmlAudioBuffers = new Map(Object.keys(MUSICXML_TIMBRES).map(name => [name, new Map()]));
+    const musicXmlAudioLoadPromises = new Map(Object.keys(MUSICXML_TIMBRES).map(name => [name, new Map()]));
+    let musicXmlAudioPrepareToken = 0;
     let projectFiles = [];
     let activeProjectId = null;
     let currentPreviewDisplayMode = 'code';
@@ -2745,6 +3598,9 @@
         if (!item) {
             return '';
         }
+        if (item.sourceType === 'musicxml') {
+            return '';
+        }
         return item.generatedCode || '';
     }
 
@@ -2822,7 +3678,7 @@
     }
 
     function stripTxtExtension(fileName) {
-        return String(fileName || 'project').replace(/\.txt$/i, '');
+        return String(fileName || 'project').replace(/\.(txt|musicxml|xml)$/i, '');
     }
 
     function getProjectData(content) {
@@ -2861,22 +3717,74 @@
     }
 
     function createProjectItem(fileName, content) {
-        const meta = parseProjectMeta(content);
+        const sourceType = getSourceType(fileName, content);
+        const musicXmlData = sourceType === 'musicxml'
+            ? parseMusicXmlProject(content, fileName)
+            : null;
+        const meta = sourceType === 'musicxml'
+            ? musicXmlData.meta
+            : parseProjectMeta(content);
         return {
             id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
             fileName,
             content,
+            sourceType,
             selected: true,
             meta,
             sourceIsEncrypted: meta.isEncrypted,
+            previewSupported: true,
             createdAt: Date.now(),
             decryptedSourceContent: null,
             generatedCode: '',
             scriptCode: '',
             notesData: null,
+            musicXmlData,
+            musicXmlOverrides: null,
+            scriptKeyNames: sourceType === 'musicxml' ? musicXmlData.keyNames : null,
             bpm: meta.bpm || 120,
             paizi: meta.paizi || '0/4'
         };
+    }
+
+    function applyMusicXmlMetaOverrides(item, values, shouldTrack = true) {
+        if (!item || item.sourceType !== 'musicxml') return;
+        if (!item.musicXmlData) {
+            item.musicXmlData = parseMusicXmlProject(item.content, item.fileName);
+        }
+
+        const currentBpm = Number(item.musicXmlData.bpm) > 0
+            ? Number(item.musicXmlData.bpm)
+            : MUSICXML_DEFAULT_BPM;
+        const bpm = Number(values?.bpm) > 0 ? Number(values.bpm) : currentBpm;
+        const bpmChanged = Math.abs(bpm - currentBpm) > 1e-9;
+        item.musicXmlData.name = values?.name || item.musicXmlData.name;
+        item.musicXmlData.author = values?.author || item.musicXmlData.author;
+        item.musicXmlData.transcribedBy = values?.transcribedBy || item.musicXmlData.transcribedBy;
+        item.musicXmlData.bpm = bpm;
+        if (bpmChanged) {
+            item.musicXmlData.tempoMap = [{ beat: 0, bpm }];
+        }
+        refreshMusicXmlEventTimes(item.musicXmlData);
+        item.musicXmlData.meta = {
+            ...item.musicXmlData.meta,
+            name: item.musicXmlData.name,
+            author: item.musicXmlData.author,
+            transcribedBy: item.musicXmlData.transcribedBy,
+            bpm
+        };
+        item.meta = item.musicXmlData.meta;
+        item.bpm = bpm;
+        if (Array.isArray(item.notesData)) {
+            syncMusicXmlProjectNotes(item);
+        }
+        if (shouldTrack) {
+            item.musicXmlOverrides = {
+                name: item.musicXmlData.name,
+                author: item.musicXmlData.author,
+                transcribedBy: item.musicXmlData.transcribedBy,
+                bpm
+            };
+        }
     }
 
     function getActiveProject() {
@@ -2894,7 +3802,10 @@
                 fileName: item.fileName,
                 content: item.content,
                 selected: item.selected,
-                createdAt: item.createdAt
+                createdAt: item.createdAt,
+                musicXmlOverrides: item.sourceType === 'musicxml'
+                    ? item.musicXmlOverrides
+                    : null
             }));
             localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
             if (activeProjectId) {
@@ -2921,6 +3832,10 @@
                 .forEach(item => {
                     try {
                         const restored = createProjectItem(item.fileName || 'project.txt', item.content);
+                        if (restored.sourceType === 'musicxml' && item.musicXmlOverrides) {
+                            applyMusicXmlMetaOverrides(restored, item.musicXmlOverrides, false);
+                            restored.musicXmlOverrides = item.musicXmlOverrides;
+                        }
                         restored.id = item.id || restored.id;
                         restored.selected = item.selected !== false;
                         restored.createdAt = item.createdAt || restored.createdAt;
@@ -2978,7 +3893,7 @@
             }
         });
 
-        flowHint.textContent = message || '拖入TXT文件后会先读取乐谱信息';
+        flowHint.textContent = message || '拖入TXT或MusicXML文件后会先读取乐谱信息';
     }
 
     function renderSongInfo(item) {
@@ -3012,7 +3927,9 @@
         document.getElementById('infoBpmInput').value = item.meta.bpm || 120;
         document.getElementById('infoTranscribedByInput').value = item.meta.transcribedBy || '';
         document.getElementById('infoPaizi').textContent = item.meta.paizi;
-        document.getElementById('infoEncrypted').textContent = item.meta.isEncrypted ? '是' : '否';
+        document.getElementById('infoEncrypted').textContent = item.sourceType === 'musicxml'
+            ? '不适用（MusicXML）'
+            : (item.meta.isEncrypted ? '是' : '否');
         document.getElementById('infoNoteCount').textContent = item.meta.noteCount;
     }
 
@@ -3118,6 +4035,22 @@
                 stopPreview();
             }
 
+            if (item.sourceType === 'musicxml') {
+                applyMusicXmlMetaOverrides(item, values);
+                item.generatedCode = buildMusicXmlFormattedCode(item.musicXmlData);
+                item.scriptCode = buildScriptCode(item.generatedCode, {
+                    keyNames: item.musicXmlData.keyNames,
+                    coordinatePrompt: `请按照从音调低到高的顺序设置好${item.musicXmlData.keyNames[0]}-${item.musicXmlData.keyNames[item.musicXmlData.keyNames.length - 1]}`
+                });
+                renderSongInfo(item);
+                showConvertedProject(item);
+                renderFileList();
+                persistProjectFiles();
+                addLog(`[+] 已更新 MusicXML 乐谱信息: ${item.meta.name} / BPM ${item.meta.bpm}`);
+                showToast('乐谱信息已更新', 'success');
+                return;
+            }
+
             const updatedContent = updateProjectContentMeta(getEditableProjectContent(item), values);
             rebuildProjectOutputsFromContent(item, updatedContent);
             modifiedContent = item.content;
@@ -3145,7 +4078,9 @@
         }
 
         fileListDiv.innerHTML = projectFiles.map(item => {
-            const encryptedLabel = item.sourceIsEncrypted ? (item.generatedCode ? '原加密' : '加密') : '未加密';
+            const encryptedLabel = item.sourceType === 'musicxml'
+                ? 'MusicXML · 61键预览/MP3'
+                : (item.sourceIsEncrypted ? (item.generatedCode ? '原加密' : '加密') : '未加密');
             const metaText = item.meta.valid
                 ? `${item.meta.name} · BPM ${item.meta.bpm} · ${encryptedLabel}${item.generatedCode ? ' · 已转换' : ''}`
                 : `识别失败：${item.meta.error || '格式错误'}`;
@@ -3185,6 +4120,7 @@
         if (isPreviewing) {
             stopPreview();
         }
+        releaseAllMusicXmlKeys();
         clearAllHighlights();
         scrollPreviewToTop();
         codeContainer.innerHTML = '';
@@ -3206,6 +4142,7 @@
         highlightedKeys.clear();
         notesData = [];
         previewSleepUnits = [];
+        previewDelayMilliseconds = [];
         currentNoteIndex = 0;
         updatePreviewProgress(0);
         hideExportProgress();
@@ -3223,6 +4160,24 @@
         stopPreviewButton.disabled = true;
         speedSelector.disabled = true;
         document.getElementById('previewControlsInSidebar').style.display = 'none';
+        if (musicXmlNotice) {
+            musicXmlNotice.style.display = 'none';
+        }
+        if (scorePreview) {
+            scorePreview.classList.remove('musicxml-mode');
+        }
+        if (pianoPanel) {
+            pianoPanel.style.display = '';
+        }
+        if (musicXmlPianoPanel) {
+            musicXmlPianoPanel.style.display = 'none';
+        }
+        if (musicXmlAudioToolbar) {
+            musicXmlAudioToolbar.style.display = 'none';
+        }
+        document.querySelectorAll('input[name="previewDisplayMode"]').forEach(input => {
+            input.disabled = false;
+        });
     }
 
     function rebuildPreviewMaps(noteList) {
@@ -3236,15 +4191,40 @@
     }
 
     function showConvertedProject(item) {
+        if (item && item.sourceType === 'musicxml') {
+            showConvertedMusicXmlProject(item);
+            return;
+        }
+
         if (!item || !item.generatedCode || !Array.isArray(item.notesData)) {
             clearActiveOutput();
             return;
         }
 
+        if (musicXmlNotice) {
+            musicXmlNotice.style.display = 'none';
+        }
+        if (scorePreview) {
+            scorePreview.classList.remove('musicxml-mode');
+        }
+        if (pianoPanel) {
+            pianoPanel.style.display = '';
+        }
+        if (musicXmlPianoPanel) {
+            musicXmlPianoPanel.style.display = 'none';
+        }
+        if (musicXmlAudioToolbar) {
+            musicXmlAudioToolbar.style.display = 'none';
+        }
+        document.querySelectorAll('input[name="previewDisplayMode"]').forEach(input => {
+            input.disabled = false;
+        });
+        setPreviewDisplayMode(currentPreviewDisplayMode, false);
+
         notesData = item.notesData;
         BPM = item.bpm || 120;
         noteDuration = 600 / BPM;
-        previewSleepUnits = buildTimingModel(notesData).sleepUnits;
+        configurePreviewTiming(item);
         rebuildPreviewMaps(notesData);
         updatePreviewProgress(0);
         hideExportProgress();
@@ -3298,9 +4278,132 @@
 
     }
 
+    function showConvertedMusicXmlProject(item) {
+        if (!item || !item.generatedCode || !item.scriptCode) {
+            clearActiveOutput();
+            return;
+        }
+
+        if (isPreviewing) {
+            stopPreview();
+        }
+        releaseAllMusicXmlKeys();
+        clearAllHighlights();
+        notesData = item.notesData || buildMusicXmlNotesData(item.musicXmlData);
+        item.notesData = notesData;
+        BPM = item.bpm || MUSICXML_DEFAULT_BPM;
+        configurePreviewTiming(item);
+        currentNoteIndex = 0;
+        updatePreviewProgress(0);
+        codeContainer.innerHTML = '';
+        notationContainer.innerHTML = '';
+        pipelineContainer.innerHTML = '';
+        snapshotGridContainer.innerHTML = '';
+        codeContainer.style.display = 'none';
+        notationContainer.style.display = 'none';
+        pipelineContainer.style.display = 'none';
+        snapshotGridContainer.style.display = 'none';
+        if (scorePreview) {
+            scorePreview.classList.remove('preview-hidden');
+            scorePreview.classList.add('musicxml-mode');
+        }
+        if (musicXmlNotice) {
+            const keyCount = item.musicXmlData?.keyNames?.length || item.meta.keyCount || 0;
+            const supportedMidis = getMusicXmlProjectMidis(item, true);
+            const unsupportedMidis = getMusicXmlProjectMidis(item, false).filter(midi => !isMusicXmlMidiSupported(midi));
+            const unsupportedText = unsupportedMidis.length > 0
+                ? `；另有 ${unsupportedMidis.length} 个超出 C2–C7 的音高仅保留在脚本中`
+                : '';
+            musicXmlNotice.textContent = `MusicXML 已完成节拍解析，共 ${keyCount} 个音高键位，其中 ${supportedMidis.length} 个可使用下方 61 键钢琴预览并导出 MP3${unsupportedText}。脚本键位仍按音高从低到高生成。`;
+            musicXmlNotice.style.display = 'block';
+        }
+        if (pianoPanel) {
+            pianoPanel.style.display = 'none';
+        }
+        if (musicXmlPianoPanel) {
+            musicXmlPianoPanel.style.display = 'block';
+        }
+        if (musicXmlAudioToolbar) {
+            musicXmlAudioToolbar.style.display = 'flex';
+        }
+        document.querySelectorAll('input[name="previewDisplayMode"]').forEach(input => {
+            input.disabled = true;
+        });
+
+        hideExportProgress();
+        downloadButton.style.display = 'none';
+        scriptDownloadButton.style.display = 'inline-block';
+        notationDownloadButton.style.display = 'none';
+        mp3DownloadButton.style.display = 'inline-block';
+        downloadButton.onclick = null;
+        notationDownloadButton.onclick = null;
+        const downloadBaseName = safeFileName(item.meta.name || stripTxtExtension(item.fileName), 'musicxml_project');
+        scriptDownloadButton.onclick = function () {
+            downloadTextFile(`${downloadBaseName}_skyscript3.3.3.zjs`, item.scriptCode);
+        };
+        mp3DownloadButton.onclick = async function () {
+            const originalText = mp3DownloadButton.textContent;
+            mp3DownloadButton.disabled = true;
+            mp3DownloadButton.textContent = '生成中...';
+            setExportProgress('准备导出MP3', 0);
+            try {
+                await downloadMp3Audio(item, downloadBaseName, setExportProgress);
+                addLog(`[+] 已使用${MUSICXML_TIMBRES[currentMusicXmlTimbre].label}导出 MusicXML MP3音频`);
+                showToast('MP3已导出', 'success');
+                setTimeout(hideExportProgress, 1400);
+            } catch (error) {
+                addLog(`[!] MP3导出失败: ${error.message}`);
+                showToast('MP3导出失败', 'error');
+                setExportProgress('MP3导出失败', 0);
+            } finally {
+                mp3DownloadButton.disabled = false;
+                mp3DownloadButton.textContent = originalText;
+            }
+        };
+        updateCopyCodeButton();
+        previewButton.disabled = true;
+        stopPreviewButton.disabled = true;
+        speedSelector.disabled = true;
+        document.getElementById('previewControlsInSidebar').style.display = 'block';
+        scrollMusicXmlPianoToProject(item);
+        prepareMusicXmlProjectAudio(item);
+    }
+
+    function convertMusicXmlProjectItem(item) {
+        if (!item || item.sourceType !== 'musicxml') {
+            throw new Error('不是 MusicXML 工程');
+        }
+
+        const parsed = item.musicXmlData || parseMusicXmlProject(item.content, item.fileName);
+        if (!parsed || !Array.isArray(parsed.events) || parsed.events.length === 0) {
+            throw new Error('MusicXML 没有可转换的音符数据');
+        }
+
+        item.musicXmlData = parsed;
+        item.meta = parsed.meta;
+        item.generatedCode = buildMusicXmlFormattedCode(parsed);
+        item.scriptCode = buildScriptCode(item.generatedCode, {
+            keyNames: parsed.keyNames,
+            coordinatePrompt: `请按照从音调低到高的顺序设置好${parsed.keyNames[0]}-${parsed.keyNames[parsed.keyNames.length - 1]}`
+        });
+        item.notesData = buildMusicXmlNotesData(parsed);
+        item.scriptKeyNames = parsed.keyNames;
+        item.bpm = parsed.bpm || MUSICXML_DEFAULT_BPM;
+        item.paizi = parsed.paizi || '4/4';
+        item.previewSupported = true;
+
+        parsed.warnings.forEach(warning => addLog(`[!] MusicXML: ${warning}`));
+        addLog(`[*] MusicXML 声部 ${parsed.meta.partCount} 个，键位 ${parsed.keyNames.length} 个，节拍 ${parsed.meta.paizi}`);
+        return item;
+    }
+
     function convertProjectItem(item) {
         if (!item || !item.meta.valid) {
             throw new Error('文件无效，无法转换');
+        }
+
+        if (item.sourceType === 'musicxml') {
+            return convertMusicXmlProjectItem(item);
         }
 
         const decryptedContent = decryptContent(item.content, addLog);
@@ -3377,7 +4480,12 @@
 
         renderSongInfo(item);
         showConvertedProject(item);
-        setFlowState('converted', `当前文件：${item.fileName}，已可预览和下载`);
+        setFlowState(
+            'converted',
+            item.sourceType === 'musicxml'
+                ? `当前文件：${item.fileName}，MusicXML 已可使用 61 键钢琴预览、导出 MP3 和脚本`
+                : `当前文件：${item.fileName}，已可预览和下载`
+        );
         renderFileList();
         if (shouldPersist) {
             persistProjectFiles();
@@ -3439,6 +4547,41 @@
         return { rawDurations, sleepUnits, unit };
     }
 
+    function buildPreviewTiming(item, noteList) {
+        const notes = Array.isArray(noteList) ? noteList : [];
+        if (item?.sourceType === 'musicxml') {
+            const parsed = item.musicXmlData;
+            const tempoMap = normalizeMusicXmlTempoMap(parsed?.tempoMap, item.bpm || MUSICXML_DEFAULT_BPM);
+            const startTimes = notes.map(note => (
+                Number.isFinite(Number(note.startBeat))
+                    ? musicXmlBeatToMilliseconds(Number(note.startBeat), tempoMap)
+                    : Math.max(0, Number(note.time) || 0)
+            ));
+            const totalMilliseconds = musicXmlBeatToMilliseconds(Number(parsed?.totalBeats || 0), tempoMap);
+            const delays = startTimes.map((startTime, index) => {
+                const nextTime = index < startTimes.length - 1 ? startTimes[index + 1] : totalMilliseconds;
+                return Math.max(0, nextTime - startTime);
+            });
+            return {
+                sleepUnits: delays.map(delay => (delay > 0 ? 1 : 0)),
+                delayMilliseconds: delays
+            };
+        }
+
+        const timingModel = buildTimingModel(notes);
+        const bpm = Number(item?.bpm || BPM || 120) || 120;
+        return {
+            sleepUnits: timingModel.sleepUnits,
+            delayMilliseconds: timingModel.sleepUnits.map(unit => unit * (60000 / bpm))
+        };
+    }
+
+    function configurePreviewTiming(item) {
+        const timing = buildPreviewTiming(item, notesData);
+        previewSleepUnits = timing.sleepUnits;
+        previewDelayMilliseconds = timing.delayMilliseconds;
+    }
+
     function buildFormattedCode(songData, paizi) {
         const bpm = songData.bpm || 120;
         const songNotes = Array.isArray(songData.songNotes) ? songData.songNotes : [];
@@ -3462,7 +4605,96 @@
         return formattedStrings;
     }
 
-    function buildScriptCode(formattedStrings) {
+    function buildMusicXmlFormattedCode(parsed) {
+        if (!parsed || !Array.isArray(parsed.events) || parsed.events.length === 0) {
+            throw new Error('MusicXML 没有可生成脚本的音符');
+        }
+
+        const lineBreak = String.fromCharCode(10);
+        const escapedLineBreak = String.fromCharCode(92) + 'n';
+        const bpm = Number(parsed.bpm) > 0 ? Number(parsed.bpm) : MUSICXML_DEFAULT_BPM;
+        const beats = Number(parsed.beats) > 0 ? Number(parsed.beats) : 4;
+        const paizi = parsed.paizi || '4/4';
+        const events = [...parsed.events].sort((a, b) => (
+            Number(a.startBeat) - Number(b.startBeat)
+                || Number(a.midi) - Number(b.midi)
+                || String(a.key).localeCompare(String(b.key))
+        ));
+        const tempoMap = normalizeMusicXmlTempoMap(parsed.tempoMap, bpm);
+        const tempoValues = [];
+        tempoMap.forEach(entry => {
+            if (!tempoValues.some(value => Math.abs(value - entry.bpm) < 1e-9)) {
+                tempoValues.push(entry.bpm);
+            }
+        });
+        const useBeatTiming = tempoValues.length <= 1;
+        const groups = [];
+
+        events.forEach(event => {
+            const startBeat = Math.max(0, Number(event.startBeat) || 0);
+            const previous = groups[groups.length - 1];
+            if (previous && Math.abs(previous.startBeat - startBeat) < 1e-8) {
+                previous.events.push(event);
+            } else {
+                groups.push({ startBeat, events: [event] });
+            }
+        });
+
+        let formattedStrings = '// 由 MusicXML 生成；网页预览使用 C2-C7 的 61 键钢琴，脚本键位按音高动态分配' + lineBreak;
+        formattedStrings += 'const name = ' + escapeScriptString(parsed.name || '未定义') + ';' + lineBreak;
+        formattedStrings += 'const author = ' + escapeScriptString(parsed.author || '未定义') + ';' + lineBreak;
+        formattedStrings += 'const transcribedBy = ' + escapeScriptString(parsed.transcribedBy || '未知') + ';' + lineBreak;
+        formattedStrings += 'console.log("乐谱名：" + name + "' + escapedLineBreak + '作者：" + author + "' + escapedLineBreak + '改编者：" + transcribedBy);' + lineBreak;
+        formattedStrings += 'const BPM = ' + formatMusicXmlNumber(bpm) + ';const n = ' + formatMusicXmlNumber(beats) + ';const m = ' + escapeScriptString(paizi) + ';var a = 60000/BPM/x;' + lineBreak;
+
+        if (Array.isArray(parsed.pitchMap) && parsed.pitchMap.length > 0) {
+            formattedStrings += '// 音高键位映射（从低到高）：' + parsed.pitchMap.map(item => item.pitchLabel + '=' + item.key).join('，') + lineBreak;
+        }
+        if (!useBeatTiming) {
+            formattedStrings += '// MusicXML 包含速度变化，以下 sleep 使用毫秒间隔以保留节拍变化' + lineBreak;
+        }
+
+        let cursorBeat = 0;
+        let cursorMilliseconds = 0;
+        groups.forEach(group => {
+            if (useBeatTiming) {
+                const delayBeats = group.startBeat - cursorBeat;
+                if (delayBeats > 1e-9) {
+                    formattedStrings += 'sleep(' + formatMusicXmlNumber(delayBeats) + '*a);' + lineBreak;
+                }
+                cursorBeat = group.startBeat;
+            } else {
+                const targetMilliseconds = musicXmlBeatToMilliseconds(group.startBeat, tempoMap);
+                const delayMilliseconds = targetMilliseconds - cursorMilliseconds;
+                if (delayMilliseconds > 1e-7) {
+                    formattedStrings += 'sleep(' + formatMusicXmlNumber(delayMilliseconds) + '/x);' + lineBreak;
+                }
+                cursorMilliseconds = targetMilliseconds;
+            }
+
+            group.events.forEach(event => {
+                if (!event.key) return;
+                formattedStrings += 'zdjl.click(' + event.key + '.x, ' + event.key + '.y, 1);' + lineBreak;
+            });
+        });
+
+        if (useBeatTiming) {
+            const tailBeats = Math.max(0, Number(parsed.totalBeats || 0) - cursorBeat);
+            if (tailBeats > 1e-9) {
+                formattedStrings += 'sleep(' + formatMusicXmlNumber(tailBeats) + '*a);' + lineBreak;
+            }
+        } else {
+            const totalMilliseconds = musicXmlBeatToMilliseconds(Number(parsed.totalBeats || 0), tempoMap);
+            const tailMilliseconds = Math.max(0, totalMilliseconds - cursorMilliseconds);
+            if (tailMilliseconds > 1e-7) {
+                formattedStrings += 'sleep(' + formatMusicXmlNumber(tailMilliseconds) + '/x);' + lineBreak;
+            }
+        }
+
+        return formattedStrings;
+    }
+
+    function buildScriptCode(formattedStrings, options = {}) {
         const readCoordinateJs = `// 初始化'坐标信息'变量
 if(zdjl.getStorage('appName','scmf')){
   console.log("检测到配置文件");
@@ -3473,27 +4705,17 @@ if(zdjl.getStorage('appName','scmf')){
 // 读取坐标信息
 zdjl.setVar("坐标信息",zdjl.getStorage('appName','scmf'));`;
 
+        const keyNames = Array.isArray(options.keyNames) && options.keyNames.length > 0
+            ? options.keyNames
+            : ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
+        const coordinateLines = keyNames.map(keyName => (
+            `temp.push((${keyName} ? ${keyName}.x + "," + ${keyName}.y : null));`
+        )).join(String.fromCharCode(10));
         const saveCoordinateJs = `// 格式化处理要上传的数组
 var temp = [];
-temp.push((A1 ? A1.x + "," + A1.y : null));
-temp.push((A2 ? A2.x + "," + A2.y : null));
-temp.push((A3 ? A3.x + "," + A3.y : null));
-temp.push((A4 ? A4.x + "," + A4.y : null));
-temp.push((A5 ? A5.x + "," + A5.y : null));
-temp.push((A6 ? A6.x + "," + A6.y : null));
-temp.push((A7 ? A7.x + "," + A7.y : null));
-temp.push((B1 ? B1.x + "," + B1.y : null));
-temp.push((B2 ? B2.x + "," + B2.y : null));
-temp.push((B3 ? B3.x + "," + B3.y : null));
-temp.push((B4 ? B4.x + "," + B4.y : null));
-temp.push((B5 ? B5.x + "," + B5.y : null));
-temp.push((B6 ? B6.x + "," + B6.y : null));
-temp.push((B7 ? B7.x + "," + B7.y : null));
-temp.push((C1 ? C1.x + "," + C1.y : null));
+${coordinateLines}
 // 写入坐标信息
 zdjl.setStorage('appName',temp,'scmf')`;
-
-        const keyNames = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1'];
         const createPositionVar = (keyName, index) => ({
             name: keyName,
             value: {
@@ -3567,7 +4789,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
                         showInput: true,
                         mustInput: true,
                         showInputContentAlign: 'left',
-                        textContent: '请按照从音调低到高的顺序设置好A1-C1',
+                        textContent: options.coordinatePrompt || `请按照从音调低到高的顺序设置好${keyNames[0]}-${keyNames[keyNames.length - 1]}`,
                         textSize: 15,
                         textColor: '#e5e5e5'
                     }
@@ -3913,43 +5135,64 @@ zdjl.setStorage('appName',temp,'scmf')`;
         return Boolean(window.lamejs.Mp3Encoder);
     }
 
-    function getAudioExportSchedule(item) {
+    function getAudioExportSchedule(item, options = {}) {
         if (!item || !Array.isArray(item.notesData) || item.notesData.length === 0) {
             throw new Error('没有可导出的音符数据');
         }
 
-        if (!Array.isArray(audioDatas) || audioDatas.length < keyOrder.length) {
-            throw new Error('音频尚未加载完成');
-        }
-
-        const bpm = item.bpm || BPM || 120;
-        const timingModel = buildTimingModel(item.notesData);
         const schedule = [];
-        let cursor = 0;
         let totalDuration = 0;
 
-        item.notesData.forEach((note, index) => {
-            const keyIndex = keyOrder.indexOf(note.key);
-            const buffer = keyIndex >= 0 ? audioDatas[keyIndex] : null;
-            if (buffer) {
-                schedule.push({
-                    keyIndex,
-                    startTime: cursor
-                });
-                totalDuration = Math.max(totalDuration, cursor + buffer.duration);
+        if (item.sourceType === 'musicxml') {
+            const timbre = MUSICXML_TIMBRES[options.timbre] ? options.timbre : currentMusicXmlTimbre;
+            const cache = musicXmlAudioBuffers.get(timbre);
+            const parsed = item.musicXmlData;
+            const tempoMap = normalizeMusicXmlTempoMap(parsed?.tempoMap, item.bpm || MUSICXML_DEFAULT_BPM);
+            item.notesData.forEach(note => {
+                const midi = Number(note.midi);
+                const buffer = isMusicXmlMidiSupported(midi) ? cache.get(midi) : null;
+                if (!buffer) return;
+                const startMilliseconds = Number.isFinite(Number(note.startBeat))
+                    ? musicXmlBeatToMilliseconds(Number(note.startBeat), tempoMap)
+                    : Math.max(0, Number(note.time) || 0);
+                const startTime = startMilliseconds / 1000;
+                schedule.push({ buffer, startTime, midi });
+                totalDuration = Math.max(totalDuration, startTime + buffer.duration);
+            });
+            const scoreDuration = musicXmlBeatToMilliseconds(Number(parsed?.totalBeats || 0), tempoMap) / 1000;
+            totalDuration = Math.max(totalDuration, scoreDuration + 0.35);
+        } else {
+            if (!Array.isArray(audioDatas) || audioDatas.length < keyOrder.length) {
+                throw new Error('音频尚未加载完成');
             }
 
-            const sleepUnit = timingModel.sleepUnits[index] || 0;
-            cursor += (sleepUnit * (60000 / bpm)) / 1000;
-        });
+            const bpm = item.bpm || BPM || 120;
+            const timingModel = buildTimingModel(item.notesData);
+            let cursor = 0;
+
+            item.notesData.forEach((note, index) => {
+                const keyIndex = keyOrder.indexOf(note.key);
+                const buffer = keyIndex >= 0 ? audioDatas[keyIndex] : null;
+                if (buffer) {
+                    schedule.push({ buffer, startTime: cursor, keyIndex });
+                    totalDuration = Math.max(totalDuration, cursor + buffer.duration);
+                }
+
+                const sleepUnit = timingModel.sleepUnits[index] || 0;
+                cursor += (sleepUnit * (60000 / bpm)) / 1000;
+            });
+            totalDuration = Math.max(totalDuration, cursor + 0.35);
+        }
 
         if (schedule.length === 0) {
-            throw new Error('没有可播放的音符');
+            throw new Error(item.sourceType === 'musicxml'
+                ? '没有 C2–C7 范围内可播放的音符'
+                : '没有可播放的音符');
         }
 
         return {
             schedule,
-            totalDuration: Math.max(totalDuration, cursor + 0.35)
+            totalDuration
         };
     }
 
@@ -3959,17 +5202,26 @@ zdjl.setStorage('appName',temp,'scmf')`;
             throw new Error('当前浏览器不支持离线音频渲染');
         }
 
-        const { schedule, totalDuration } = getAudioExportSchedule(item);
+        let timbre = null;
+        if (item?.sourceType === 'musicxml') {
+            timbre = currentMusicXmlTimbre;
+            const midis = getMusicXmlProjectMidis(item, true);
+            if (midis.length === 0) {
+                throw new Error('没有 C2–C7 范围内可导出的音符');
+            }
+            await ensureMusicXmlAudioBuffers(midis, timbre);
+        }
+        const { schedule, totalDuration } = getAudioExportSchedule(item, { timbre });
         const sampleRate = 44100;
         const frameCount = Math.ceil(totalDuration * sampleRate);
         const offlineCtx = new OfflineCtx(1, frameCount, sampleRate);
         const masterGain = offlineCtx.createGain();
-        masterGain.gain.value = 0.72;
+        masterGain.gain.value = item?.sourceType === 'musicxml' ? 0.56 : 0.72;
         masterGain.connect(offlineCtx.destination);
 
         schedule.forEach(event => {
             const source = offlineCtx.createBufferSource();
-            source.buffer = audioDatas[event.keyIndex];
+            source.buffer = event.buffer;
             source.connect(masterGain);
             source.start(event.startTime);
         });
@@ -4143,7 +5395,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
         await ensureMp3Encoder();
         if (typeof onProgress === 'function') {
-            onProgress('离线渲染音频', 18);
+            onProgress(item?.sourceType === 'musicxml' ? '加载钢琴音色并离线渲染' : '离线渲染音频', 18);
         }
         const renderedBuffer = await renderProjectAudioBuffer(item);
         if (typeof onProgress === 'function') {
@@ -4345,9 +5597,13 @@ zdjl.setStorage('appName',temp,'scmf')`;
         let firstAddedId = null;
 
         for (const file of incomingFiles) {
-            if (!file.name.toLowerCase().endsWith('.txt')) {
-                addLog(`[!] 已跳过非txt文件: ${file.name}`);
-                showToast(`已跳过非txt文件：${file.name}`, 'error');
+            const sourceType = getSourceType(file.name);
+            const isSupportedFile = sourceType === 'musicxml'
+                ? isMusicXmlFileName(file.name)
+                : file.name.toLowerCase().endsWith('.txt');
+            if (!isSupportedFile) {
+                addLog(`[!] 已跳过不支持的文件: ${file.name}`);
+                showToast(`已跳过不支持的文件：${file.name}`, 'error');
                 continue;
             }
 
@@ -4359,7 +5615,11 @@ zdjl.setStorage('appName',temp,'scmf')`;
                     firstAddedId = item.id;
                 }
                 addLog(`[+] 已加载文件: ${file.name}`);
-                addLog(`[*] 已识别: ${item.meta.name} / BPM ${item.meta.bpm} / ${item.meta.isEncrypted ? '加密' : '未加密'}`);
+                if (item.sourceType === 'musicxml') {
+                    addLog(`[*] 已识别 MusicXML: ${item.meta.name} / BPM ${item.meta.bpm} / ${item.meta.noteCount} 个音符 / ${item.meta.keyCount} 个键位`);
+                } else {
+                    addLog(`[*] 已识别: ${item.meta.name} / BPM ${item.meta.bpm} / ${item.meta.isEncrypted ? '加密' : '未加密'}`);
+                }
                 showToast(`已识别：${item.meta.name}`, 'success');
             } catch (error) {
                 addLog(`[!] 文件未被接受 ${file.name}: ${error.message}`);
@@ -4535,14 +5795,31 @@ zdjl.setStorage('appName',temp,'scmf')`;
     updateSpeedControl(false);
 
     // 开始预览
-    function startPreview() {
+    async function startPreview() {
         if (isPreviewing) return;
         if (notesData.length === 0) return;
+        const activeItem = getActiveProject();
+        if (activeItem?.sourceType === 'musicxml') {
+            const timbre = currentMusicXmlTimbre;
+            previewButton.disabled = true;
+            previewButton.textContent = '准备音色...';
+            try {
+                await ensureMusicXmlAudioBuffers(getMusicXmlProjectMidis(activeItem, true), timbre);
+            } catch (error) {
+                previewButton.textContent = '开始预览';
+                previewButton.disabled = true;
+                addLog(`[!] MusicXML预览音色加载失败: ${error.message}`);
+                showToast('预览音色加载失败', 'error');
+                return;
+            }
+            if (getActiveProject()?.id !== activeItem.id || currentMusicXmlTimbre !== timbre) return;
+            previewButton.disabled = false;
+        }
         if (currentNoteIndex >= notesData.length) {
             currentNoteIndex = 0;
         }
-        if (previewSleepUnits.length !== notesData.length) {
-            previewSleepUnits = buildTimingModel(notesData).sleepUnits;
+        if (previewDelayMilliseconds.length !== notesData.length) {
+            configurePreviewTiming(activeItem);
         }
 
         isPreviewing = true;
@@ -4628,6 +5905,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
         }
         if (returnToTop) {
             scrollPreviewToTop();
+            const activeItem = getActiveProject();
+            if (activeItem?.sourceType === 'musicxml') {
+                scrollMusicXmlPianoToProject(activeItem);
+            }
         }
     }
 
@@ -4701,39 +5982,35 @@ zdjl.setStorage('appName',temp,'scmf')`;
                     throw new DOMException('Preview aborted', 'AbortError');
                 }
 
-                const isNewPreviewGroup = i === firstNoteIndex || (previewSleepUnits[i - 1] || 0) > 0;
+                const isNewPreviewGroup = i === firstNoteIndex || (previewDelayMilliseconds[i - 1] || 0) > 0;
                 if (isNewPreviewGroup) {
                     clearAllHighlights();
                 }
 
                 const note = notesData[i];
-                const keyName = note.key;
-                const keyIndex = getKeyIndex(keyName);
-
-                if (keyIndex !== -1) {
-                    // 播放音频
-                    playSound(keyIndex);
-
-                    // 高亮琴键
-                    const keyElement = pianoKeys[keyIndex];
-                    keyElement.classList.add('piano-key-down');
-                    highlightedKeys.add(keyIndex);
-
-                    // 高亮对应的代码行（使用映射关系）
-                    const codeLineNumber = codeLineMap.get(i);
-                    if (codeLineNumber !== undefined) {
-                        highlightCodeLine(codeLineNumber);
+                const activeItem = getActiveProject();
+                if (activeItem?.sourceType === 'musicxml') {
+                    if (isMusicXmlMidiSupported(note.midi)) {
+                        playMusicXmlSound(note.midi);
+                        highlightMusicXmlKey(note.midi);
                     }
-                    highlightNotationEvent(i);
-                    highlightPipelineColumn(i);
-                    highlightSnapshotGridCell(i);
-                    requestPreviewScroll(i);
+                } else {
+                    const keyIndex = getKeyIndex(note.key);
+                    if (keyIndex !== -1) {
+                        playSound(keyIndex);
+                        const keyElement = pianoKeys[keyIndex];
+                        keyElement.classList.add('piano-key-down');
+                        highlightedKeys.add(keyIndex);
+                    }
                 }
+
+                // 高亮对应的代码行和其它预览视图（MusicXML当前仅显示钢琴键盘）。
+                highlightPreviewPosition(i);
+                requestPreviewScroll(i);
 
                 currentNoteIndex = i + 1;
                 updatePreviewProgress(currentNoteIndex);
-                const sleepUnit = previewSleepUnits[i] || 0;
-                const delay = sleepUnit * (60000 / BPM);
+                const delay = previewDelayMilliseconds[i] || 0;
 
                 // 使用await实现非阻塞延迟
                 await waitForPreviewDelay(delay, signal);
@@ -4770,16 +6047,302 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     // 6. 音频播放功能
     // 兼容safari浏览器
+    function ensureAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioCtx;
+    }
+
+    function resumeAudioContext(context = audioCtx) {
+        if (!context || context.state !== 'suspended' || !context.resume) return;
+        try {
+            const resumeResult = context.resume();
+            if (resumeResult && typeof resumeResult.catch === 'function') {
+                resumeResult.catch(() => {});
+            }
+        } catch (error) {}
+    }
+
     function myDecodeAudioData(originBuffer) {
         return new Promise((resolve, reject) => {
             try {
-                audioCtx.decodeAudioData(originBuffer, audioData => {
-                    resolve(audioData);
-                });
+                ensureAudioContext().decodeAudioData(originBuffer, resolve, reject);
             } catch (error) {
                 reject(error);
             }
         });
+    }
+
+    function getAudioAssetCandidates(relativePath) {
+        const normalizedPath = String(relativePath || '').replace(/^\/+/, '');
+        const localUrl = new URL(normalizedPath, document.baseURI).href;
+        const productionUrl = `https://bilibiliales.github.io/skystudio-decrypt/${normalizedPath}`;
+        return Array.from(new Set([localUrl, productionUrl]));
+    }
+
+    async function fetchAudioArrayBuffer(relativePath) {
+        let lastError = null;
+        for (const url of getAudioAssetCandidates(relativePath)) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok && response.status !== 0) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return await response.arrayBuffer();
+            } catch (error) {
+                lastError = error;
+            }
+        }
+        throw new Error(`音频文件加载失败：${relativePath}${lastError ? `（${lastError.message}）` : ''}`);
+    }
+
+    async function loadDecodedAudio(relativePath) {
+        return myDecodeAudioData(await fetchAudioArrayBuffer(relativePath));
+    }
+
+    async function getMusicXmlAudioBuffer(midi, timbre = currentMusicXmlTimbre) {
+        const value = Math.round(Number(midi));
+        const selectedTimbre = MUSICXML_TIMBRES[timbre] ? timbre : 'piano';
+        if (!isMusicXmlMidiSupported(value)) return null;
+
+        const cache = musicXmlAudioBuffers.get(selectedTimbre);
+        const pending = musicXmlAudioLoadPromises.get(selectedTimbre);
+        if (cache.has(value)) return cache.get(value);
+        if (pending.has(value)) return pending.get(value);
+
+        const samplePath = getMusicXmlSamplePath(value, selectedTimbre);
+        const loadPromise = loadDecodedAudio(samplePath)
+            .then(buffer => {
+                cache.set(value, buffer);
+                return buffer;
+            })
+            .finally(() => pending.delete(value));
+        pending.set(value, loadPromise);
+        return loadPromise;
+    }
+
+    async function ensureMusicXmlAudioBuffers(midis, timbre = currentMusicXmlTimbre, onProgress) {
+        const supportedMidis = Array.from(new Set((Array.isArray(midis) ? midis : [])
+            .map(Number)
+            .filter(isMusicXmlMidiSupported)));
+        let completed = 0;
+        await Promise.all(supportedMidis.map(async midi => {
+            await getMusicXmlAudioBuffer(midi, timbre);
+            completed++;
+            if (typeof onProgress === 'function') {
+                onProgress(completed, supportedMidis.length, midi);
+            }
+        }));
+        return supportedMidis;
+    }
+
+    function updateMusicXmlAudioStatus(message) {
+        if (musicXmlAudioStatus) {
+            musicXmlAudioStatus.textContent = message;
+        }
+    }
+
+    async function prepareMusicXmlProjectAudio(item) {
+        if (!item || item.sourceType !== 'musicxml') return;
+        const midis = getMusicXmlProjectMidis(item, true);
+        const timbre = currentMusicXmlTimbre;
+        const timbreLabel = MUSICXML_TIMBRES[timbre].label;
+        const token = ++musicXmlAudioPrepareToken;
+
+        if (midis.length === 0) {
+            updateMusicXmlAudioStatus('乐谱没有 C2–C7 范围内的可播放音符');
+            previewButton.disabled = true;
+            speedSelector.disabled = true;
+            mp3DownloadButton.disabled = true;
+            return;
+        }
+
+        previewButton.disabled = true;
+        previewButton.textContent = '加载音色...';
+        speedSelector.disabled = true;
+        mp3DownloadButton.disabled = true;
+        updateMusicXmlAudioStatus(`${timbreLabel} · 正在加载 0/${midis.length}`);
+
+        try {
+            await ensureMusicXmlAudioBuffers(midis, timbre, (completed, total) => {
+                if (token === musicXmlAudioPrepareToken) {
+                    updateMusicXmlAudioStatus(`${timbreLabel} · 正在加载 ${completed}/${total}`);
+                }
+            });
+            if (token !== musicXmlAudioPrepareToken || getActiveProject()?.id !== item.id || currentMusicXmlTimbre !== timbre) {
+                return;
+            }
+            updateMusicXmlAudioStatus(`${timbreLabel} · 已加载乐谱使用的 ${midis.length} 个音高`);
+            previewButton.textContent = currentNoteIndex > 0 ? '继续预览' : '开始预览';
+            previewButton.disabled = false;
+            speedSelector.disabled = false;
+            mp3DownloadButton.disabled = false;
+        } catch (error) {
+            if (token !== musicXmlAudioPrepareToken || getActiveProject()?.id !== item.id) return;
+            updateMusicXmlAudioStatus(`${timbreLabel}加载失败：${error.message}`);
+            previewButton.textContent = '开始预览';
+            previewButton.disabled = true;
+            speedSelector.disabled = true;
+            mp3DownloadButton.disabled = true;
+            addLog(`[!] MusicXML音色加载失败: ${error.message}`);
+            showToast('MusicXML音色加载失败', 'error');
+        }
+    }
+
+    function playMusicXmlSound(midi, timbre = currentMusicXmlTimbre) {
+        const buffer = musicXmlAudioBuffers.get(timbre)?.get(Number(midi));
+        if (!buffer) return false;
+        const context = ensureAudioContext();
+        resumeAudioContext(context);
+        const source = context.createBufferSource();
+        source.buffer = buffer;
+        source.connect(context.destination);
+        source.start(0);
+        return true;
+    }
+
+    async function pressMusicXmlKey(midi) {
+        const value = Number(midi);
+        const key = musicXmlPianoKeys.get(value);
+        if (!key || manualPressedMusicXmlMidis.has(value)) return;
+        manualPressedMusicXmlMidis.add(value);
+        key.classList.add('musicxml-key-down');
+        try {
+            const timbre = currentMusicXmlTimbre;
+            await getMusicXmlAudioBuffer(value, timbre);
+            playMusicXmlSound(value, timbre);
+        } catch (error) {
+            updateMusicXmlAudioStatus(`${musicXmlMidiToLabel(value)} 加载失败`);
+            addLog(`[!] 琴键音频加载失败 ${musicXmlMidiToLabel(value)}: ${error.message}`);
+        }
+    }
+
+    function releaseMusicXmlKey(midi) {
+        const value = Number(midi);
+        const key = musicXmlPianoKeys.get(value);
+        manualPressedMusicXmlMidis.delete(value);
+        if (key && !highlightedMusicXmlMidis.has(value)) {
+            key.classList.remove('musicxml-key-down');
+        }
+    }
+
+    function releaseAllMusicXmlKeys() {
+        Array.from(manualPressedMusicXmlMidis).forEach(releaseMusicXmlKey);
+    }
+
+    function scrollMusicXmlPianoKeyIntoView(key, behavior = 'smooth') {
+        if (!key || !musicXmlPianoScroll) return;
+        const left = key.offsetLeft;
+        const right = left + key.offsetWidth;
+        const visibleLeft = musicXmlPianoScroll.scrollLeft;
+        const visibleRight = visibleLeft + musicXmlPianoScroll.clientWidth;
+        if (left >= visibleLeft + 12 && right <= visibleRight - 12) return;
+        const target = Math.max(0, left - (musicXmlPianoScroll.clientWidth / 2) + (key.offsetWidth / 2));
+        if (typeof musicXmlPianoScroll.scrollTo === 'function') {
+            musicXmlPianoScroll.scrollTo({ left: target, behavior });
+        } else {
+            musicXmlPianoScroll.scrollLeft = target;
+        }
+    }
+
+    function highlightMusicXmlKey(midi) {
+        const value = Number(midi);
+        const key = musicXmlPianoKeys.get(value);
+        if (!key) return;
+        key.classList.add('musicxml-key-down');
+        highlightedMusicXmlMidis.add(value);
+        scrollMusicXmlPianoKeyIntoView(key);
+    }
+
+    function scrollMusicXmlPianoToProject(item) {
+        const firstMidi = getMusicXmlProjectMidis(item, true)[0];
+        const key = musicXmlPianoKeys.get(firstMidi);
+        if (!key || !musicXmlPianoScroll) return;
+        const target = Math.max(0, key.offsetLeft - (musicXmlPianoScroll.clientWidth * 0.2));
+        musicXmlPianoScroll.scrollLeft = target;
+    }
+
+    function renderMusicXmlPianoKeyboard() {
+        if (!musicXmlPianoKeyboard) return;
+        musicXmlPianoKeyboard.innerHTML = '';
+        musicXmlPianoKeys.clear();
+        const whiteKeyCount = MUSICXML_PIANO_WHITE_CODES.length;
+        let whiteIndex = 0;
+
+        for (let midi = MUSICXML_MIN_MIDI; midi <= MUSICXML_MAX_MIDI; midi++) {
+            const pitchClass = ((midi % 12) + 12) % 12;
+            const isWhite = MUSICXML_WHITE_PITCH_CLASSES.has(pitchClass);
+            const octave = Math.floor(midi / 12) - 1;
+            const key = document.createElement('button');
+            const label = musicXmlMidiToLabel(midi);
+            key.type = 'button';
+            key.className = `musicxml-piano-key ${isWhite ? 'white' : 'black'}`;
+            key.dataset.midi = String(midi);
+            key.dataset.octave = String(octave);
+            key.setAttribute('aria-label', `播放 ${label}`);
+            key.setAttribute('title', `播放 ${label}`);
+
+            if (isWhite) {
+                key.style.left = `${(whiteIndex / whiteKeyCount) * 100}%`;
+                key.style.width = `${100 / whiteKeyCount}%`;
+                whiteIndex++;
+            } else {
+                key.style.left = `${((whiteIndex - 0.31) / whiteKeyCount) * 100}%`;
+                key.style.width = `${(0.62 / whiteKeyCount) * 100}%`;
+            }
+
+            const labelElement = document.createElement('span');
+            labelElement.className = 'musicxml-key-label';
+            labelElement.textContent = label;
+            key.appendChild(labelElement);
+
+            key.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                if (key.setPointerCapture) {
+                    try { key.setPointerCapture(event.pointerId); } catch (error) {}
+                }
+                pressMusicXmlKey(midi);
+            });
+            key.addEventListener('pointerup', () => releaseMusicXmlKey(midi));
+            key.addEventListener('pointercancel', () => releaseMusicXmlKey(midi));
+            key.addEventListener('lostpointercapture', () => releaseMusicXmlKey(midi));
+            key.addEventListener('keydown', event => {
+                if ((event.key === 'Enter' || event.key === ' ') && !event.repeat) {
+                    event.preventDefault();
+                    pressMusicXmlKey(midi);
+                }
+            });
+            key.addEventListener('keyup', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    releaseMusicXmlKey(midi);
+                }
+            });
+
+            musicXmlPianoKeyboard.appendChild(key);
+            musicXmlPianoKeys.set(midi, key);
+        }
+    }
+
+    function setMusicXmlTimbre(timbre, shouldPersist = true) {
+        const selectedTimbre = MUSICXML_TIMBRES[timbre] ? timbre : 'piano';
+        const changed = selectedTimbre !== currentMusicXmlTimbre;
+        currentMusicXmlTimbre = selectedTimbre;
+        if (musicXmlTimbreSelector) {
+            musicXmlTimbreSelector.value = selectedTimbre;
+        }
+        if (shouldPersist) {
+            localStorage.setItem(MUSICXML_TIMBRE_KEY, selectedTimbre);
+        }
+        const item = getActiveProject();
+        if (changed && item?.sourceType === 'musicxml') {
+            if (isPreviewing || currentNoteIndex > 0) {
+                stopPreview();
+            }
+            clearAllHighlights();
+            prepareMusicXmlProjectAudio(item);
+        }
     }
 
     function pressManualKey(index) {
@@ -4809,37 +6372,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     // 加载所有音频
     Promise.all([
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b1.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b2.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b3.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b4.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b5.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b6.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/b7.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c1.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c2.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c3.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c4.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c5.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c6.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/c7.mp3").then(response => response.arrayBuffer()),
-        fetch("https://bilibiliales.github.io/skystudio-decrypt/sounds/d1.mp3").then(response => response.arrayBuffer())
-    ])
-
-        // 创建audio上下文
-        .then(soundBuffers => {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            return soundBuffers;
-        })
-
-        // 转换为audioBuffer
-        .then(soundBuffers => {
-            let taskList = [];
-            soundBuffers.forEach(buffer => {
-                taskList.push(myDecodeAudioData(buffer));
-            });
-            return Promise.all(taskList);
-        })
+        'sounds/b1.mp3', 'sounds/b2.mp3', 'sounds/b3.mp3', 'sounds/b4.mp3', 'sounds/b5.mp3',
+        'sounds/b6.mp3', 'sounds/b7.mp3', 'sounds/c1.mp3', 'sounds/c2.mp3', 'sounds/c3.mp3',
+        'sounds/c4.mp3', 'sounds/c5.mp3', 'sounds/c6.mp3', 'sounds/c7.mp3', 'sounds/d1.mp3'
+    ].map(loadDecodedAudio))
 
         // 音频加载完成
         .then(datas => {
@@ -4886,6 +6422,9 @@ zdjl.setStorage('appName',temp,'scmf')`;
             document.getElementById('loadding').textContent = "音频加载失败，请检查网络连接";
         });
 
+    document.addEventListener('pointerup', releaseAllMusicXmlKeys);
+    window.addEventListener('blur', releaseAllMusicXmlKeys);
+
     function soundLoaded() {
         document.getElementById('loadding').style.display = 'none';
         showToast('音频加载成功', 'success');
@@ -4893,6 +6432,8 @@ zdjl.setStorage('appName',temp,'scmf')`;
 
     function playSound(index) {
         if (!audioCtx || !audioDatas[index]) return;
+
+        resumeAudioContext(audioCtx);
 
         const audioSource = audioCtx.createBufferSource();
         audioSource.buffer = audioDatas[index];
@@ -5205,6 +6746,12 @@ zdjl.setStorage('appName',temp,'scmf')`;
         });
     });
 
+    if (musicXmlTimbreSelector) {
+        musicXmlTimbreSelector.addEventListener('change', function() {
+            setMusicXmlTimbre(this.value);
+        });
+    }
+
     document.querySelectorAll('[data-song-meta-field]').forEach(input => {
         input.addEventListener('change', applySongInfoEdits);
         input.addEventListener('keydown', function(event) {
@@ -5230,6 +6777,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
             localStorage.removeItem(PANEL_THEME_KEY);
             localStorage.removeItem(KEY_LABEL_MODE_KEY);
             localStorage.removeItem(PREVIEW_DISPLAY_MODE_KEY);
+            localStorage.removeItem(MUSICXML_TIMBRE_KEY);
         } catch (error) {
             console.warn('清除本地存储失败:', error);
         }
@@ -5258,6 +6806,7 @@ zdjl.setStorage('appName',temp,'scmf')`;
         // 重置预览显示为代码
         setPreviewDisplayMode('code', false);
         document.querySelector('input[name="previewDisplayMode"][value="code"]').checked = true;
+        setMusicXmlTimbre('piano', false);
         
         // 应用重置后的样式
         updatePianoStyle();
@@ -5272,11 +6821,13 @@ zdjl.setStorage('appName',temp,'scmf')`;
     setPanelTheme(localStorage.getItem(PANEL_THEME_KEY) === 'dark', false);
     setKeyLabelMode(localStorage.getItem(KEY_LABEL_MODE_KEY) || 'letters', false);
     setPreviewDisplayMode(localStorage.getItem(PREVIEW_DISPLAY_MODE_KEY) || 'code', false);
+    renderMusicXmlPianoKeyboard();
+    setMusicXmlTimbre(localStorage.getItem(MUSICXML_TIMBRE_KEY) || 'piano', false);
     window.addEventListener('load', function() {
         setKeyLabelMode(currentKeyLabelMode, false);
         const activeItem = getActiveProject();
         const canRestoreActivePreview = activeItem
-            ? Array.isArray(activeItem.notesData)
+            ? (activeItem.sourceType !== 'musicxml' && activeItem.previewSupported !== false && Array.isArray(activeItem.notesData))
             : false;
         if (canRestoreActivePreview) {
             displayFormattedNotation(activeItem);
@@ -5293,10 +6844,10 @@ zdjl.setStorage('appName',temp,'scmf')`;
     });
 
     // 初始化日志
-    addLog('Sky Studio乐谱解密解析工具（支持加密文件）');
+    addLog('Sky Studio乐谱解密解析工具（支持TXT与MusicXML）');
     addLog('━━━━━━━━━━━━━━━━━━━━');
-    addLog('点击或拖拽TXT文件到上传区域开始');
-    addLog('支持加密/未加密文件转换');
+    addLog('点击或拖拽TXT / MusicXML文件到上传区域开始');
+    addLog('TXT支持解密和15键预览；MusicXML支持61键双音色预览、MP3与脚本导出');
     addLog('');
     setFlowState('empty');
     renderFileList();
@@ -6226,6 +7777,14 @@ zdjl.setStorage('appName',temp,'scmf')`;
             }
         });
         highlightedKeys.clear();
+
+        highlightedMusicXmlMidis.forEach(midi => {
+            const keyElement = musicXmlPianoKeys.get(midi);
+            if (keyElement && !manualPressedMusicXmlMidis.has(midi)) {
+                keyElement.classList.remove('musicxml-key-down');
+            }
+        });
+        highlightedMusicXmlMidis.clear();
     }
 
     // 为AbortController提供polyfill（针对不支持的浏览器）
